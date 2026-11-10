@@ -630,6 +630,21 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
   .element-box.element-box--sm { padding: 0 6px; gap: 6px; }
 }
 
+/* 768-899px: the home hero is a flex row and the section is display:flex, so
+   the container cannot shrink below its content. The portrait (150px) +
+   2.6em gap + the nowrap "full-stack web apps & machine-learning tools" pill
+   give it an 804.6px min-content — 92px wider than a 768px window's 753px
+   layout box. Let the pills wrap as they do below 768px and scale the 7em
+   nowrap title (767px wide) in this band, so neither child sets a min-content
+   wider than the viewport. 900px and up is untouched (title stays 126px,
+   pills stay on one line). Placed before the 767px block so the mobile rules
+   keep winning there, while fractional viewport widths (e.g. 767.5px on a
+   scaled display) still get this fix instead of falling in a breakpoint gap. */
+@media (max-width: 899px) {
+  .hero-title { font-size: min(7em, 13.5vw); }
+  .lead a { white-space: normal; }
+}
+
 @media (max-width: 1023px) {
   .tile-grid > li { width: 50%; }
 }
@@ -654,6 +669,25 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
 
 @media (max-width: 420px) {
   .social-row a { width: 42px; height: 42px; }
+}
+
+/* 320-380px: 14vw is measured against innerWidth, which includes the ~15px
+   classic scrollbar, so the 44.8px nowrap "Hello World..." title is 272.9px
+   wide and its 40px page padding needs 312.9px — 8px more than the 305px the
+   layout actually gets at a 320px window (the flex home section then refuses
+   to shrink below that). 13vw keeps the title inside the real layout box at
+   every width in this band; 381px and up is unchanged. */
+@media (max-width: 380px) {
+  .hero-title { font-size: min(4.6em, 13vw); }
+}
+
+/* At 320-360px two columns leave each tile ~122px wide, too narrow for the
+   132px "experience" label (.full) inside the element-box's 30px padding and
+   3px frame — it gets clipped by overflow:hidden. One column keeps the label
+   whole and the grid still spans the same 285px; the 2x2 layout is unchanged
+   from 361px up (390px included). */
+@media (max-width: 360px) {
+  .tile-grid > li { width: 100%; }
 }
 
 /* ==========================================================================
