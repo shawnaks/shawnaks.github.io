@@ -1,0 +1,306 @@
+/* ==========================================================================
+   contact — email-first hero, channel grid, location & status
+   page-only styles. main.css owns the shell, tokens and primitives; this file
+   adds the bordered email CTA, the three channel cards and the status strip.
+   ========================================================================== */
+
+/* the hero should span the container, not the 800px reading measure */
+.section-body.contact-body {
+  max-width: none;
+}
+
+.contact-intro {
+  max-width: 860px;
+}
+
+/* ==========================================================================
+   primary email block — the page's hero action
+   ========================================================================== */
+
+.contact-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  width: 100%;
+  border: 3px solid var(--ink);
+  background: var(--white);
+  padding: 28px 30px;
+  color: var(--ink);
+  text-decoration: none;
+  overflow: hidden;
+  transition: border-color .3s linear;
+}
+
+/* the hatch shadow lives on the wrapper: the anchor clips its wipe */
+.contact-hero-wrap {
+  width: 100%;
+}
+
+/* accent wipe, same language as the .cta / case links */
+.contact-hero-wipe {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: translateX(-101%);
+  transition: transform .35s var(--ease);
+  z-index: 0;
+}
+
+.contact-hero:hover .contact-hero-wipe,
+.contact-hero:focus-visible .contact-hero-wipe {
+  transform: translateX(0);
+}
+
+.contact-hero:hover,
+.contact-hero:focus-visible {
+  border-color: var(--accent);
+}
+
+.contact-hero-icon,
+.contact-hero-copy,
+.contact-hero-go {
+  position: relative;
+  z-index: 1;
+  transition: color .3s linear, border-color .3s linear;
+}
+
+.contact-hero-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border: 3px solid var(--ink);
+  color: var(--accent);
+}
+
+.contact-hero-icon .icon {
+  width: 34px;
+  height: 34px;
+}
+
+.contact-hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.contact-hero-address {
+  font: 700 clamp(18px, 4.2vw, 28px)/1.15 var(--ui);
+  letter-spacing: -.02em;
+  overflow-wrap: anywhere;
+}
+
+.contact-hero-desc {
+  font: 400 1.65em/1.45 var(--serif);
+  color: var(--gray);
+}
+
+.contact-hero-go {
+  display: flex;
+  flex: none;
+  margin-left: auto;
+}
+
+.contact-hero-go .icon {
+  width: 18px;
+  height: 18px;
+  color: var(--accent);
+  transition: color .3s linear, transform .3s var(--ease);
+}
+
+.contact-hero-go .icon + .icon {
+  margin-left: -8px;
+}
+
+.contact-hero:hover .contact-hero-icon,
+.contact-hero:focus-visible .contact-hero-icon {
+  border-color: #fff;
+  color: #fff;
+}
+
+.contact-hero:hover .contact-hero-address,
+.contact-hero:focus-visible .contact-hero-address,
+.contact-hero:hover .contact-hero-desc,
+.contact-hero:focus-visible .contact-hero-desc,
+.contact-hero:hover .contact-hero-go .icon,
+.contact-hero:focus-visible .contact-hero-go .icon {
+  color: #fff;
+}
+
+.contact-hero:hover .contact-hero-go .icon,
+.contact-hero:focus-visible .contact-hero-go .icon {
+  transform: translateX(4px);
+}
+
+/* ==========================================================================
+   channel grid — linkedin / github / résumé
+   ========================================================================== */
+
+.contact-label {
+  margin-top: 3.4em;
+  margin-bottom: 1.4em;
+}
+
+.contact-channel-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.contact-channel {
+  display: flex;
+  min-width: 0;
+}
+
+.contact-channel-link {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  border: 3px solid var(--ink);
+  background: var(--white);
+  padding: 22px 22px 24px;
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    border-color .4s var(--ease),
+    transform .4s var(--ease-out),
+    box-shadow .4s var(--ease-out);
+}
+
+.contact-channel:hover .contact-channel-link,
+.contact-channel:focus-within .contact-channel-link {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 14px 26px rgba(43, 44, 51, .10);
+}
+
+.contact-channel-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 3px solid var(--ink);
+  color: var(--accent);
+  margin-bottom: 2.2em;
+  transition: background-color .25s linear, border-color .25s linear, color .25s linear;
+}
+
+.contact-channel-icon .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.contact-channel:hover .contact-channel-icon,
+.contact-channel:focus-within .contact-channel-icon {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.contact-channel-name {
+  font: 700 1.2em/1 var(--ui);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: .7em;
+}
+
+.contact-channel-handle {
+  font: 700 1.7em/1.2 var(--ui);
+  letter-spacing: -.01em;
+  overflow-wrap: anywhere;
+  box-shadow: inset 0 -3px 0 var(--accent);
+  transition: background-color .25s linear, color .25s linear;
+}
+
+.contact-channel:hover .contact-channel-handle,
+.contact-channel:focus-within .contact-channel-handle {
+  background: var(--accent);
+  color: #fff;
+}
+
+.contact-channel-desc {
+  font: 400 1.6em/1.45 var(--serif);
+  color: var(--gray);
+  margin-top: .75em;
+}
+
+/* ==========================================================================
+   location & status strip
+   ========================================================================== */
+
+.contact-status {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 3px;
+  margin-top: 3.2em;
+  border: 3px solid var(--ink);
+  background: var(--ink);
+}
+
+.contact-status-cell {
+  min-width: 0;
+  padding: 20px 22px;
+  background: var(--white);
+}
+
+.contact-status-label {
+  font: 700 1.25em/1 var(--ui);
+  letter-spacing: .04em;
+  color: var(--accent);
+  margin-bottom: .8em;
+}
+
+.contact-status-value {
+  font: 700 2.4em/1.1 var(--ui);
+  letter-spacing: -.02em;
+}
+
+.contact-status-open {
+  font: 400 1.7em/1.5 var(--serif);
+}
+
+/* ==========================================================================
+   responsive — one channel per row, stacked hero and status
+   ========================================================================== */
+@media (max-width: 767px) {
+  .contact-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 22px 20px;
+  }
+
+  .contact-hero-go {
+    display: none;
+  }
+
+  .contact-hero-desc {
+    font-size: 1.55em;
+  }
+
+  .contact-channel-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .contact-channel-icon {
+    margin-bottom: 1.6em;
+  }
+
+  .contact-channel-handle {
+    font-size: 1.5em;
+  }
+
+  .contact-status {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-status-cell {
+    padding: 18px 18px;
+  }
+}

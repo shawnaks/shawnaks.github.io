@@ -1,0 +1,10 @@
+{
+  "name": "Shawnak Samaddar",
+  "short_name": "shawnak",
+  "description": "Personal site of Shawnak Samaddar — full-stack web apps & machine-learning tools.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2b2c33",
+  "icons": [{ "src": "assets/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

@@ -1,0 +1,64 @@
+/* ==========================================================================
+   experience — roles, research & hackathon record
+   page-only styles. main.css owns the shell, tokens and .plan-item base;
+   this file adds the achievements list, the inline pill and its markers.
+   ========================================================================== */
+
+/* Bulleted achievements: Garamond body copy at the plan-body scale, with a
+   small accent square as the marker. The marker is absolute so wrapped lines
+   hang under the text and inline links stay in the text flow (an inline-block
+   child of a grid/flex list item would become a squeezed grid/flex item). */
+.record-list {
+  display: grid;
+  gap: .34em;
+  margin-top: .7em;
+  font-size: 1.7em;
+  line-height: 1.5;
+}
+
+.record-list > li {
+  position: relative;
+  padding-left: .84em;
+}
+
+.record-list > li::before {
+  content: '';
+  position: absolute;
+  top: .62em;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  background: var(--accent);
+}
+
+/* Inline project pill inside a card — same language as the .lead pills:
+   ink capsule, accent on hover, compact UI type. */
+.record-pill {
+  display: inline-block;
+  font-family: var(--ui);
+  font-weight: 700;
+  font-style: normal;
+  font-size: .68em;
+  line-height: 1;
+  color: #fff;
+  background: var(--ink);
+  padding: .4em 1em .36em;
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+  transform: translateY(-.1em);
+  transition: background-color .25s linear;
+}
+
+.record-pill:hover,
+.record-pill:focus-visible {
+  background: var(--accent);
+  text-shadow: -1px 0 rgba(0, 255, 255, .85), 1px 0 rgba(255, 0, 0, .85);
+  animation: pill-jitter .25s steps(2) infinite;
+}
+
+@media (max-width: 767px) {
+  .record-list {
+    font-size: 1.6em;
+  }
+}

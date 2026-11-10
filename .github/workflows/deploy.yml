@@ -1,0 +1,59 @@
+name: deploy to github pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping queued runs between an
+# in-progress run and a newly queued one.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: install dependencies
+        run: npm ci
+
+      # vite.config.ts already sets `base: './'`, so the build works under any
+      # repository subpath without extra env vars.
+      - name: build
+        run: npm run build
+
+      - name: configure pages
+        uses: actions/configure-pages@v5
+
+      # The site uses hash routing (#/hello/, #/about/, ...), so every URL
+      # resolves to index.html — no 404.html SPA fallback is required.
+      - name: upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: deploy to github pages
+        id: deployment
+        uses: actions/deploy-pages@v4

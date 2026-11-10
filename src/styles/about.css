@@ -1,0 +1,133 @@
+/* ==========================================================================
+   about — bio, education, coursework, skill stack
+   page-specific styles only; tokens and primitives live in main.css
+   ========================================================================== */
+
+/* sub-labels between blocks */
+.about-label { margin-top: 3.6em; }
+
+/* education card — the PlanItem primitive, sized up slightly */
+.about-edu .plan-name { font-size: 2.1em; }
+.about-edu .plan-body { margin-top: .7em; }
+
+/* coursework chips */
+.course-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.course-chip {
+  border: 3px solid var(--ink);
+  background: var(--white);
+  padding: .55em .9em .5em;
+  font: 700 1.25em/1.2 var(--ui);
+  letter-spacing: .01em;
+}
+
+/* tools & more */
+.tools-line {
+  font: 400 1.6em/1.7 var(--ui);
+  max-width: 720px;
+}
+
+/* ==========================================================================
+   skill bars — fills grow to --pct, numbers count in SkillBars.tsx
+   ========================================================================== */
+.skill-bars {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 1.2em;
+}
+
+.skill-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.skill-track {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 34px;
+  border: 3px solid var(--ink);
+  background: var(--white);
+  overflow: hidden;
+}
+
+.skill-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--ink);
+  transition: width 1.5s var(--ease);
+}
+
+.skill-bars.is-live .skill-fill { width: var(--pct); }
+
+/* instant rewind before a replay, so fast scroll-out/in always starts at 0 */
+.skill-bars.is-resetting .skill-fill {
+  width: 0;
+  transition: none;
+}
+
+.skill-name {
+  padding-left: 13px;
+  color: #fff;
+  font: 700 1.25em/1 var(--ui);
+  letter-spacing: .01em;
+  white-space: nowrap;
+}
+
+/* narrow screens move the label above the track so long names never clip */
+.skill-name--top { display: none; }
+
+.skill-num {
+  flex: none;
+  width: 3.2em;
+  text-align: right;
+  font: 700 1.5em/1 var(--ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.skill-num::after {
+  content: '%';
+  margin-left: .08em;
+  font-size: .62em;
+  font-weight: 400;
+  color: var(--gray);
+}
+
+/* ==========================================================================
+   responsive
+   ========================================================================== */
+@media (max-width: 600px) {
+  .course-chip { font-size: 1.15em; }
+  .skill-bar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'name name'
+      'track num';
+    gap: 6px 10px;
+    align-items: center;
+  }
+  .skill-name--top {
+    display: block;
+    grid-area: name;
+    padding-left: 0;
+    color: var(--ink);
+    font: 700 1.15em/1.2 var(--ui);
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .skill-fill .skill-name { display: none; }
+  .skill-track { height: 32px; grid-area: track; }
+  .skill-num { width: 2.9em; font-size: 1.35em; grid-area: num; }
+}
