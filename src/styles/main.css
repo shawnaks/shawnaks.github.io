@@ -283,13 +283,12 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
 .box-text, .box-desc {
   position: relative;
   z-index: 2;
-  transition: opacity .25s var(--ease), transform .25s var(--ease);
-  transform-origin: left top;
+  transition: color .25s linear;
 }
 .element-box:hover .box-text,
 .element-box:focus-visible .box-text,
 .element-box:hover .box-desc,
-.element-box:focus-visible .box-desc { opacity: 0; transform: scale(1.4); }
+.element-box:focus-visible .box-desc { color: #fff; }
 
 .box-desc {
   display: block;
@@ -607,7 +606,14 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
 /* ==========================================================================
    responsive
    ========================================================================== */
-@media (max-width: 1279px) {
+/* Compact tiles (abbr + icon only) until the full labels genuinely fit.
+   Measured with full labels: logo 335.4 + nav 858.1 + menu 45 + 2×16 gap
+   = 1270.6px of content vs 1160px usable inside the 1200px wrap. The wrap
+   is centered, so the 110.6px overflow only clears the viewport from ~1493px
+   up; below that the hamburger is pushed off-screen. 1499px keeps a 59px
+   right-edge cushion at 1500px and plenty of slack (≥102px) on the compact
+   layout from 1024px up. */
+@media (max-width: 1499px) {
   .element-box--sm .full { display: none; }
 }
 

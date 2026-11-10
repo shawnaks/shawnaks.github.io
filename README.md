@@ -101,7 +101,7 @@ Personal Website/
 
 | Route | Status | Contents |
 | --- | --- | --- |
-| `#/hello/` | **BUILT** — home | "Hello World..." hero with scramble reveal, intro paragraphs with inline transition links, "// navigate" tile grid (visual sitemap), social row, colophon |
+| `#/hello/` | **BUILT** — home | "Hello World..." hero with scramble reveal, portrait + intro paragraphs with inline transition links, "// navigate" tile grid (visual sitemap), social row |
 | `#/about/` | **BUILT** | Three-paragraph bio; education card (Georgia Tech B.S. CS Dec 2027, threads: AI & information internetworks, math minor); 8 coursework chips; 8 scroll-triggered skill bars with counters; tools line |
 | `#/experience/` | **BUILT** | 3 role records — Delta Dental data engineering intern (May–Aug 2026: Python + Snowflake ETL, 53M+ raw records → 27M refined rows, AI agent saving 80% developer time, 600M+ record validation across 50 sources) · Safe Robotics Lab undergrad research assistant (Dec 2025–present: OpenArm bimanual robot teleop in MuJoCo, robot-learning models) · NASA GeneLab Multi-Omics AWG data analyst intern (Jun 2024–Sep 2025: microscopy, K-Means, six ML models) — plus 3 hackathon records: Hacklytics 2026 2nd place best use of Actian VectorAI (50+ teams), AI ATL 2025 (Hearo), HackGT 2025 team lead (SnapFind) |
 | `#/projects/` | **BUILT** | 6 project cards with 6px borders and framed `ShotSlot` screenshot placeholders: SnapFind (React 19, Supabase, FastAPI, ResNet-18, 92% accuracy), RxGuard (Gemini, sentence-transformers, Actian VectorAI, Hacklytics 2nd place), Flight Fare Optimizer (Python, 186 airports, 262k fares, 4 algorithms from scratch), Hearo (React Native, Gemini 2.5 Flash, ElevenLabs), Battle Showdown (Next.js 15, Tailwind 4), Pong (pygame, 2022) |
@@ -154,7 +154,6 @@ Then set **Settings → Pages → Source: Deploy from a branch → `gh-pages` / 
 1. Drop real screenshots into the framed `ShotSlot` placeholders on `#/projects/` and each case study
 2. Optional live demo links for SnapFind, Battle Showdown, and Hearo
 3. Custom domain (owner plans to add one later)
-4. A possible profile photo on `#/about/` (owner decision pending)
 
 ## Notes
 

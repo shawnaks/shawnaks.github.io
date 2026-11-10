@@ -1,0 +1,104 @@
+/* ==========================================================================
+   portrait — framed owner photo, shared by the home hero and the about bio
+   page-specific layout only; tokens and primitives live in main.css
+   ========================================================================== */
+
+.portrait {
+  flex: none;
+  width: 150px;
+  margin: 0;
+}
+
+.portrait--lg {
+  width: 300px;
+}
+
+.portrait-frame {
+  position: relative;
+  border: 3px solid var(--ink);
+  background: var(--white);
+  transition: transform .55s var(--ease-out);
+}
+
+/* clip the hover zoom at the frame, but let the HUD corners sit outside it */
+.portrait-media {
+  display: block;
+  overflow: hidden;
+}
+
+.portrait-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: grayscale(100%);
+  transition: filter .6s var(--ease), transform .6s var(--ease-out);
+}
+
+.portrait:hover .portrait-img {
+  filter: grayscale(0);
+  transform: scale(1.035);
+}
+
+.portrait:hover .portrait-frame {
+  transform: translateY(-4px);
+}
+
+/* the corner brackets are children of the frame, so key them off the .anim
+   reveal state that useReveal puts on the figure */
+.portrait.is-entering .ui-corner {
+  transform: translate(0, 0);
+}
+
+/* ==========================================================================
+   home hero — small portrait beside the two lead paragraphs
+   ========================================================================== */
+
+.hero-intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 2.6em;
+}
+
+.hero-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ==========================================================================
+   about bio — larger headshot to the right of the bio paragraphs
+   ========================================================================== */
+
+.about-bio {
+  display: flex;
+  align-items: flex-start;
+  gap: 3em;
+}
+
+.about-bio-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ==========================================================================
+   responsive — shrink the frames, then let each row stack
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  .portrait {
+    width: 110px;
+  }
+
+  .portrait--lg {
+    width: 220px;
+  }
+
+  .hero-intro {
+    flex-direction: column;
+    gap: 1.8em;
+  }
+
+  .about-bio {
+    flex-direction: column;
+    gap: 2.2em;
+  }
+}

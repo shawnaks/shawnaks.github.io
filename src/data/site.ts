@@ -31,11 +31,6 @@ export const NAV_ITEMS = [
   { to: '/contact/', abbr: 'Ct', full: 'contact', icon: 'mail' },
 ] as const satisfies readonly NavItem[];
 
-export type HomeTile = NavItem & {
-  /** exact `.box-desc` copy from the home tile grid */
-  desc: string;
-};
-
 /** The four home-grid tiles (hello itself is never a tile). */
 export const HOME_TILES = [
   {
@@ -43,30 +38,26 @@ export const HOME_TILES = [
     abbr: 'Ab',
     full: 'about',
     icon: 'user',
-    desc: 'bio, education, coursework & skills',
   },
   {
     to: '/experience/',
     abbr: 'Ex',
     full: 'experience',
     icon: 'brief',
-    desc: 'delta dental, nasa genelab, robotics & hackathon podiums',
   },
   {
     to: '/projects/',
     abbr: 'Pr',
     full: 'projects',
     icon: 'code',
-    desc: 'snapfind, rxguard, hearo & other things I’ve shipped',
   },
   {
     to: '/contact/',
     abbr: 'Ct',
     full: 'contact',
     icon: 'mail',
-    desc: 'email, linkedin, github & résumé',
   },
-] as const satisfies readonly HomeTile[];
+] as const satisfies readonly NavItem[];
 
 export type SocialLink = {
   id: 'github' | 'linkedin' | 'email' | 'resume';
