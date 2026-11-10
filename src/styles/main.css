@@ -119,14 +119,14 @@ ul { list-style: none; }
 .header.is-dark   { background: var(--ink); border-bottom-color: var(--ink); }
 
 .header-wrap {
-  max-width: 1200px;
+  max-width: 1400px;
   height: 100%;
   margin: 0 auto;
   padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 10px;
 }
 
 /* logo */
@@ -136,7 +136,7 @@ ul { list-style: none; }
   gap: 7px;
   text-decoration: none;
   color: var(--ink);
-  font: 700 1.9em/1 var(--ui);
+  font: 700 1.7em/1 var(--ui);
   letter-spacing: -.01em;
   white-space: nowrap;
 }
@@ -144,17 +144,17 @@ ul { list-style: none; }
 .header.is-dark .logo-text { color: #fff; }
 
 /* compact header nav */
-.primary-nav ul { display: flex; gap: 8px; }
+.primary-nav ul { display: flex; gap: 6px; }
 .element-box.element-box--sm {
   flex-direction: row;
   align-items: center;
   height: 45px;
-  padding: 0 12px;
+  padding: 0 10px;
   gap: 9px;
 }
 .element-box--sm .box-text { display: flex; align-items: baseline; gap: 6px; }
 .element-box--sm .abbr { font-size: 1.5em; }
-.element-box--sm .full  { font-size: 1.2em; margin-top: 0; }
+.element-box--sm .full  { font-size: 1.1em; margin-top: 0; }
 .element-box--sm .box-icon {
   position: static;
   width: 16px; height: 16px;
@@ -606,15 +606,28 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
 /* ==========================================================================
    responsive
    ========================================================================== */
-/* Compact tiles (abbr + icon only) until the full labels genuinely fit.
-   Measured with full labels: logo 335.4 + nav 858.1 + menu 45 + 2×16 gap
-   = 1270.6px of content vs 1160px usable inside the 1200px wrap. The wrap
-   is centered, so the 110.6px overflow only clears the viewport from ~1493px
-   up; below that the hamburger is pushed off-screen. 1499px keeps a 59px
-   right-edge cushion at 1500px and plenty of slack (≥102px) on the compact
-   layout from 1024px up. */
-@media (max-width: 1499px) {
+/* Compact tiles (abbr + icon only) only where the full labels truly cannot
+   fit. Full labels now also live inside a 1400px wrap with trimmed spacing
+   and type, so they need ~1166px of content at the Arial-fallback worst case
+   (logo ~300 + nav ~801 + 45px menu + 2x10px wrap gaps). A 1280px window with
+   a classic 15px scrollbar lays out at 1265px and still leaves ~44px of slack
+   (~59px at an innerWidth of 1280) before the hamburger; the 1249px fallback
+   keeps full names visible at 1250px and up (including that 1265px worst
+   case), while 768-1249px stays compact. */
+@media (max-width: 1249px) {
   .element-box--sm .full { display: none; }
+}
+
+/* 768-899px: the abbreviation-only nav still needs ~807px of content, which
+   overflows a 768px window (713px usable once the scrollbar is subtracted).
+   Trim the wordmark and the compact tile chrome only for that narrow band so
+   the abbr layout keeps ~23px of slack at 768px; 767px and below is untouched
+   (nav hidden, hamburger only). */
+@media (min-width: 768px) and (max-width: 899px) {
+  .header-wrap { gap: 8px; padding: 0 16px; }
+  .logo a { font-size: 1.45em; }
+  .primary-nav ul { gap: 4px; }
+  .element-box.element-box--sm { padding: 0 6px; gap: 6px; }
 }
 
 @media (max-width: 1023px) {
