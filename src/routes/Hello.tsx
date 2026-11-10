@@ -47,25 +47,25 @@ export function Hello({ onNavigate }: HelloProps) {
               </p>
 
               <p className="lead anim">
-                These days I’m an undergraduate research assistant at the{' '}
+                I am currently an undergraduate research assistant at the{' '}
                 <TransitionLink to="/experience/" onNavigate={onNavigate}>
                   Safe Robotics Lab
                 </TransitionLink>
-                , teleoperating a bimanual robot and training it to act on its own. Before that: 53M+ records
-                through clean pipelines at{' '}
+                , where I teleoperate a bimanual robot and train models for autonomous operation.
+                Previously, I engineered data pipelines refining 53M+ records at{' '}
                 <TransitionLink to="/experience/" onNavigate={onNavigate}>
                   Delta{'\u00A0'}Dental
-                </TransitionLink>
-                , and gene-expression patterns at{' '}
+                </TransitionLink>{' '}
+                and analyzed gene-expression patterns at{' '}
                 <TransitionLink to="/experience/" onNavigate={onNavigate}>
                   NASA{'\u00A0'}GeneLab
                 </TransitionLink>
-                . Off the clock you’ll find me at{' '}
+                . Outside of my studies and research, I compete in{' '}
                 <TransitionLink to="/experience/" onNavigate={onNavigate}>
                   hackathons
                 </TransitionLink>{' '}
-                — most recently 2nd place at Hacklytics, out of 50+ teams. I’m always looking for the
-                next hard problem.
+                — most recently earning 2nd place among 50+ teams at Hacklytics. I am always looking
+                for the next hard problem.
               </p>
             </div>
           </div>
