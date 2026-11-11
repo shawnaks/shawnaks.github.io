@@ -9,7 +9,7 @@ import { TransitionLink } from '../components/TransitionLink';
 import { PROJECTS } from '../data/projects';
 import type { ProjectData } from '../data/projects';
 import type { NavigateHandler } from '../lib/transition';
-import { revealDelay } from '../lib/transition';
+import type { SectionNavHandler } from '../lib/sections';
 import { useReveal } from '../hooks/useReveal';
 
 type ProjectCardProps = {
@@ -76,19 +76,22 @@ function ProjectCard({ project, onNavigate }: ProjectCardProps) {
 }
 
 export type ProjectsProps = {
+  /** Case-study links keep the outgoing route transition. */
   onNavigate?: NavigateHandler;
+  /** The section CTA scrolls back to hello. */
+  onSectionNavigate?: SectionNavHandler;
 };
 
-/** `#/projects/` — selected work, one card per case study. */
-export function Projects({ onNavigate }: ProjectsProps) {
+/** The `projects` section: selected work, one card per case study. */
+export function Projects({ onNavigate, onSectionNavigate }: ProjectsProps) {
   const sectionRef = useRef<HTMLElement>(null);
 
-  useReveal(sectionRef, revealDelay());
+  useReveal(sectionRef);
 
   return (
     <section
       ref={sectionRef}
-      className="section section--page is-active"
+      className="section section--page"
       id="projects"
       aria-labelledby="projects-title"
     >
@@ -112,7 +115,7 @@ export function Projects({ onNavigate }: ProjectsProps) {
           </ul>
 
           <p className="cta-row anim">
-            <Cta onNavigate={onNavigate} />
+            <Cta onNavigate={onSectionNavigate} />
           </p>
         </div>
       </div>

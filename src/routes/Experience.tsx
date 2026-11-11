@@ -6,8 +6,7 @@ import { Cta } from '../components/Cta';
 import { PlanList } from '../components/PlanList';
 import { SectionTitle } from '../components/SectionTitle';
 import { TransitionLink } from '../components/TransitionLink';
-import type { NavigateHandler } from '../lib/transition';
-import { revealDelay } from '../lib/transition';
+import type { SectionNavHandler } from '../lib/sections';
 import { useReveal } from '../hooks/useReveal';
 
 type RecordCardData = {
@@ -68,7 +67,7 @@ const ROLE_ITEMS: readonly RecordCardData[] = [
   },
 ];
 
-function hackathonItems(onNavigate?: NavigateHandler): readonly RecordCardData[] {
+function hackathonItems(onNavigate?: SectionNavHandler): readonly RecordCardData[] {
   return [
     {
       name: 'hacklytics 2026 — 2nd place, best use of actian vectorai db',
@@ -102,19 +101,19 @@ function hackathonItems(onNavigate?: NavigateHandler): readonly RecordCardData[]
 }
 
 export type ExperienceProps = {
-  onNavigate?: NavigateHandler;
+  onNavigate?: SectionNavHandler;
 };
 
-/** `#/experience/` — work.log. */
+/** The `experience` section: work.log. */
 export function Experience({ onNavigate }: ExperienceProps) {
   const sectionRef = useRef<HTMLElement>(null);
 
-  useReveal(sectionRef, revealDelay());
+  useReveal(sectionRef);
 
   return (
     <section
       ref={sectionRef}
-      className="section section--page is-active"
+      className="section section--page"
       id="experience"
       aria-labelledby="experience-title"
     >

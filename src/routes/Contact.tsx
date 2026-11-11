@@ -3,8 +3,7 @@ import { Cta } from '../components/Cta';
 import { Icon } from '../components/Icon';
 import { SectionTitle } from '../components/SectionTitle';
 import type { IconName } from '../data/site';
-import type { NavigateHandler } from '../lib/transition';
-import { revealDelay } from '../lib/transition';
+import type { SectionNavHandler } from '../lib/sections';
 import { useReveal } from '../hooks/useReveal';
 import '../styles/contact.css';
 
@@ -48,19 +47,19 @@ const CHANNELS: readonly Channel[] = [
 ];
 
 export type ContactProps = {
-  onNavigate?: NavigateHandler;
+  onNavigate?: SectionNavHandler;
 };
 
-/** `#/contact/` — say hello: email-first hero, channel grid, location & status. */
+/** The `contact` section: email-first hero, channel grid, location & status. */
 export function Contact({ onNavigate }: ContactProps) {
   const sectionRef = useRef<HTMLElement>(null);
 
-  useReveal(sectionRef, revealDelay());
+  useReveal(sectionRef);
 
   return (
     <section
       ref={sectionRef}
-      className="section section--page is-active"
+      className="section section--page"
       id="contact"
       aria-labelledby="contact-title"
     >

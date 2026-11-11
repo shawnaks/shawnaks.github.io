@@ -1,177 +1,68 @@
 import './styles/main.css';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import type { MouseEvent } from 'react';
-import {
-  HashRouter,
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
+import { HashRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { Header } from './components/Header';
 import { IconSprite } from './components/IconSprite';
 import { Loader } from './components/Loader';
 import { MenuOverlay } from './components/MenuOverlay';
-import {
-  CLONE_REMOVE_MS,
-  FLIGHT_MS,
-  NO_CLONE_SETTLE_MS,
-  cancelOutPhase,
-  consumeFlight,
-  endTransition,
-  isTransitioning,
-  navigateWithTransition,
-  normalizePath,
-} from './lib/transition';
-import { About } from './routes/About';
+import { prefersReducedMotion } from './hooks/useScramble';
+import { markSectionScroll, scrollBehavior, scrollToSection } from './lib/scroll';
+import { isCaseStudyPath, isMainPath, sectionIdFromPath } from './lib/sections';
+import type { SectionNavHandler } from './lib/sections';
+import { endTransition, navigateWithTransition } from './lib/transition';
+import type { NavigateHandler } from './lib/transition';
 import { CaseStudy } from './routes/CaseStudy';
-import { Contact } from './routes/Contact';
 import { ErrorPage } from './routes/ErrorPage';
-import { Experience } from './routes/Experience';
-import { Hello } from './routes/Hello';
-import { Projects } from './routes/Projects';
+import { MainPage } from './routes/MainPage';
 
-/** Maps a hash pathname to the slug used in `document.title`. */
-function pageName(pathname: string): string {
-  const normalized = pathname.endsWith('/') ? pathname : `${pathname}/`;
-
-  switch (normalized) {
-    case '/':
-    case '/hello/':
-      return 'hello';
-    case '/about/':
-      return 'about';
-    case '/experience/':
-      return 'experience';
-    case '/projects/':
-      return 'projects';
-    case '/contact/':
-      return 'contact';
-    default:
-      return 'error';
-  }
-}
-
-/** `document.title` + scroll reset on every route change. */
+/** Page title + scroll reset for routes that are not the stacked document. */
 function RouteEffects() {
   const location = useLocation();
 
   useEffect(() => {
-    const name = pageName(location.pathname);
-    document.title = `Shawnak Samaddar // ${name === 'hello' ? 'hello world' : name}`;
+    if (isMainPath(location.pathname)) {
+      document.title = 'Shawnak Samaddar // hello world';
+    } else if (isCaseStudyPath(location.pathname)) {
+      document.title = 'Shawnak Samaddar // case study';
+    } else {
+      document.title = 'Shawnak Samaddar // error';
+    }
+  }, [location.pathname]);
+
+  useLayoutEffect(() => {
+    // MainPage owns its own (instant) section landing.
+    if (!isMainPath(location.pathname)) window.scrollTo(0, 0);
   }, [location.pathname]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // A history move before the out phase finished wins over the queued swap.
+    endTransition();
   }, [location.pathname]);
 
   return null;
 }
 
-/**
- * Landing half of the tile transition: the clone was pinned at the clicked
- * tile's rect by `navigateWithTransition`; once the new page commits, measure
- * its title and collapse the clone into the blue spine.
- */
-function LandingTransition() {
-  const location = useLocation();
+type MainRoutesProps = {
+  onSectionNavigate: SectionNavHandler;
+  onCaseStudyNavigate: NavigateHandler;
+};
 
-  useEffect(() => {
-    // A route change before the queued swap wins (e.g. browser back/forward).
-    cancelOutPhase();
+/** Section paths render the one stacked MainPage; anything else is the 404. */
+function MainRoutes({ onSectionNavigate, onCaseStudyNavigate }: MainRoutesProps) {
+  const { pathname } = useLocation();
 
-    const pending = consumeFlight();
+  if (isMainPath(pathname)) {
+    return (
+      <MainPage
+        onNavigate={onSectionNavigate}
+        onCaseStudyNavigate={onCaseStudyNavigate}
+      />
+    );
+  }
 
-    if (!pending) {
-      if (!isTransitioning()) return;
-      let released = false;
-      const timer = window.setTimeout(() => {
-        released = true;
-        endTransition();
-      }, NO_CLONE_SETTLE_MS);
-      // A second route change during the settle window (history navigation,
-      // programmatic hash change) cancels this timer; release the guard on
-      // cleanup instead of leaving every later click blocked.
-      return () => {
-        window.clearTimeout(timer);
-        if (!released) endTransition();
-      };
-    }
-
-    const { clone } = pending;
-
-    if (normalizePath(location.pathname) !== pending.to) {
-      clone.remove();
-      endTransition();
-      return;
-    }
-
-    const page = document.querySelector<HTMLElement>('#main .section.is-active');
-    const title = page?.querySelector<HTMLElement>('.section-title, .hero-title');
-
-    if (!title) {
-      clone.remove();
-      endTransition();
-      return;
-    }
-
-    const rect = title.getBoundingClientRect();
-    // `.anim` starts translated 50px down — measure where it settles.
-    let left = rect.left;
-    let top = rect.top;
-    const matrix = getComputedStyle(title).transform.match(/^matrix\(([^)]+)\)$/);
-    if (matrix) {
-      const values = matrix[1].split(',').map(Number);
-      left -= values[4] ?? 0;
-      top -= values[5] ?? 0;
-    }
-
-    let flyRaf = 0;
-    let removeTimer = 0;
-    let cleanupTimer = 0;
-    let completed = false;
-
-    const raf = requestAnimationFrame(() => {
-      flyRaf = requestAnimationFrame(() => {
-        clone.classList.add('is-flying');
-        clone.style.left = `${left}px`;
-        clone.style.top = `${top}px`;
-        clone.style.width = '15px';
-        clone.style.height = `${rect.height}px`;
-        // `.element-box` is border-box with horizontal padding; without this the
-        // clone can never render narrower than padding + borders (30-36px).
-        clone.style.paddingLeft = '0';
-        clone.style.paddingRight = '0';
-        clone.style.borderLeftWidth = '0';
-        clone.style.borderRightWidth = '0';
-
-        removeTimer = window.setTimeout(() => {
-          clone.classList.add('is-removing');
-          cleanupTimer = window.setTimeout(() => {
-            clone.remove();
-            completed = true;
-            endTransition();
-          }, CLONE_REMOVE_MS);
-        }, FLIGHT_MS);
-      });
-    });
-
-    return () => {
-      cancelAnimationFrame(raf);
-      cancelAnimationFrame(flyRaf);
-      window.clearTimeout(removeTimer);
-      window.clearTimeout(cleanupTimer);
-      // Never leave a stray clone behind if this flight was interrupted.
-      if (clone.isConnected) clone.remove();
-      // Only release the guard if this flight never finished; a completed
-      // effect must not clear the flag for a transition that started later.
-      if (!completed) endTransition();
-    };
-  }, [location.pathname]);
-
-  return null;
+  return <ErrorPage onNavigate={onCaseStudyNavigate} />;
 }
 
 function Shell() {
@@ -180,7 +71,8 @@ function Shell() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleNavigate = useCallback(
+  /** Case-study links keep the outgoing route transition. */
+  const handleTransitionNavigate = useCallback(
     (e: MouseEvent, to: string) => {
       navigateWithTransition(e, to, {
         currentPath: location.pathname,
@@ -189,6 +81,56 @@ function Shell() {
       });
     },
     [location.pathname, navigate],
+  );
+
+  /**
+   * Every section control scrolls instead of routing. A history entry is
+   * pushed only when the hash points at another section; passive scrolling
+   * has already kept the hash current with replaceState.
+   */
+  const handleSectionNavigate = useCallback(
+    (_event: MouseEvent, to: string) => {
+      const id = sectionIdFromPath(to);
+      if (!id) return;
+
+      const onMain = isMainPath(location.pathname);
+
+      const closeMenu = () => {
+        if (!menuOpen) return;
+        setMenuOpen(false);
+        // The overlay locks body scrolling via `body.menu-open`; releasing it
+        // now lets any following scroll start immediately.
+        document.body.classList.remove('menu-open');
+      };
+
+      if (!onMain) {
+        // Arriving from a case study or the error page: MainPage's location
+        // effect lands instantly at the target section.
+        closeMenu();
+        navigate(to);
+        return;
+      }
+
+      const currentHash = window.location.hash;
+      const pathDiffers = currentHash !== `#${to}`;
+
+      if (pathDiffers) {
+        markSectionScroll(to);
+        navigate(to);
+      }
+
+      const run = () => scrollToSection(id, scrollBehavior());
+
+      if (menuOpen) {
+        closeMenu();
+        // The overlay closes first (0.4s transform); the scroll waits for it.
+        const delay = prefersReducedMotion() ? 0 : 400;
+        window.setTimeout(run, delay);
+      } else {
+        run();
+      }
+    },
+    [location.pathname, menuOpen, navigate],
   );
 
   return (
@@ -200,30 +142,33 @@ function Shell() {
         ready={ready}
         menuOpen={menuOpen}
         onMenuToggle={() => setMenuOpen((open) => !open)}
-        onNavigate={handleNavigate}
+        onNavigate={handleSectionNavigate}
       />
       <MenuOverlay
         menuOpen={menuOpen}
         onClose={() => setMenuOpen(false)}
-        onNavigate={handleNavigate}
+        onNavigate={handleSectionNavigate}
       />
 
       {ready ? (
         <main id="main">
           <Routes>
-            <Route path="/" element={<Navigate to="/hello/" replace />} />
-            <Route path="/hello/" element={<Hello onNavigate={handleNavigate} />} />
-            <Route path="/about/" element={<About onNavigate={handleNavigate} />} />
-            <Route path="/experience/" element={<Experience onNavigate={handleNavigate} />} />
-            <Route path="/projects/" element={<Projects onNavigate={handleNavigate} />} />
-            <Route path="/case-study/:slug" element={<CaseStudy onNavigate={handleNavigate} />} />
-            <Route path="/contact/" element={<Contact onNavigate={handleNavigate} />} />
-            <Route path="*" element={<ErrorPage onNavigate={handleNavigate} />} />
+            <Route
+              path="/case-study/:slug"
+              element={<CaseStudy onNavigate={handleTransitionNavigate} />}
+            />
+            <Route
+              path="*"
+              element={
+                <MainRoutes
+                  onSectionNavigate={handleSectionNavigate}
+                  onCaseStudyNavigate={handleTransitionNavigate}
+                />
+              }
+            />
           </Routes>
         </main>
       ) : null}
-
-      <LandingTransition />
     </>
   );
 }

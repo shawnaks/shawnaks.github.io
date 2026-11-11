@@ -1,5 +1,8 @@
 import type { MouseEvent } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useActiveSection } from '../hooks/useActiveSection';
+import { isCaseStudyPath, isMainPath } from '../lib/sections';
+import type { SectionId } from '../lib/sections';
 import { Icon } from './Icon';
 
 export type NavTileProps = {
@@ -12,19 +15,25 @@ export type NavTileProps = {
   /** `sm` is the compact header variant. */
   size?: 'sm';
   /**
-   * When provided, plain left-clicks are intercepted and handed to this
-   * callback instead of doing a normal navigation (used for page transitions).
-   * Modifier / non-primary clicks are left to the browser.
+   * Section control: plain left-clicks are intercepted and handed to the
+   * shared scroll handler. Modifier / non-primary clicks keep the browser's
+   * normal link behaviour.
    */
   onNavigate?: (e: MouseEvent, to: string) => void;
 };
 
-/** An `element-box` nav tile, wired to react-router's NavLink for active state. */
+/**
+ * An `element-box` nav tile. Active state comes from the shared scroll-spy
+ * store (passive scrolling updates it without touching the router), not from
+ * the router location. Case studies still light the projects tile.
+ */
 export function NavTile({ to, abbr, full, icon, desc, size, onNavigate }: NavTileProps) {
   const { pathname } = useLocation();
-  // Case studies live under /case-study/* but belong to the projects section,
-  // so keep the projects tile lit while reading one.
-  const inCaseStudy = to === '/projects/' && pathname.startsWith('/case-study/');
+  const activeSection = useActiveSection();
+  const section = to.replace(/\//g, '') as SectionId;
+
+  const inCaseStudy = section === 'projects' && isCaseStudyPath(pathname);
+  const isActive = inCaseStudy || (isMainPath(pathname) && activeSection === section);
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (!onNavigate) return;
@@ -34,18 +43,13 @@ export function NavTile({ to, abbr, full, icon, desc, size, onNavigate }: NavTil
   };
 
   return (
-    <NavLink
+    <Link
       to={to}
-      data-section={to.replace(/\//g, '')}
-      className={({ isActive }) =>
-        [
-          'element-box',
-          size === 'sm' ? 'element-box--sm' : '',
-          isActive || inCaseStudy ? 'is-active' : '',
-        ]
-          .filter(Boolean)
-          .join(' ')
-      }
+      data-section={section}
+      aria-current={isActive ? 'location' : undefined}
+      className={['element-box', size === 'sm' ? 'element-box--sm' : '', isActive ? 'is-active' : '']
+        .filter(Boolean)
+        .join(' ')}
       onClick={handleClick}
     >
       <span className="box-text">
@@ -56,6 +60,6 @@ export function NavTile({ to, abbr, full, icon, desc, size, onNavigate }: NavTil
       <span className="box-icon">
         <Icon name={icon} />
       </span>
-    </NavLink>
+    </Link>
   );
 }

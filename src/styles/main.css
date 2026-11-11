@@ -162,6 +162,9 @@ ul { list-style: none; }
   flex: none;
 }
 .header.is-dark .element-box--sm { border-color: #fff; color: #fff; background: transparent; }
+/* The scroll-spy active tile must stay legible on the dark header; the rule
+   above is more specific than `.element-box.is-active`, so restate it here. */
+.header.is-dark .element-box--sm.is-active { border-color: var(--accent); }
 
 /* header entrance after loader */
 .header .logo,
@@ -312,41 +315,34 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
 .element-box.is-active { border-color: var(--accent); }
 .element-box.is-active .box-icon { opacity: 1; transform: scale(1); }
 
-/* clone used for the page transition */
-.tile-clone {
-  position: fixed;
-  z-index: 300;
-  margin: 0;
-  pointer-events: none;
-  box-shadow: 0 12px 32px rgba(43, 44, 51, .28);
-  transition: left .45s var(--ease), top .45s var(--ease),
-              width .45s var(--ease), height .45s var(--ease),
-              opacity .3s var(--ease), box-shadow .45s var(--ease),
-              background-color .3s linear, border-color .3s linear;
-}
-.tile-clone.is-flying { box-shadow: none; background: var(--accent); border-color: var(--accent); }
-.tile-clone.is-flying > * { opacity: 0; transition: opacity .2s linear; }
-.tile-clone.is-removing { opacity: 0; }
-
 /* ==========================================================================
    layout / sections
    ========================================================================== */
 #main { position: relative; margin-top: 75px; }
 .container { max-width: 1020px; margin: 0 auto; padding: 0 20px; }
 
-.section { display: none; min-height: calc(100vh - 75px); padding: 50px 0 60px; }
-.section.is-active { display: block; }
-.section--home.is-active { display: flex; }
+.section { position: relative; min-height: calc(100vh - 75px); padding: 50px 0 60px; }
+.section--home { display: flex; }
 .section--home > .container { margin: auto; }
 
-/* hidden helper used to measure a section before transitioning to it */
-.section.measure {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  visibility: hidden !important;
+/* The one scrollable document: hero fills the first viewport, the rest take
+   their natural height with generous rhythm. Every section clears the fixed
+   header when scrolled to. */
+.page-stack > .section {
+  min-height: 0;
+  padding: 132px 0 150px;
+  scroll-margin-top: 90px;
+  /* HUD corner brackets start translated 25px outward; clipped at the
+     section edge so the stacked off-screen sections cannot widen the page. */
+  overflow-x: clip;
 }
+.page-stack > .section--home {
+  display: flex;
+  min-height: calc(100vh - 75px);
+  padding: 50px 0 60px;
+  scroll-margin-top: 0;
+}
+.page-stack > .section + .section { border-top: 1px solid var(--border); }
 
 /* ==========================================================================
    home (hello)
@@ -665,6 +661,8 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
   .menu-nav li:last-child { grid-column: span 2; }
   .plan-item { padding: 16px 16px 14px; }
   .section { padding: 40px 0 50px; }
+  .page-stack > .section { padding: 84px 0 96px; }
+  .page-stack > .section--home { padding: 40px 0 50px; }
 }
 
 @media (max-width: 420px) {
@@ -694,10 +692,11 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
    print — unhide every section, drop the chrome
    ========================================================================== */
 @media print {
-  .header, .menu-overlay, .loader, .tile-clone { display: none !important; }
+  .header, .menu-overlay, .loader { display: none !important; }
   body { overflow: visible; }
   #main { margin-top: 0; }
   .section { display: block !important; min-height: 0; page-break-after: always; }
+  .page-stack > .section { padding: 0 0 40px; border-top: 0; }
   .anim, .rule { opacity: 1 !important; transform: none !important; width: 100% !important; }
   .title-bar { display: none !important; }
   .section--page .title-text { color: var(--ink) !important; }

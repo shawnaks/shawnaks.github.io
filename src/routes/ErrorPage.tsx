@@ -2,23 +2,22 @@ import { useRef } from 'react';
 import { Cta } from '../components/Cta';
 import { SectionTitle } from '../components/SectionTitle';
 import type { NavigateHandler } from '../lib/transition';
-import { revealDelay } from '../lib/transition';
 import { useReveal } from '../hooks/useReveal';
 
 export type ErrorPageProps = {
   onNavigate?: NavigateHandler;
 };
 
-/** `*` — the 404 section, ported from the vanilla `#error`. */
+/** `*` — the 404 section. */
 export function ErrorPage({ onNavigate }: ErrorPageProps) {
   const sectionRef = useRef<HTMLElement>(null);
 
-  useReveal(sectionRef, revealDelay());
+  useReveal(sectionRef);
 
   return (
     <section
       ref={sectionRef}
-      className="section section--page section--error is-active"
+      className="section section--page section--error"
       id="error"
       aria-labelledby="error-title"
     >

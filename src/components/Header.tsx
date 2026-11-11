@@ -2,6 +2,7 @@ import type { MouseEvent } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { NAV_ITEMS } from '../data/site';
+import { isProgrammaticScroll } from '../lib/scroll';
 import { NavTile } from './NavTile';
 
 export type HeaderProps = {
@@ -31,6 +32,17 @@ export function Header({ ready, menuOpen, onMenuToggle, onNavigate }: HeaderProp
       const y = window.scrollY;
 
       setDark(y > 20);
+
+      // Section landings and history restorations are programmatic: keep the
+      // header on screen instead of treating the jump as a user scrolling
+      // down past the hero. A single scroll event that moves more than one
+      // viewport is always a jump, never a wheel/trackpad gesture.
+      const delta = y - lastY.current;
+      if (isProgrammaticScroll() || Math.abs(delta) > window.innerHeight) {
+        setHidden(false);
+        lastY.current = y;
+        return;
+      }
 
       if (y > lastY.current + 8 && y > 120) setHidden(true);
       else if (y < lastY.current - 8) setHidden(false);

@@ -5,8 +5,7 @@ import type { PlanItemData } from '../components/PlanItem';
 import { Portrait } from '../components/Portrait';
 import { SectionTitle } from '../components/SectionTitle';
 import { SkillBars } from '../components/SkillBars';
-import type { NavigateHandler } from '../lib/transition';
-import { revealDelay } from '../lib/transition';
+import type { SectionNavHandler } from '../lib/sections';
 import { useReveal } from '../hooks/useReveal';
 import '../styles/about.css';
 
@@ -33,19 +32,19 @@ const TOOLS =
   'Git · VS Code · IntelliJ & PyCharm · Jupyter · Claude Code & GitHub Copilot · Figma · Agile/Scrum · Prompt Engineering';
 
 export type AboutProps = {
-  onNavigate?: NavigateHandler;
+  onNavigate?: SectionNavHandler;
 };
 
-/** `#/about/` — whoami: bio, education, coursework, skill stack. */
+/** The `about` section: bio, education, coursework, skill stack. */
 export function About({ onNavigate }: AboutProps) {
   const sectionRef = useRef<HTMLElement>(null);
 
-  useReveal(sectionRef, revealDelay());
+  useReveal(sectionRef);
 
   return (
     <section
       ref={sectionRef}
-      className="section section--page is-active"
+      className="section section--page"
       id="about"
       aria-labelledby="about-title"
     >

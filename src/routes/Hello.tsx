@@ -5,24 +5,23 @@ import { Portrait } from '../components/Portrait';
 import { SectionTitle } from '../components/SectionTitle';
 import { SocialRow } from '../components/SocialRow';
 import { TransitionLink } from '../components/TransitionLink';
-import type { NavigateHandler } from '../lib/transition';
-import { revealDelay } from '../lib/transition';
+import type { SectionNavHandler } from '../lib/sections';
 import { useReveal } from '../hooks/useReveal';
 
 export type HelloProps = {
-  onNavigate?: NavigateHandler;
+  onNavigate?: SectionNavHandler;
 };
 
-/** `#/hello/` — the home section, ported from the vanilla `#hello`. */
+/** The hero section, first in the stacked single-page document. */
 export function Hello({ onNavigate }: HelloProps) {
   const sectionRef = useRef<HTMLElement>(null);
 
-  useReveal(sectionRef, revealDelay());
+  useReveal(sectionRef);
 
   return (
     <section
       ref={sectionRef}
-      className="section section--home is-active"
+      className="section section--home"
       id="hello"
       aria-labelledby="hello-title"
     >

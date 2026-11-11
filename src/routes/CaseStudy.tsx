@@ -10,7 +10,6 @@ import { TransitionLink } from '../components/TransitionLink';
 import { getNextProject, getProject } from '../data/projects';
 import type { ProjectData } from '../data/projects';
 import type { NavigateHandler } from '../lib/transition';
-import { revealDelay } from '../lib/transition';
 import { useReveal } from '../hooks/useReveal';
 
 export type CaseStudyProps = {
@@ -21,12 +20,12 @@ export type CaseStudyProps = {
 function CaseStudyNotFound({ onNavigate }: CaseStudyProps) {
   const sectionRef = useRef<HTMLElement>(null);
 
-  useReveal(sectionRef, revealDelay());
+  useReveal(sectionRef);
 
   return (
     <section
       ref={sectionRef}
-      className="section section--page section--error is-active"
+      className="section section--page section--error"
       id="case-study-not-found"
       aria-labelledby="case-study-not-found-title"
     >
@@ -59,12 +58,12 @@ type CaseStudyViewProps = {
 
 /**
  * The full record. Keyed by slug in `CaseStudy`, so moving between studies
- * remounts this view and `useReveal` can stagger the new content in.
+ * remounts this view and the reveal observer can stagger the new content in.
  */
 function CaseStudyView({ project, onNavigate }: CaseStudyViewProps) {
   const sectionRef = useRef<HTMLElement>(null);
 
-  useReveal(sectionRef, revealDelay());
+  useReveal(sectionRef);
 
   const id = `case-study-${project.slug}`;
   const next = getNextProject(project.slug);
@@ -72,7 +71,7 @@ function CaseStudyView({ project, onNavigate }: CaseStudyViewProps) {
   return (
     <section
       ref={sectionRef}
-      className="section section--page case-study is-active"
+      className="section section--page case-study"
       id={id}
       aria-labelledby={`${id}-title`}
     >
@@ -189,7 +188,9 @@ export function CaseStudy({ onNavigate }: CaseStudyProps) {
 
   // Page-level title; RouteEffects has already set the generic fallback.
   useEffect(() => {
-    if (project) document.title = `Shawnak Samaddar // ${project.name}`;
+    document.title = project
+      ? `Shawnak Samaddar // ${project.name}`
+      : 'Shawnak Samaddar // error';
   }, [project]);
 
   if (!project) return <CaseStudyNotFound onNavigate={onNavigate} />;
