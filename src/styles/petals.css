@@ -1,9 +1,9 @@
 /* ==========================================================================
-   petals — generative rosette beneath the about portrait
+   petals — wind-driven leaf field beneath the about portrait
    page-specific layout only; tokens and primitives live in main.css
    ========================================================================== */
 
-/* portrait + rosette share the bio row's right-hand column */
+/* portrait + leaf field share the bio row's right-hand column */
 .about-aside {
   flex: none;
   width: 300px;
