@@ -6,8 +6,6 @@ import { HashRouter, Route, Routes, useLocation, useNavigate } from 'react-route
 import { Header } from './components/Header';
 import { IconSprite } from './components/IconSprite';
 import { Loader } from './components/Loader';
-import { MenuOverlay } from './components/MenuOverlay';
-import { prefersReducedMotion } from './hooks/useScramble';
 import { markSectionScroll, scrollBehavior, scrollToSection } from './lib/scroll';
 import { isCaseStudyPath, isMainPath, sectionIdFromPath } from './lib/sections';
 import type { SectionNavHandler } from './lib/sections';
@@ -67,7 +65,6 @@ function MainRoutes({ onSectionNavigate, onCaseStudyNavigate }: MainRoutesProps)
 
 function Shell() {
   const [ready, setReady] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -76,7 +73,6 @@ function Shell() {
     (e: MouseEvent, to: string) => {
       navigateWithTransition(e, to, {
         currentPath: location.pathname,
-        closeMenu: () => setMenuOpen(false),
         navigate,
       });
     },
@@ -93,20 +89,9 @@ function Shell() {
       const id = sectionIdFromPath(to);
       if (!id) return;
 
-      const onMain = isMainPath(location.pathname);
-
-      const closeMenu = () => {
-        if (!menuOpen) return;
-        setMenuOpen(false);
-        // The overlay locks body scrolling via `body.menu-open`; releasing it
-        // now lets any following scroll start immediately.
-        document.body.classList.remove('menu-open');
-      };
-
-      if (!onMain) {
+      if (!isMainPath(location.pathname)) {
         // Arriving from a case study or the error page: MainPage's location
         // effect lands instantly at the target section.
-        closeMenu();
         navigate(to);
         return;
       }
@@ -119,18 +104,9 @@ function Shell() {
         navigate(to);
       }
 
-      const run = () => scrollToSection(id, scrollBehavior());
-
-      if (menuOpen) {
-        closeMenu();
-        // The overlay closes first (0.4s transform); the scroll waits for it.
-        const delay = prefersReducedMotion() ? 0 : 400;
-        window.setTimeout(run, delay);
-      } else {
-        run();
-      }
+      scrollToSection(id, scrollBehavior());
     },
-    [location.pathname, menuOpen, navigate],
+    [location.pathname, navigate],
   );
 
   return (
@@ -138,17 +114,7 @@ function Shell() {
       <IconSprite />
       <Loader onDone={() => setReady(true)} />
       <RouteEffects />
-      <Header
-        ready={ready}
-        menuOpen={menuOpen}
-        onMenuToggle={() => setMenuOpen((open) => !open)}
-        onNavigate={handleSectionNavigate}
-      />
-      <MenuOverlay
-        menuOpen={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        onNavigate={handleSectionNavigate}
-      />
+      <Header ready={ready} onNavigate={handleSectionNavigate} />
 
       {ready ? (
         <main id="main">

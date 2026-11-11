@@ -2,7 +2,7 @@
 
 Personal portfolio of **Shawnak Samaddar** — computer science student at Georgia Tech building full-stack web apps and machine-learning tools.
 
-The site is **one scrollable document**: the hero, about, experience, projects, and contact sections are stacked on a single page. Header, overlay, and home-grid tiles smooth-scroll between sections, a scroll spy keeps every tile's active state in sync, and the URL tracks the section you are reading (`#/about/`, `#/contact/`, ...) so any section is directly shareable. The six project deep-dives remain real sub-routes at `#/case-study/:slug/`.
+The site is **one scrollable document**: the hero, about, experience, projects, and contact sections are stacked on a single page. Header tiles, the home-grid tiles, inline pills, and CTAs smooth-scroll between sections, a scroll spy keeps every tile's active state in sync, and the URL tracks the section you are reading (`#/about/`, `#/contact/`, ...) so any section is directly shareable. The six project deep-dives remain real sub-routes at `#/case-study/:slug/`. There is no fullscreen menu: the header carries a compact nav plus a light/dark switch, and on phones navigation is scrolling or the home `// navigate` tile grid.
 
 The visual design is a faithful homage to [oninross.github.io/infinite-imaginations](https://oninross.github.io/infinite-imaginations/) by Niño Ross Rodriguez, rebuilt from scratch on a modern stack: React + TypeScript + Vite, with every animation and interaction hand-rolled rather than pulled from a library.
 
@@ -17,7 +17,8 @@ The visual design is a faithful homage to [oninross.github.io/infinite-imaginati
 | **Styling** | Hand-rolled design system in plain CSS (`src/styles/main.css` plus one stylesheet per section) — no Tailwind, no UI kit |
 | **Text scramble** | Custom `useScramble` hook (baffle.js equivalent) |
 | **Transitions** | Custom expo-eased timing: scroll-driven reveals, section-title wipe + scramble, and a case-study out-stagger |
-| **Fonts** | Inter + EB Garamond via Google Fonts |
+| **Fonts** | Martian Mono (400/700) via Google Fonts — one monospace family for UI and body, with a `ui-monospace` / Cascadia Mono / Consolas fallback stack |
+| **Theme** | Light / dark via a `.theme-dark` class and semantic CSS tokens; persisted in `localStorage`, applied pre-paint |
 | **Icons** | Inline SVG sprite (`IconSprite` + `Icon`) — no icon package |
 
 Libraries the original leaned on (baffle.js for scramble text, GSAP for easing) are replaced by small local implementations in `src/hooks/useScramble.ts`, `src/hooks/useReveal.ts`, and `src/lib/transition.ts`.
@@ -38,22 +39,29 @@ npm run preview  # serve the production build
 
 ## Navigation & URL model
 
-- **Smooth scrolling.** All section controls — the five header tiles, the five fullscreen-menu tiles, the four home-grid tiles, inline pills, and CTAs — scroll to their section instead of swapping pages. The target section leaves a `90px` scroll margin so its title slab clears the fixed 75px header.
+- **Smooth scrolling.** All section controls — the five header tiles, the four home-grid tiles, inline pills, and CTAs — scroll to their section instead of swapping pages. The target section leaves a `90px` scroll margin so its title slab clears the fixed 75px header.
+- **Header.** One full-width bar: wordmark flush left, five compact nav tiles, and the 45px theme switch flush right. Full tile names show from 1251px; 768–1250px uses the two-letter abbreviations; at 767px and below the nav is hidden (navigation is scrolling or the home grid). There is no fullscreen menu. On phones the wordmark shrinks with the viewport, and a 768–899px band trims it to `1.1em` so the abbreviated nav still fits.
 - **Scroll spy.** A centre-band `IntersectionObserver` (`src/lib/scrollSpy.ts`) tracks which stacked section owns the reading line and drives every tile's active state through a `useSyncExternalStore` store.
 - **History.** Moving to a different section pushes a history entry, so browser back/forward returns to the section — and the scroll position — you came from.
 - **Shareable hashes.** `#/hello/`, `#/about/`, `#/experience/`, `#/projects/`, and `#/contact/` deep-link straight to a section with an instant landing; the trailing slash is optional (`#/about` normalises to `#/about/`). Passive scrolling updates the hash silently with `replaceState`, so browsing does not fill up the history stack.
 - **Case studies.** Project cards open the real sub-route `#/case-study/:slug/` with an outgoing content stagger. "back to listing" returns instantly to the projects section; browser back returns to the section you left.
 - **Reduced motion.** `prefers-reduced-motion: reduce` makes scrolling instant and renders reveals, skill bars, and title wipes immediately.
 
+## Theming
+
+The 45px theme switch in the header flips a `.theme-dark` class on `<html>`. The choice is stored in `localStorage` under `theme`; a small inline script in `index.html` applies the class and rewrites `<meta name="theme-color">` before the first paint, so reloading in dark mode never flashes a white page. The first visit defaults to light, and the key survives case-study navigation (it is origin-scoped).
+
+Every surface reads from semantic tokens, so the loader, title slabs, project cards, case-study grids, contact cards, error page, focus rings, and `::selection` all flip without duplicated component rules. The token palettes are listed [below](#semantic-color-tokens). Native scrollbars follow the theme through `color-scheme`, and print media resets the page to the light palette.
+
 ## Project structure
 
 ```
 Personal Website/
   .github/workflows/deploy.yml   # automatic GitHub Pages deployment
-  index.html                     # Vite entry document (fonts, meta, #root)
+  index.html                     # Vite entry document (fonts, theme pre-paint script, #root)
   vite.config.ts                 # React plugin + base: './' for portable builds
   public/
-    assets/favicon.svg           # 344 B
+    assets/favicon.svg           # 382 B
     assets/Shawnak-Samaddar-Resume.pdf   # 108 KB, linked from the social row & contact
     site.webmanifest             # PWA metadata
   src/
@@ -70,11 +78,12 @@ Personal Website/
       Contact.tsx                # #/contact/     — email-first, all channels live
       ErrorPage.tsx              # catch-all "// not found"
     components/
-      Header.tsx                 # fixed header, compact nav, menu toggle, scroll state
-      MenuOverlay.tsx            # full-screen menu (Escape + backdrop close)
+      Header.tsx                 # fixed header, compact nav, theme switch, scroll state
+      ThemeToggle.tsx            # 45px light/dark switch; persists + updates theme-color
       NavTile.tsx                # 2-letter nav tile; intercepts clicks for smooth scrolling
       SectionTitle.tsx           # observer-triggered slab wipe + scramble, hero variant
-      PlanList.tsx / PlanItem.tsx# bordered detail-card list (education, roles, records)
+      PlanList.tsx / PlanItem.tsx # bordered detail-card list (education, roles, records)
+      Portrait.tsx               # framed, grayscale-until-hover owner portrait
       Cta.tsx                    # double-chevron call to action
       SocialRow.tsx              # github / linkedin / email / résumé row
       ShotSlot.tsx               # framed screenshot slot (placeholder or image)
@@ -95,22 +104,41 @@ Personal Website/
       site.ts                    # nav items, home tiles, socials — single source of truth
       projects.ts                # six project records + case-study content
     styles/
-      main.css                   # design system: tokens, shell, primitives
+      main.css                   # design system: light/dark tokens, shell, primitives
       about.css                  # bio, education, coursework, skill bars
       experience.css             # role/hackathon records, inline project pills
       projects.css               # project cards, case-study blocks, screenshot slots
       contact.css                # email hero, channel grid, location/status strip
+      portrait.css               # framed portrait + home/about bio layouts
 ```
 
 ## Design tokens
 
 | Area | Tokens |
 | --- | --- |
-| **Colors** | bg `#ffffff` · ink `#2b2c33` · accent `#0b852d` · error `#cc0000` · border `#e0e0e0` · gray `#6b6d78` |
-| **Type** | Inter / Helvetica Neue (300/400/700) for UI; EB Garamond for body copy; `1em = 10px` scale |
-| **Borders** | `3px solid ink` (tiles / detail cards / CTAs), `6px` project cards, `0` border-radius |
-| **Motifs** | black title slab + 15px accent spine · `//` labels · 2-letter tile abbreviations (Ho Ab Ex Pr Ct) · diagonal hatch shadows · HUD corner brackets · grayscale screenshots · double-chevron CTAs |
+| **Colors** | Semantic roles only — `--bg`, `--fg`, `--fill`, `--bg-subtle`, `--border`, `--gray`, `--accent`, `--red` — with a light and dark value for each (table below) |
+| **Type** | Martian Mono (400/700) for everything; `1em = 10px`. Bold (700) for logo, hero + slab titles, tile abbreviations, `//` labels, plan names/meta, pills, CTAs, stats, skill labels, project-card names, the case pager, contact handles, and course chips; regular (400) for body and secondary copy. No italics. Fallback stack: `ui-monospace, 'Cascadia Mono', Consolas, monospace` |
+| **Borders** | `3px solid --fg` (tiles / detail cards / CTAs), `6px` project cards, `0` border-radius |
+| **Motifs** | title slab + 15px accent spine · `//` labels · 2-letter tile abbreviations (Ho Ab Ex Pr Ct) · diagonal hatch shadows · HUD corner brackets · grayscale screenshots · double-chevron CTAs |
 | **Motion** | expo eases `cubic-bezier(0.19, 1, 0.22, 1)` / `cubic-bezier(0.16, 1, 0.3, 1)`, 0.25s micro / 0.5s layout · scroll-driven reveals · slab wipe + scramble · case-study out-stagger · glitch text on hover |
+
+### Semantic color tokens
+
+| Token | Light | Dark | Role |
+| --- | --- | --- | --- |
+| `--bg` | `#ffffff` | `#17181d` | page and card surfaces |
+| `--fg` | `#2b2c33` | `#e8e9ee` | text, lines, borders |
+| `--fill` | `#2b2c33` | `#34353d` | title slabs, pills, rules — white text on top |
+| `--bg-subtle` | `#fafafa` | `#1d1e24` | screenshot wells |
+| `--border` | `#e0e0e0` | `#3a3b44` | hairline dividers |
+| `--gray` | `#6b6d78` | `#9aa0ad` | secondary copy |
+| `--accent` | `#0b852d` | `#1b8843` | the single accent (dark value reaches 4.52:1 with white text and 3.96:1 on the page) |
+| `--red` | `#cc0000` | `#cc0000` | error slab only |
+| `--hatch` | `rgba(43,44,51,.16)` | `rgba(255,255,255,.10)` | diagonal hatch strips |
+| `--hatch-soft` | `rgba(43,44,51,.045)` | `rgba(255,255,255,.06)` | screenshot-well texture |
+| `--shadow` | `rgba(43,44,51,.10)` | `rgba(0,0,0,.45)` | card lift shadows |
+
+`color-scheme` follows the theme (`light` / `dark`), so native scrollbars and controls match; print media forces the light palette.
 
 ## Site map
 
@@ -179,6 +207,6 @@ The original vanilla implementation — a zero-dependency, single-file HTML/CSS/
 ## Credits
 
 - **Design homage:** "infinite imaginations" by Niño Ross Rodriguez ([oninross.github.io/infinite-imaginations](https://oninross.github.io/infinite-imaginations))
-- **Fonts:** Inter + EB Garamond (Google Fonts), fallbacks Helvetica Neue / Georgia
+- **Fonts:** Martian Mono 400/700 (Google Fonts), fallbacks `ui-monospace` / Cascadia Mono / Consolas
 - **Icons:** inline SVG sprite, feather-style line icons
 - Built with React 19 + TypeScript + Vite; every animation is a local implementation

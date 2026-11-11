@@ -4,12 +4,13 @@
    this file adds the achievements list, the inline pill and its markers.
    ========================================================================== */
 
-/* Bulleted achievements: Garamond body copy at the plan-body scale, with a
+/* Bulleted achievements: mono body copy at the plan-body scale, with a
    small accent square as the marker. The marker is absolute so wrapped lines
    hang under the text and inline links stay in the text flow (an inline-block
    child of a grid/flex list item would become a squeezed grid/flex item). */
 .record-list {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: .34em;
   margin-top: .7em;
   font-size: 1.7em;
@@ -18,7 +19,9 @@
 
 .record-list > li {
   position: relative;
+  min-width: 0;
   padding-left: .84em;
+  overflow-wrap: anywhere;
 }
 
 .record-list > li::before {
@@ -41,7 +44,7 @@
   font-size: .68em;
   line-height: 1;
   color: #fff;
-  background: var(--ink);
+  background: var(--fill);
   padding: .4em 1em .36em;
   border-radius: 999px;
   text-decoration: none;

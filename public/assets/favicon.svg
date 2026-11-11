@@ -1,4 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="shawnak samaddar">
   <rect width="64" height="64" fill="#2b2c33"/>
-  <text x="32" y="41" fill="#0b852d" font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="28" letter-spacing="-1" text-anchor="middle">//</text>
+  <text x="32" y="41" fill="#0b852d" font-family="'Martian Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace" font-weight="700" font-size="28" letter-spacing="-1" text-anchor="middle">//</text>
 </svg>

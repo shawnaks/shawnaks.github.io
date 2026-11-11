@@ -15,8 +15,8 @@
 
 .portrait-frame {
   position: relative;
-  border: 3px solid var(--ink);
-  background: var(--white);
+  border: 3px solid var(--fg);
+  background: var(--bg);
   transition: transform .55s var(--ease-out);
 }
 
@@ -92,13 +92,19 @@
     width: 220px;
   }
 
-  .hero-intro {
+  /* stacked rows must not take the max-content width of the copy: with
+     monospace text a long word would otherwise widen the whole column */
+  .hero-intro,
+  .about-bio {
     flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-intro {
     gap: 1.8em;
   }
 
   .about-bio {
-    flex-direction: column;
     gap: 2.2em;
   }
 }

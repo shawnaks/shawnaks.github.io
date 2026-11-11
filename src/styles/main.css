@@ -6,16 +6,39 @@
 
 /* ----- tokens ----- */
 :root {
-  --white: #ffffff;
-  --ink: #2b2c33;            /* warm near-black */
-  --accent: #0b852d;         /* the single accent */
-  --red: #cc0000;            /* error only */
+  --bg: #ffffff;             /* page / card surfaces */
+  --fg: #2b2c33;             /* text + lines & borders */
+  --fill: #2b2c33;           /* slabs, pills, rules — white text on top */
+  --bg-subtle: #fafafa;      /* screenshot wells */
   --border: #e0e0e0;
   --gray: #6b6d78;
+  --accent: #0b852d;         /* the single accent */
+  --red: #cc0000;            /* error only */
+  --hatch: rgba(43, 44, 51, 0.16);
+  --hatch-soft: rgba(43, 44, 51, 0.045);
+  --shadow: rgba(43, 44, 51, 0.10);
   --ease: cubic-bezier(0.19, 1, 0.22, 1);      /* expo in-out */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);   /* expo out */
-  --ui: 'Helvetica Neue', Helvetica, 'Inter', Arial, sans-serif;
-  --serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  --ui: 'Martian Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --serif: 'Martian Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  color-scheme: light;       /* native scrollbars / controls match the page */
+}
+
+/* dark theme — same roles, inverted roles for fill vs page. The accent is
+   brightened for dark surfaces; measured 4.52:1 against white text and
+   3.96:1 against the page, so both the backed and standalone uses read. */
+:root.theme-dark {
+  --bg: #17181d;
+  --fg: #e8e9ee;
+  --fill: #34353d;
+  --bg-subtle: #1d1e24;
+  --border: #3a3b44;
+  --gray: #9aa0ad;
+  --accent: #1b8843;
+  --hatch: rgba(255, 255, 255, 0.10);
+  --hatch-soft: rgba(255, 255, 255, 0.06);
+  --shadow: rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
 }
 
 /* ----- reset / base ----- */
@@ -25,7 +48,7 @@ html {
   font-family: var(--ui);
   font-size: 62.5%;              /* 1em = 10px */
   line-height: 1.618;
-  font-weight: 300;
+  font-weight: 400;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -33,13 +56,12 @@ body {
   font-family: var(--serif);
   font-weight: 400;
   font-size: 1.8em;              /* 18px body copy */
-  color: var(--ink);
-  background: var(--white);
+  color: var(--fg);
+  background: var(--bg);
   overflow-x: hidden;
 }
 
 body.is-loading { overflow: hidden; }
-body.menu-open  { overflow: hidden; }
 
 ::selection { background: var(--accent); color: #fff; }
 
@@ -61,7 +83,7 @@ ul { list-style: none; }
   width: 100%;
   height: 7px;
   background-image: repeating-linear-gradient(
-    -45deg, transparent 0 2px, rgba(43, 44, 51, 0.16) 2px 5px);
+    -45deg, transparent 0 2px, var(--hatch) 2px 5px);
 }
 .hatch::after {
   content: '';
@@ -71,7 +93,7 @@ ul { list-style: none; }
   width: 7px;
   height: calc(100% - 7px);
   background-image: repeating-linear-gradient(
-    -45deg, transparent 0 2px, rgba(43, 44, 51, 0.16) 2px 5px);
+    -45deg, transparent 0 2px, var(--hatch) 2px 5px);
 }
 
 /* ==========================================================================
@@ -81,7 +103,7 @@ ul { list-style: none; }
   position: fixed;
   inset: 0;
   z-index: 400;
-  background: var(--white);
+  background: var(--bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -110,18 +132,18 @@ ul { list-style: none; }
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 75px;
-  background: var(--white);
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
   z-index: 100;
   transition: transform .4s var(--ease), background-color .3s linear, border-color .3s linear;
 }
 .header.is-hidden { transform: translateY(-100%); }
-.header.is-dark   { background: var(--ink); border-bottom-color: var(--ink); }
+/* Scrolled: the slab fill separates the bar from the page. In dark mode the
+   fill is lighter than the page, so the bar still reads without a white flash. */
+.header.is-dark   { background: var(--fill); border-bottom-color: var(--fill); }
 
 .header-wrap {
-  max-width: 1400px;
   height: 100%;
-  margin: 0 auto;
   padding: 0 20px;
   display: flex;
   align-items: center;
@@ -135,26 +157,25 @@ ul { list-style: none; }
   align-items: center;
   gap: 7px;
   text-decoration: none;
-  color: var(--ink);
-  font: 700 1.7em/1 var(--ui);
-  letter-spacing: -.01em;
+  color: var(--fg);
+  font: 700 1.35em/1 var(--ui);
   white-space: nowrap;
 }
 .logo-mark { color: var(--accent); }
 .header.is-dark .logo-text { color: #fff; }
 
 /* compact header nav */
-.primary-nav ul { display: flex; gap: 6px; }
+.primary-nav ul { display: flex; gap: 4px; }
 .element-box.element-box--sm {
   flex-direction: row;
   align-items: center;
   height: 45px;
-  padding: 0 10px;
-  gap: 9px;
+  padding: 0 7px;
+  gap: 7px;
 }
-.element-box--sm .box-text { display: flex; align-items: baseline; gap: 6px; }
-.element-box--sm .abbr { font-size: 1.5em; }
-.element-box--sm .full  { font-size: 1.1em; margin-top: 0; }
+.element-box--sm .box-text { display: flex; align-items: baseline; gap: 5px; }
+.element-box--sm .abbr { font-size: 1.3em; }
+.element-box--sm .full  { font-size: .9em; margin-top: 0; }
 .element-box--sm .box-icon {
   position: static;
   width: 16px; height: 16px;
@@ -166,90 +187,49 @@ ul { list-style: none; }
    above is more specific than `.element-box.is-active`, so restate it here. */
 .header.is-dark .element-box--sm.is-active { border-color: var(--accent); }
 
+/* theme switch — same 45px square language as the social row */
+.theme-btn {
+  width: 45px;
+  height: 45px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 3px solid var(--fg);
+  border-radius: 0;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  cursor: pointer;
+  transition: transform .25s var(--ease), background-color .25s linear,
+              color .25s linear, border-color .25s linear;
+}
+.theme-btn .icon { width: 20px; height: 20px; }
+
 /* header entrance after loader */
 .header .logo,
 .header .primary-nav,
-.header .menu {
+.header .theme-btn {
   opacity: 0;
   transform: translateY(50px);
   transition: opacity .5s var(--ease-out), transform .5s var(--ease-out);
 }
 .header.is-ready .logo,
-.header.is-ready .menu { opacity: 1; transform: none; transition-delay: .7s; }
+.header.is-ready .theme-btn { opacity: 1; transform: none; transition-delay: .7s; }
 .header.is-ready .primary-nav { opacity: 1; transform: none; transition-delay: .85s; }
 
-/* 4-square hamburger */
-.menu {
-  width: 45px;
-  height: 45px;
-  flex: none;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  place-items: center;
-  background: none;
-  border: 0;
-  cursor: pointer;
+.theme-btn:hover, .theme-btn:focus-visible {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  transform: scale(1.08);
+  transition-delay: 0s;
 }
-.menu .box {
-  width: 12px; height: 12px;
-  border-radius: 2px;
-  background: var(--ink);
-  transition: transform .25s var(--ease), opacity .25s var(--ease), background-color .25s linear;
-}
-.menu:hover .tl { transform: translate(-4px, -4px); }
-.menu:hover .tr { transform: translate(4px, -4px); }
-.menu:hover .bl { transform: translate(-4px, 4px); }
-.menu:hover .br { transform: translate(4px, 4px); }
-body:not(.menu-open) .header.is-dark .menu .box { background: #fff; }
-body.menu-open .menu .box { background: var(--accent); }
-body.menu-open .menu .tl { transform: translate(11px, 11px) rotate(45deg); }
-body.menu-open .menu .tr { transform: translate(-11px, 11px) rotate(-45deg); }
-body.menu-open .menu .bl { opacity: 0; transform: translate(-11px, -11px); }
-body.menu-open .menu .br { opacity: 0; transform: translate(11px, -11px); }
-
-/* ==========================================================================
-   fullscreen tile menu
-   ========================================================================== */
-.menu-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  background: var(--white);
-  transform: scaleY(0);
-  transform-origin: top;
-  visibility: hidden;
-  transition: transform .4s var(--ease), visibility 0s linear .4s;
-  overflow-y: auto;
-  padding: 105px 20px 45px;
-  pointer-events: none;
-}
-body.menu-open .menu-overlay {
-  transform: scaleY(1);
-  visibility: visible;
-  transition: transform .4s var(--ease);
-  pointer-events: auto;
-}
-
-.menu-nav ul {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  max-width: 1020px;
-  margin: 0 auto;
-}
-.menu-nav .element-box { height: 146px; }
-.menu-nav li {
-  opacity: 0;
-  transform: translate(5px, 20px) scale(.5);
-  transition: opacity .3s var(--ease), transform .3s var(--ease);
-}
-body.menu-open .menu-nav li { opacity: 1; transform: none; }
-body.menu-open .menu-nav li:nth-child(1) { transition-delay: .08s; }
-body.menu-open .menu-nav li:nth-child(2) { transition-delay: .16s; }
-body.menu-open .menu-nav li:nth-child(3) { transition-delay: .24s; }
-body.menu-open .menu-nav li:nth-child(4) { transition-delay: .32s; }
-body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
+.header.is-dark .theme-btn { border-color: #fff; color: #fff; }
+.header.is-dark .theme-btn:hover,
+.header.is-dark .theme-btn:focus-visible { border-color: var(--accent); color: #fff; }
+.header.is-ready .theme-btn:hover,
+.header.is-ready .theme-btn:focus-visible { transform: scale(1.08); transition-delay: 0s; }
 
 /* ==========================================================================
    element boxes (nav tiles)
@@ -261,9 +241,9 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
   justify-content: space-between;
   height: 150px;
   padding: 14px 15px 12px;
-  border: 3px solid var(--ink);
-  background: var(--white);
-  color: var(--ink);
+  border: 3px solid var(--fg);
+  background: var(--bg);
+  color: var(--fg);
   text-decoration: none;
   overflow: hidden;
 }
@@ -295,7 +275,7 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
 
 .box-desc {
   display: block;
-  font: italic 400 1.35em/1.4 var(--serif);
+  font: 400 1.35em/1.4 var(--serif);
   color: var(--gray);
 }
 
@@ -347,22 +327,27 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
 /* ==========================================================================
    home (hello)
    ========================================================================== */
-.hero { max-width: 860px; }
+.hero { max-width: 980px; }
 
 .hero-title {
   position: relative;
   font-family: var(--ui);
   font-weight: 700;
-  font-size: 7em;
+  /* Martian Mono advances .7em per glyph, so the nowrap 14-character title
+     needs a smaller cap than the old proportional face. 5.4em (97.2px) is
+     952.6px wide and fits the 980px container measure; 8.9vw keeps the same
+     clearance below the 1092px fixed-size crossover and inside the 753px
+     layout box at 768px. */
+  font-size: min(5.4em, 8.9vw);
   line-height: 1;
-  letter-spacing: -.02em;
+  letter-spacing: normal;
   white-space: nowrap;
   margin: 0 0 .55em;
 }
 
 .lead { font-size: 2em; }
 .lead + .lead { margin-top: 1em; }
-.lead strong { font-weight: 600; }
+.lead strong { font-weight: 700; }
 
 /* inline pill links */
 .lead a, .section-intro a {
@@ -370,10 +355,13 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
   font-family: var(--ui);
   font-weight: 700;
   font-style: normal;
-  font-size: .72em;
+  /* .62em: the long "full-stack web apps & machine-learning tools" pill is
+     44 monospace glyphs and must clear the 150px portrait + 2.6em gap
+     without leaving the 980px container measure. */
+  font-size: .62em;
   line-height: 1;
   color: #fff;
-  background: var(--ink);
+  background: var(--fill);
   padding: .38em 1em .34em;
   border-radius: 999px;
   text-decoration: none;
@@ -396,7 +384,7 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
 .rule {
   border: 0;
   height: 3px;
-  background: var(--ink);
+  background: var(--fill);
   width: 0;
   margin: 3.2em 0 2.8em;
   transition: width .6s var(--ease-out);
@@ -416,8 +404,8 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
   align-items: center;
   justify-content: center;
   width: 48px; height: 48px;
-  border: 3px solid var(--ink);
-  color: var(--ink);
+  border: 3px solid var(--fg);
+  color: var(--fg);
   transition: transform .25s var(--ease), background-color .25s linear,
               color .25s linear, border-color .25s linear;
 }
@@ -448,14 +436,14 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
   font-weight: 700;
   font-size: 3.2em;
   line-height: 1;
-  letter-spacing: -.01em;
+  letter-spacing: normal;
   white-space: nowrap;
 }
 .title-bar {
   position: absolute;
   top: 0; right: 0; bottom: 0; left: 0;
   width: 0;
-  background: var(--ink);
+  background: var(--fill);
   z-index: 0;
   transition: width .5s var(--ease-out);
 }
@@ -470,11 +458,14 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
 .section-intro { font-size: 2em; margin-bottom: 1.6em; }
 
 /* planned-content list with HUD corner brackets */
-.plan-list { display: grid; gap: 20px; }
+.plan-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+/* Mono text raises the grid items' automatic minimum size above narrow
+   viewports; the copy already wraps, so let the track shrink. */
+.plan-list > * { min-width: 0; }
 .plan-item {
   position: relative;
-  border: 3px solid var(--ink);
-  background: var(--white);
+  border: 3px solid var(--fg);
+  background: var(--bg);
   padding: 20px 22px 18px;
 }
 .plan-name { font: 700 1.8em/1.25 var(--ui); overflow-wrap: anywhere; }
@@ -489,10 +480,10 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
 .plan-body { font-size: 1.7em; margin-top: .55em; }
 
 .ui-corner { position: absolute; width: 9px; height: 9px; transition: transform .45s var(--ease) .15s; }
-.ui-corner.tl { top: -7px;    left: -7px;  border-top: 3px solid var(--ink);    border-left: 3px solid var(--ink);  transform: translate(-25px, -25px); }
-.ui-corner.tr { top: -7px;    right: -7px; border-top: 3px solid var(--ink);    border-right: 3px solid var(--ink); transform: translate(25px, -25px); }
-.ui-corner.bl { bottom: -7px; left: -7px;  border-bottom: 3px solid var(--ink); border-left: 3px solid var(--ink);  transform: translate(-25px, 25px); }
-.ui-corner.br { bottom: -7px; right: -7px; border-bottom: 3px solid var(--ink); border-right: 3px solid var(--ink); transform: translate(25px, 25px); }
+.ui-corner.tl { top: -7px;    left: -7px;  border-top: 3px solid var(--fg);    border-left: 3px solid var(--fg);  transform: translate(-25px, -25px); }
+.ui-corner.tr { top: -7px;    right: -7px; border-top: 3px solid var(--fg);    border-right: 3px solid var(--fg); transform: translate(25px, -25px); }
+.ui-corner.bl { bottom: -7px; left: -7px;  border-bottom: 3px solid var(--fg); border-left: 3px solid var(--fg);  transform: translate(-25px, 25px); }
+.ui-corner.br { bottom: -7px; right: -7px; border-bottom: 3px solid var(--fg); border-right: 3px solid var(--fg); transform: translate(25px, 25px); }
 .plan-item.is-entering .ui-corner { transform: translate(0, 0); }
 
 .section-note { font: 400 1.4em/1.5 var(--ui); color: var(--gray); margin: 2.2em 0 1.2em; }
@@ -504,10 +495,10 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
   display: inline-flex;
   align-items: center;
   gap: 14px;
-  border: 3px solid var(--ink);
+  border: 3px solid var(--fg);
   padding: 14px 20px;
   text-decoration: none;
-  color: var(--ink);
+  color: var(--fg);
   font: 700 1.5em/1 var(--ui);
   overflow: hidden;
 }
@@ -603,62 +594,52 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
    responsive
    ========================================================================== */
 /* Compact tiles (abbr + icon only) only where the full labels truly cannot
-   fit. Full labels now also live inside a 1400px wrap with trimmed spacing
-   and type, so they need ~1166px of content at the Arial-fallback worst case
-   (logo ~300 + nav ~801 + 45px menu + 2x10px wrap gaps). A 1280px window with
-   a classic 15px scrollbar lays out at 1265px and still leaves ~44px of slack
-   (~59px at an innerWidth of 1280) before the hamburger; the 1249px fallback
-   keeps full names visible at 1250px and up (including that 1265px worst
-   case), while 768-1249px stays compact. */
-@media (max-width: 1249px) {
+   fit. With Martian Mono at .9em the full-label header needs ~1164px of
+   content (logo 313.2 + nav 805.4 + 45px theme button), plus 2x20px wrap
+   padding and 2x16px minimum clearance = 1235.6px of layout — a 1251px
+   window with a classic 15px scrollbar. A 1280px window lays out at 1265px,
+   so full names show with ~31px on either side of the nav; 768-1250px stays
+   compact. */
+@media (max-width: 1250px) {
   .element-box--sm .full { display: none; }
 }
 
-/* 768-899px: the abbreviation-only nav still needs ~807px of content, which
-   overflows a 768px window (713px usable once the scrollbar is subtracted).
-   Trim the wordmark and the compact tile chrome only for that narrow band so
-   the abbr layout keeps ~23px of slack at 768px; 767px and below is untouched
-   (nav hidden, hamburger only). */
+/* 768-899px: the abbreviation-only nav still needs more than a 768px window's
+   713px layout box at the base sizes. Trim the wordmark and the compact tile
+   chrome only for that narrow band so the abbr layout keeps ~30px of slack
+   at 768px; 767px and below is untouched (nav hidden, theme button only). */
 @media (min-width: 768px) and (max-width: 899px) {
   .header-wrap { gap: 8px; padding: 0 16px; }
-  .logo a { font-size: 1.45em; }
+  .logo a { font-size: 1.1em; }
   .primary-nav ul { gap: 4px; }
   .element-box.element-box--sm { padding: 0 6px; gap: 6px; }
+  .element-box--sm .abbr { font-size: 1.05em; }
 }
 
-/* 768-899px: the home hero is a flex row and the section is display:flex, so
-   the container cannot shrink below its content. The portrait (150px) +
-   2.6em gap + the nowrap "full-stack web apps & machine-learning tools" pill
-   give it an 804.6px min-content — 92px wider than a 768px window's 753px
-   layout box. Let the pills wrap as they do below 768px and scale the 7em
-   nowrap title (767px wide) in this band, so neither child sets a min-content
-   wider than the viewport. 900px and up is untouched (title stays 126px,
-   pills stay on one line). Placed before the 767px block so the mobile rules
-   keep winning there, while fractional viewport widths (e.g. 767.5px on a
-   scaled display) still get this fix instead of falling in a breakpoint gap. */
-@media (max-width: 899px) {
-  .hero-title { font-size: min(7em, 13.5vw); }
-  .lead a { white-space: normal; }
-}
-
+/* The long pills are nowrap inline-blocks and wider in monospace. The home
+   hero starts them 196.8px in (150px portrait + 2.6em gap); the .62em pill is
+   ~732px at its widest, so it clears the 980px container measure from 1024px
+   up but would overflow the 768-1023px band, where pills wrap as on mobile. */
 @media (max-width: 1023px) {
+  .lead a { white-space: normal; }
   .tile-grid > li { width: 50%; }
 }
 
 @media (max-width: 767px) {
   .primary-nav { display: none; }
-  /* wordmark + 45px menu must fit: shrink the nowrap logo instead of
-     pushing the menu button past the right edge */
-  .logo a { font-size: min(1.9em, 6.7vw); }
-  /* nowrap title + nowrap pills must not inflate the flex container's
-     min-content width (it would push the whole layout past the viewport) */
-  .hero-title { font-size: min(4.6em, 14vw); }
+  /* 4.9vw keeps the nowrap wordmark + 45px theme button inside the 265px
+     content box at a 320px window with a classic scrollbar */
+  .logo a { font-size: min(1.35em, 4.9vw); }
+  /* 8.2vw keeps the 14-glyph nowrap title inside the 265px layout box at a
+     320px window with a classic scrollbar, and the 335px one at 390px */
+  .hero-title { font-size: min(5.4em, 8.2vw); }
   .lead a, .section-intro a { white-space: normal; }
   .lead { font-size: 1.8em; }
-  .section-title { font-size: min(2.6em, 13vw); }
+  /* "experience" is 10 monospace glyphs: 7.93em of slab + padding must stay
+     inside the 335px measure at 390px (classic scrollbar) and the 265px one
+     at 320px */
+  .section-title { font-size: min(2.6em, 9.6vw); }
   .section-intro { font-size: 1.8em; }
-  .menu-nav ul { grid-template-columns: repeat(2, 1fr); }
-  .menu-nav li:last-child { grid-column: span 2; }
   .plan-item { padding: 16px 16px 14px; }
   .section { padding: 40px 0 50px; }
   .page-stack > .section { padding: 84px 0 96px; }
@@ -669,14 +650,10 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
   .social-row a { width: 42px; height: 42px; }
 }
 
-/* 320-380px: 14vw is measured against innerWidth, which includes the ~15px
-   classic scrollbar, so the 44.8px nowrap "Hello World..." title is 272.9px
-   wide and its 40px page padding needs 312.9px — 8px more than the 305px the
-   layout actually gets at a 320px window (the flex home section then refuses
-   to shrink below that). 13vw keeps the title inside the real layout box at
-   every width in this band; 381px and up is unchanged. */
-@media (max-width: 380px) {
-  .hero-title { font-size: min(4.6em, 13vw); }
+/* 320-340px: a 13-glyph word ("undergraduate") is wider than the 280px
+   content box at 32.4px mono; let prose break rather than widen the page. */
+@media (max-width: 340px) {
+  .lead, .section-intro { overflow-wrap: anywhere; }
 }
 
 /* At 320-360px two columns leave each tile ~122px wide, too narrow for the
@@ -692,14 +669,28 @@ body.menu-open .menu-nav li:nth-child(5) { transition-delay: .40s; }
    print — unhide every section, drop the chrome
    ========================================================================== */
 @media print {
-  .header, .menu-overlay, .loader { display: none !important; }
+  /* printing from dark mode should still use ink on paper */
+  :root, :root.theme-dark {
+    --bg: #fff;
+    --fg: #2b2c33;
+    --fill: #2b2c33;
+    --bg-subtle: #fafafa;
+    --border: #e0e0e0;
+    --gray: #6b6d78;
+    --accent: #0b852d;
+    --hatch: rgba(43, 44, 51, 0.16);
+    --hatch-soft: rgba(43, 44, 51, 0.045);
+    --shadow: rgba(43, 44, 51, 0.10);
+    color-scheme: light;
+  }
+  .header, .loader { display: none !important; }
   body { overflow: visible; }
   #main { margin-top: 0; }
   .section { display: block !important; min-height: 0; page-break-after: always; }
   .page-stack > .section { padding: 0 0 40px; border-top: 0; }
   .anim, .rule { opacity: 1 !important; transform: none !important; width: 100% !important; }
   .title-bar { display: none !important; }
-  .section--page .title-text { color: var(--ink) !important; }
+  .section--page .title-text { color: var(--fg) !important; }
   .glitch::before, .glitch::after { display: none !important; }
   .ui-corner { transform: none !important; }
 }

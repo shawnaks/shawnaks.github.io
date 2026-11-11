@@ -18,8 +18,8 @@
 }
 
 .course-chip {
-  border: 3px solid var(--ink);
-  background: var(--white);
+  border: 3px solid var(--fg);
+  background: var(--bg);
   padding: .55em .9em .5em;
   font: 700 1.25em/1.2 var(--ui);
   letter-spacing: .01em;
@@ -51,8 +51,8 @@
   flex: 1 1 auto;
   min-width: 0;
   height: 34px;
-  border: 3px solid var(--ink);
-  background: var(--white);
+  border: 3px solid var(--fg);
+  background: var(--bg);
   overflow: hidden;
 }
 
@@ -65,7 +65,7 @@
   display: flex;
   align-items: center;
   overflow: hidden;
-  background: var(--ink);
+  background: var(--fill);
   transition: width 1.5s var(--ease);
 }
 
@@ -80,7 +80,10 @@
 .skill-name {
   padding-left: 13px;
   color: #fff;
-  font: 700 1.25em/1 var(--ui);
+  /* mono runs ~40% wider than the old proportional face; 1.05em keeps the
+     longest label ("Machine Learning (PyTorch, TensorFlow)") inside an 80%
+     fill instead of clipping it */
+  font: 700 1.05em/1 var(--ui);
   letter-spacing: .01em;
   white-space: nowrap;
 }
@@ -122,7 +125,7 @@
     display: block;
     grid-area: name;
     padding-left: 0;
-    color: var(--ink);
+    color: var(--fg);
     font: 700 1.15em/1.2 var(--ui);
     white-space: normal;
     overflow-wrap: anywhere;

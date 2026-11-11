@@ -4,22 +4,21 @@ import { Link } from 'react-router-dom';
 import { NAV_ITEMS } from '../data/site';
 import { isProgrammaticScroll } from '../lib/scroll';
 import { NavTile } from './NavTile';
+import { ThemeToggle } from './ThemeToggle';
 
 export type HeaderProps = {
   /** Adds `is-ready`, which runs the post-loader entrance. */
   ready: boolean;
-  menuOpen: boolean;
-  onMenuToggle: () => void;
   /** Optional page-transition hook forwarded to every nav tile / the logo. */
   onNavigate?: (e: MouseEvent, to: string) => void;
 };
 
 /**
- * Fixed header: logo, compact nav, hamburger. Ports the vanilla scroll logic:
- * dark after 20px, auto-hide on downward scroll past 120px, reveal on scroll-up
- * (±8px), and all scroll handling is suspended while the menu is open.
+ * Fixed header: logo, compact nav, theme switch. Ports the vanilla scroll
+ * logic: dark after 20px, auto-hide on downward scroll past 120px, reveal on
+ * scroll-up (±8px).
  */
-export function Header({ ready, menuOpen, onMenuToggle, onNavigate }: HeaderProps) {
+export function Header({ ready, onNavigate }: HeaderProps) {
   const [dark, setDark] = useState(false);
   const [hidden, setHidden] = useState(false);
   const lastY = useRef(0);
@@ -28,7 +27,6 @@ export function Header({ ready, menuOpen, onMenuToggle, onNavigate }: HeaderProp
     lastY.current = window.scrollY;
 
     const onScroll = () => {
-      if (menuOpen) return;
       const y = window.scrollY;
 
       setDark(y > 20);
@@ -52,14 +50,7 @@ export function Header({ ready, menuOpen, onMenuToggle, onNavigate }: HeaderProp
 
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, [menuOpen]);
-
-  // Opening the menu always brings the header back (vanilla setMenu does this).
-  // Clearing on the toggle event keeps the effect free of synchronous setState.
-  const handleMenuToggle = () => {
-    setHidden(false);
-    onMenuToggle();
-  };
+  }, []);
 
   const handleLogoClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (!onNavigate) return;
@@ -94,20 +85,7 @@ export function Header({ ready, menuOpen, onMenuToggle, onNavigate }: HeaderProp
           </ul>
         </nav>
 
-        <button
-          className="menu"
-          id="menuBtn"
-          type="button"
-          aria-label="toggle menu"
-          aria-expanded={menuOpen}
-          aria-controls="menuOverlay"
-          onClick={handleMenuToggle}
-        >
-          <span className="box tl" />
-          <span className="box tr" />
-          <span className="box bl" />
-          <span className="box br" />
-        </button>
+        <ThemeToggle />
       </div>
     </header>
   );

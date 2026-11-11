@@ -5,7 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shawnak Samaddar // hello world</title>
 <meta name="description" content="Shawnak Samaddar — computer science student at Georgia Tech building full-stack web apps and machine-learning tools. Atlanta, GA.">
-<meta name="theme-color" content="#2b2c33">
+<meta name="theme-color" content="#ffffff">
+<script>
+  (function () {
+    try {
+      var dark = localStorage.getItem('theme') === 'dark';
+      if (dark) document.documentElement.classList.add('theme-dark');
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', dark ? '#17181d' : '#ffffff');
+    } catch (e) {}
+  })();
+</script>
 <meta property="og:title" content="Shawnak Samaddar // hello world">
 <meta property="og:description" content="Computer science student at Georgia Tech building full-stack web apps and machine-learning tools.">
 <meta property="og:type" content="website">
@@ -13,7 +23,7 @@
 <link rel="manifest" href="site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <div id="root"></div>

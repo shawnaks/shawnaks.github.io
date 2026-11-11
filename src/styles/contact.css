@@ -23,10 +23,10 @@
   align-items: center;
   gap: 26px;
   width: 100%;
-  border: 3px solid var(--ink);
-  background: var(--white);
+  border: 3px solid var(--fg);
+  background: var(--bg);
   padding: 28px 30px;
-  color: var(--ink);
+  color: var(--fg);
   text-decoration: none;
   overflow: hidden;
   transition: border-color .3s linear;
@@ -71,7 +71,7 @@
   place-items: center;
   width: 68px;
   height: 68px;
-  border: 3px solid var(--ink);
+  border: 3px solid var(--fg);
   color: var(--accent);
 }
 
@@ -89,7 +89,7 @@
 
 .contact-hero-address {
   font: 700 clamp(18px, 4.2vw, 28px)/1.15 var(--ui);
-  letter-spacing: -.02em;
+  letter-spacing: normal;
   overflow-wrap: anywhere;
 }
 
@@ -160,10 +160,10 @@
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  border: 3px solid var(--ink);
-  background: var(--white);
+  border: 3px solid var(--fg);
+  background: var(--bg);
   padding: 22px 22px 24px;
-  color: var(--ink);
+  color: var(--fg);
   text-decoration: none;
   transition:
     border-color .4s var(--ease),
@@ -175,7 +175,7 @@
 .contact-channel:focus-within .contact-channel-link {
   border-color: var(--accent);
   transform: translateY(-4px);
-  box-shadow: 0 14px 26px rgba(43, 44, 51, .10);
+  box-shadow: 0 14px 26px var(--shadow);
 }
 
 .contact-channel-icon {
@@ -183,7 +183,7 @@
   place-items: center;
   width: 42px;
   height: 42px;
-  border: 3px solid var(--ink);
+  border: 3px solid var(--fg);
   color: var(--accent);
   margin-bottom: 2.2em;
   transition: background-color .25s linear, border-color .25s linear, color .25s linear;
@@ -211,7 +211,7 @@
 
 .contact-channel-handle {
   font: 700 1.7em/1.2 var(--ui);
-  letter-spacing: -.01em;
+  letter-spacing: normal;
   overflow-wrap: anywhere;
   box-shadow: inset 0 -3px 0 var(--accent);
   transition: background-color .25s linear, color .25s linear;
@@ -238,14 +238,14 @@
   grid-template-columns: 1fr 1.6fr;
   gap: 3px;
   margin-top: 3.2em;
-  border: 3px solid var(--ink);
-  background: var(--ink);
+  border: 3px solid var(--fg);
+  background: var(--fill);
 }
 
 .contact-status-cell {
   min-width: 0;
   padding: 20px 22px;
-  background: var(--white);
+  background: var(--bg);
 }
 
 .contact-status-label {
@@ -257,7 +257,8 @@
 
 .contact-status-value {
   font: 700 2.4em/1.1 var(--ui);
-  letter-spacing: -.02em;
+  letter-spacing: normal;
+  overflow-wrap: anywhere;
 }
 
 .contact-status-open {
@@ -270,7 +271,7 @@
 @media (max-width: 767px) {
   .contact-hero {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 18px;
     padding: 22px 20px;
   }
@@ -286,6 +287,10 @@
   .contact-channel-grid {
     grid-template-columns: 1fr;
     gap: 20px;
+  }
+
+  .contact-channel-link {
+    align-items: stretch;
   }
 
   .contact-channel-icon {

@@ -15,8 +15,6 @@ export type NavigateHandler = (e: MouseEvent, to: string) => void;
 export type NavigateOptions = {
   /** The router's current pathname (used for the same-route check). */
   currentPath: string;
-  /** Closes the fullscreen menu, if it is open. */
-  closeMenu: () => void;
   /** react-router's navigate(). */
   navigate: (to: string) => void;
 };
@@ -58,12 +56,9 @@ export function navigateWithTransition(_e: MouseEvent, to: string, options: Navi
   if (busy) return;
 
   if (normalizePath(to) === normalizePath(options.currentPath)) {
-    options.closeMenu();
     window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
     return;
   }
-
-  options.closeMenu();
 
   if (prefersReducedMotion()) {
     options.navigate(to);
