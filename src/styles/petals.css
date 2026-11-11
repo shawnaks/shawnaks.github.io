@@ -1,0 +1,49 @@
+/* ==========================================================================
+   petals — generative rosette beneath the about portrait
+   page-specific layout only; tokens and primitives live in main.css
+   ========================================================================== */
+
+/* portrait + rosette share the bio row's right-hand column */
+.about-aside {
+  flex: none;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+}
+
+/* the circle is the one explicit round shape in the system */
+.petal-circle {
+  width: 220px;
+  height: 220px;
+  flex: none;
+  border: 3px solid var(--fg);
+  border-radius: 50%;
+  background: var(--bg);
+  overflow: hidden;
+  cursor: crosshair;
+  touch-action: pan-y;
+  transition: background-color .3s linear, border-color .3s linear;
+}
+
+.petal-circle canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ==========================================================================
+   responsive — stacked bio: portrait column shrinks, circle follows
+   ========================================================================== */
+@media (max-width: 767px) {
+  .about-aside {
+    width: 220px;
+    gap: 24px;
+  }
+
+  .petal-circle {
+    width: 170px;
+    height: 170px;
+  }
+}

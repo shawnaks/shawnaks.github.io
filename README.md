@@ -45,7 +45,7 @@ npm run preview  # serve the production build
 - **History.** Moving to a different section pushes a history entry, so browser back/forward returns to the section — and the scroll position — you came from.
 - **Shareable hashes.** `#/hello/`, `#/about/`, `#/experience/`, `#/projects/`, and `#/contact/` deep-link straight to a section with an instant landing; the trailing slash is optional (`#/about` normalises to `#/about/`). Passive scrolling updates the hash silently with `replaceState`, so browsing does not fill up the history stack.
 - **Case studies.** Project cards open the real sub-route `#/case-study/:slug/` with an outgoing content stagger. "back to listing" returns instantly to the projects section; browser back returns to the section you left.
-- **Reduced motion.** `prefers-reduced-motion: reduce` makes scrolling instant and renders reveals, skill bars, and title wipes immediately.
+- **Reduced motion.** `prefers-reduced-motion: reduce` makes scrolling instant, renders reveals, skill bars, and title wipes immediately, and holds the petal rosette in its static rest pose.
 
 ## Theming
 
@@ -71,7 +71,7 @@ Personal Website/
     routes/
       MainPage.tsx               # the scrollable document: Hello → About → Experience → Projects → Contact
       Hello.tsx                  # #/hello/       — hero, intro, home tile grid, socials
-      About.tsx                  # #/about/       — bio, education, coursework, skill bars
+      About.tsx                  # #/about/       — bio + petal rosette, education, coursework, skill bars
       Experience.tsx             # #/experience/  — 3 roles + 3 hackathon records
       Projects.tsx               # #/projects/    — 6 project cards with ShotSlot frames
       CaseStudy.tsx              # #/case-study/:slug/ — full record + next pager
@@ -84,6 +84,8 @@ Personal Website/
       SectionTitle.tsx           # observer-triggered slab wipe + scramble, hero variant
       PlanList.tsx / PlanItem.tsx # bordered detail-card list (education, roles, records)
       Portrait.tsx               # framed, grayscale-until-hover owner portrait
+      PetalCircle.tsx            # canvas rosette under the about portrait; petals lean
+                                 #   and bloom toward the pointer, DPR-scaled, rAF on demand
       Cta.tsx                    # double-chevron call to action
       SocialRow.tsx              # github / linkedin / email / résumé row
       ShotSlot.tsx               # framed screenshot slot (placeholder or image)
@@ -110,6 +112,7 @@ Personal Website/
       projects.css               # project cards, case-study blocks, screenshot slots
       contact.css                # email hero, channel grid, location/status strip
       portrait.css               # framed portrait + home/about bio layouts
+      petals.css                 # about-aside column + bordered rosette circle
 ```
 
 ## Design tokens
@@ -147,7 +150,7 @@ All five sections live on the one stacked document; any section hash opens the s
 | Route | Status | Contents |
 | --- | --- | --- |
 | `#/` or `#/hello/` | **BUILT** — section 1 (top) | "Hello World..." hero with scramble reveal, portrait + intro paragraphs with inline section links, "// navigate" home tile grid (visual sitemap), social row |
-| `#/about/` | **BUILT** — section 2 | Three-paragraph bio; education card (Georgia Tech B.S. CS Dec 2027, threads: AI & information internetworks, math minor); 8 coursework chips; 8 scroll-triggered skill bars with counters; tools line |
+| `#/about/` | **BUILT** — section 2 | Three-paragraph bio with an interactive canvas petal rosette (15 green petals that swirl and bloom toward the pointer) beneath the portrait; education card (Georgia Tech B.S. CS Dec 2027, threads: AI & information internetworks, math minor); 8 coursework chips; 8 scroll-triggered skill bars with counters; tools line |
 | `#/experience/` | **BUILT** — section 3 | 3 role records — Delta Dental data engineering intern (May–Aug 2026: Python + Snowflake ETL, 53M+ raw records → 27M refined rows, AI agent saving 80% developer time, 600M+ record validation across 50 sources) · Safe Robotics Lab undergrad research assistant (Dec 2025–present: OpenArm bimanual robot teleop in MuJoCo, robot-learning models) · NASA GeneLab Multi-Omics AWG data analyst intern (Jun 2024–Sep 2025: microscopy, K-Means, six ML models) — plus 3 hackathon records: Hacklytics 2026 2nd place best use of Actian VectorAI (50+ teams), AI ATL 2025 (Hearo), HackGT 2025 team lead (SnapFind) |
 | `#/projects/` | **BUILT** — section 4 | 6 project cards with 6px borders and framed `ShotSlot` screenshot placeholders: SnapFind (React 19, Supabase, FastAPI, ResNet-18, 92% accuracy), RxGuard (Gemini, sentence-transformers, Actian VectorAI, Hacklytics 2nd place), Flight Fare Optimizer (Python, 186 airports, 262k fares, 4 algorithms from scratch), Hearo (React Native, Gemini 2.5 Flash, ElevenLabs), Battle Showdown (Next.js 15, Tailwind 4), Pong (pygame, 2022) |
 | `#/contact/` | **BUILT** — section 5 (bottom) | Email-first: wide `mailto:` hero card, 3 channel cards (LinkedIn, GitHub, résumé PDF download), location & status strip — Atlanta, GA, open to SWE/data internships summer 2027 |

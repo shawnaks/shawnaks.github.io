@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { Cta } from '../components/Cta';
+import { PetalCircle } from '../components/PetalCircle';
 import { PlanList } from '../components/PlanList';
 import type { PlanItemData } from '../components/PlanItem';
 import { Portrait } from '../components/Portrait';
@@ -78,7 +79,10 @@ export function About({ onNavigate }: AboutProps) {
               </p>
             </div>
 
-            <Portrait size="lg" />
+            <div className="about-aside">
+              <Portrait size="lg" />
+              <PetalCircle />
+            </div>
           </div>
 
           <p className="section-label about-label anim">// education</p>
