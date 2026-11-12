@@ -40,6 +40,16 @@ export const GITHUB_URL = 'https://github.com/shawnaks';
 export const LINKEDIN_URL = 'https://www.linkedin.com/in/shawnaksa/';
 export const RESUME_HREF = 'assets/Shawnak-Samaddar-Resume.pdf';
 
+/**
+ * Contact-form delivery. Leave `endpoint` empty to use the mailto fallback;
+ * set it to a form-backend URL (Formspree, Cloudflare Worker, ...) to POST
+ * JSON instead. That one string is the only change needed to go live.
+ */
+export const CONTACT: { endpoint: string; email: string } = {
+  endpoint: '',
+  email: EMAIL,
+};
+
 /** Facts repeated across sections. Strings are the exact displayed copy. */
 export const FACTS = {
   deltaRecords: '53M+',

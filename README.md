@@ -44,8 +44,10 @@ npm test         # run the unit suites (Vitest, one pass)
 
 - `src/lib/sections.test.ts` — path normalisation, section-path → section-id mapping, and case-study path detection
 - `src/data/projects.test.ts` — six unique project slugs, non-empty challenge/solution steps, case-insensitive lookup, and next-pager wrapping
+- `src/lib/contactForm.test.ts` — field validation and caps, CR/LF stripping, and mailto subject/body encoding (including header-injection attempts)
+- `src/lib/rateLimit.test.ts` — cooldown and rolling-window verdicts, persistence, corrupt-JSON tolerance, and falling back to memory when storage throws
 
-Together they cover the path mapping behind the router and the integrity of the project data behind the grid and case studies. There is no browser E2E harness in the repo.
+Together they cover the path mapping behind the router, the integrity of the project data behind the grid and case studies, and the contact form's validation, encoded mailto, and client-side rate limiting. There is no browser E2E harness in the repo.
 
 ## Navigation & URL model
 
@@ -95,7 +97,7 @@ Personal Website/
       Experience.tsx             # #/experience/  — 3 roles + 3 hackathon records
       Projects.tsx               # #/projects/    — 6 project cards with ShotSlot frames
       CaseStudy.tsx              # #/case-study/:slug/ — full record + next pager
-      Contact.tsx                # #/contact/     — email-first, all channels live
+      Contact.tsx                # #/contact/     — email-first, channels, status, message form
       ErrorPage.tsx              # catch-all "// not found"
     components/
       Header.tsx                 # fixed header, compact nav, theme switch, scroll state
@@ -126,9 +128,13 @@ Personal Website/
       scrollSpy.ts               # centre-band IntersectionObserver + shared active store
       scroll.ts                  # smooth/instant section scrolling, programmatic marker
       transition.ts              # case-study out-stagger + navigation guard
+      contactForm.ts             # contact validation, field caps, CR/LF-safe mailto builder
+      contactForm.test.ts        # validation / caps / encoding / header-injection tests
+      rateLimit.ts               # 60s cooldown + 3-per-15-min limiter, localStorage + memory fallback
+      rateLimit.test.ts          # cooldown / rolling window / corrupt + throwing storage tests
     data/
       site.ts                    # nav items, home tiles, socials, contact details (EMAIL/GITHUB_URL/
-                                 #   LINKEDIN_URL/RESUME_HREF) + shared facts (FACTS) — single source of truth
+                                 #   LINKEDIN_URL/RESUME_HREF), form delivery (CONTACT) + facts (FACTS)
       projects.ts                # six project records + case-study content
       projects.test.ts           # project-data integrity: slugs, steps, lookup, next pager
     styles/
@@ -137,10 +143,16 @@ Personal Website/
       about.css                  # bio, education, coursework, skill bars
       experience.css             # role/hackathon records, inline project pills
       projects.css               # project cards, case-study blocks, screenshot slots
-      contact.css                # email hero, channel grid, location/status strip
+      contact.css                # email hero, channel grid, location/status strip, message form
       portrait.css               # framed portrait + home/about bio layouts
       leaf-rain.css              # fixed full-viewport leaf canvas + about content stacking
 ```
+
+### Contact form delivery
+
+`src/data/site.ts` exports `CONTACT = { endpoint, email }`. With `endpoint` empty (the current setting) the form builds a fully encoded `mailto:` and opens the visitor's mail app, so the static build makes **no network request**. Set `endpoint` to a form-backend URL (Formspree, a Cloudflare Worker, …) and the same form `POST`s JSON instead — that one string is the only switch needed to go live. `email` is the address used in the mailto and in the error/fallback copy.
+
+The form is rate-limited in `src/lib/rateLimit.ts`: one send per 60 seconds, at most three per rolling 15 minutes, persisted under the `contact-submits-v1` `localStorage` key with an in-memory fallback when storage is unavailable. This is a **client-side courtesy, not security** - clearing storage (or calling the endpoint directly) bypasses it, so a real endpoint needs its own server-side limit. A hidden honeypot field plus a minimum-fill check (a submit under ~3 s after the first edit) fake a successful send for obvious bots, leaving no rate-limit timestamp behind.
 
 ## Design tokens
 
@@ -177,11 +189,11 @@ All five sections live on the one stacked document; any section hash opens the s
 
 | Route | Status | Contents |
 | --- | --- | --- |
-| `#/` or `#/hello/` | **BUILT** — section 1 (top) | "Hello World..." hero with scramble reveal, portrait + intro paragraphs with inline section links, "// navigate" home tile grid (visual sitemap), centred social row, and a six-sector leaf-green pie under it that jumps to About (spins on hover/focus) |
+| `#/` or `#/hello/` | **BUILT** — section 1 (top) | "Hello World..." hero with scramble reveal, portrait + intro paragraphs with inline section links, "// navigate" home tile grid (visual sitemap), centred social row, and a six-sector leaf-green pie under it that jumps to About (drifts slowly at rest, spins up on hover/focus) |
 | `#/about/` | **BUILT** — section 2 | Three-paragraph bio with a full-screen falling-leaf rain behind the content (sparse 16–24px leaves in 5 theme-aware green shades, each swaying and tumbling as it falls; starts when About is reached, stops and fades at education, resumes on scroll-up, static under reduced motion); education card (Georgia Tech B.S. CS Dec 2027, threads: AI & information internetworks, math minor); 8 coursework chips; 8 scroll-triggered skill bars with counters; tools line |
 | `#/experience/` | **BUILT** — section 3 | 3 role records — Delta Dental data engineering intern (May–Aug 2026: Python + Snowflake ETL, 53M+ raw records → 27M refined rows, AI agent saving 80% developer time, 600M+ record validation across 50 sources) · Safe Robotics Lab undergrad research assistant (Dec 2025–present: OpenArm bimanual robot teleop in MuJoCo, robot-learning models) · NASA GeneLab Multi-Omics AWG data analyst intern (Jun 2024–Sep 2025: microscopy, K-Means, six ML models) — plus 3 hackathon records: Hacklytics 2026 2nd place best use of Actian VectorAI (50+ teams), AI ATL 2025 (Hearo), HackGT 2025 team lead (SnapFind) |
 | `#/projects/` | **BUILT** — section 4 | 6 project cards with 6px borders and framed `ShotSlot` screenshot placeholders: SnapFind (React 19, Supabase, FastAPI, ResNet-18, 92% accuracy), RxGuard (Gemini, sentence-transformers, Actian VectorAI, Hacklytics 2nd place), Flight Fare Optimizer (Python, 186 airports, 262k fares, 4 algorithms from scratch; Fall 2024 course build, refreshed against DOT data through Q1 2026), Hearo (React Native, Gemini 2.5 Flash, ElevenLabs), Battle Showdown (Next.js 15, Tailwind 4), Pong (pygame, 2022) |
-| `#/contact/` | **BUILT** — section 5 (bottom) | Email-first: wide `mailto:` hero card, 3 channel cards (LinkedIn, GitHub, résumé PDF download), location & status strip — Atlanta, GA, open to SWE/data internships summer 2027 |
+| `#/contact/` | **BUILT** — section 5 (bottom) | Email-first: wide `mailto:` hero card, 3 channel cards (LinkedIn, GitHub, résumé PDF download), location & status strip — Atlanta, GA, open to SWE/data internships summer 2027 — and a `// send a message` form (name, email, optional subject, 2000-character message) with inline validation, focus management, a polite live status line, a 60s / 3-per-15-minute client-side rate limit, and a `mailto:` fallback until `CONTACT.endpoint` is set |
 | `#/case-study/:slug/` | **BUILT** — sub-route | Six full case studies (table below) — TLDR; role, technology used, paired challenges & solutions, stats, repo/devpost links, and a `next:` pager that cycles all six; "back to listing" returns to the projects section |
 | anything else | **BUILT** — 404 | "// not found" with a CTA back to the top of the page |
 

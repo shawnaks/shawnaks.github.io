@@ -236,6 +236,179 @@
 }
 
 /* ==========================================================================
+   message form — boxed fields, accent focus, cta submit
+   ========================================================================== */
+
+.contact-form {
+  /* --red is shared by both themes; on the dark page it is only ~3.3:1, so
+     error text/borders use a lightened red there and keep AA. */
+  --error: var(--red);
+  border: 3px solid var(--fg);
+  background: var(--bg);
+  padding: 28px 30px 30px;
+}
+
+:root.theme-dark .contact-form {
+  --error: #ff8a8a;
+}
+
+.contact-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.contact-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.contact-field--full {
+  grid-column: 1 / -1;
+}
+
+.contact-field-label {
+  font: 700 1.25em/1 var(--ui);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: .9em;
+}
+
+.contact-field-optional {
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.contact-input {
+  width: 100%;
+  min-width: 0;
+  border: 3px solid var(--border);
+  border-radius: 0;
+  background: var(--bg-subtle);
+  color: var(--fg);
+  font: 400 1.6em/1.5 var(--ui);
+  padding: 12px 14px;
+  transition: border-color .25s linear;
+}
+
+.contact-input:hover {
+  border-color: var(--gray);
+}
+
+.contact-input:focus {
+  border-color: var(--accent-ink);
+}
+
+.contact-input[aria-invalid='true'] {
+  border-color: var(--error);
+}
+
+.contact-textarea {
+  min-height: 160px;
+  resize: vertical;
+}
+
+.contact-field-error {
+  font: 700 1.2em/1.4 var(--ui);
+  color: var(--error);
+  margin-top: .7em;
+}
+
+.contact-field-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.2em;
+  margin-top: .7em;
+}
+
+.contact-field-meta .contact-field-error {
+  margin-top: 0;
+}
+
+.contact-count {
+  margin-left: auto;
+  font: 400 1.2em/1.4 var(--ui);
+  color: var(--gray);
+  white-space: nowrap;
+}
+
+/* honeypot — off-screen but still submittable */
+.contact-hp {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.contact-form-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px 20px;
+  margin-top: 2.6em;
+}
+
+button.contact-form-submit {
+  appearance: none;
+  background: var(--bg);
+  font: 700 1.5em/1 var(--ui);
+  cursor: pointer;
+}
+
+button.contact-form-submit:disabled {
+  cursor: not-allowed;
+  border-color: var(--border);
+}
+
+button.contact-form-submit:disabled::before {
+  transform: translateX(-101%);
+}
+
+button.contact-form-submit:disabled .cta-text,
+button.contact-form-submit:disabled .cta-icon .icon {
+  color: var(--gray);
+}
+
+.contact-form-wait {
+  font: 400 1.3em/1.5 var(--ui);
+  color: var(--gray);
+}
+
+.contact-form-status {
+  min-height: 1.5em;
+  margin-top: 1.6em;
+  font: 700 1.3em/1.5 var(--ui);
+  color: var(--gray);
+}
+
+/* The limit line next to the button already states this for sighted users;
+   keep the live-region copy for screen readers without repeating it. */
+.contact-form-status--info {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.contact-form-status--success {
+  color: var(--accent-ink);
+}
+
+.contact-form-status--error {
+  color: var(--error);
+}
+
+/* ==========================================================================
    responsive — one channel per row, stacked hero and status
    ========================================================================== */
 @media (max-width: 767px) {
@@ -277,5 +450,24 @@
 
   .contact-status-cell {
     padding: 18px 18px;
+  }
+
+  .contact-form {
+    padding: 22px 20px 24px;
+  }
+
+  .contact-form-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .contact-form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  button.contact-form-submit {
+    justify-content: center;
+    font-size: 1.4em;
   }
 }
