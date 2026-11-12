@@ -98,7 +98,7 @@ export function Projects({ onNavigate, onSectionNavigate }: ProjectsProps) {
       <div className="container">
         <header className="section-head">
           <p className="section-label anim">// ls ./projects</p>
-          <SectionTitle id="projects-title" text="projects" />
+          <SectionTitle id="projects-title" text="projects" letters />
         </header>
 
         <div className="section-body project-body">

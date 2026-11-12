@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 /** Characters used by the baffle-style scramble (identical to js/main.js). */
-const GLYPHS = '█▓▒░<>/\\|[]{}#@$%&*+=!?';
+export const SCRAMBLE_GLYPHS = '█▓▒░<>/\\|[]{}#@$%&*+=!?';
+const GLYPHS = SCRAMBLE_GLYPHS;
 
 const SCRAMBLE_MS = 750;
 
@@ -15,18 +16,22 @@ export function prefersReducedMotion(): boolean {
 
 export type ScrambleFn = (el: HTMLElement | null, duration?: number) => void;
 export type CancelScrambleFn = (el?: HTMLElement | null) => void;
+export type ResetScrambleFn = (el?: HTMLElement | null) => void;
 
 export type ScrambleControls = {
   scramble: ScrambleFn;
   cancel: CancelScrambleFn;
+  /** Restore the settled text, or every `.title-char` to its true glyph. */
+  reset: ResetScrambleFn;
 };
 
 /**
  * Port of the vanilla `scramble()`. Mutates the element's text, resolving
- * left-to-right over `duration`; on completion adds `is-glitching` to the
- * closest `.glitch` ancestor. `cancel` stops a running / queued scramble so
- * scroll-away resets can restore the final text. All rAF loops are cancelled
- * on unmount.
+ * left-to-right over `duration`; a split `.title-text` (one `.title-char` per
+ * character) is painted per span instead of as one string. On completion adds
+ * `is-glitching` to the closest `.glitch` ancestor. `cancel` stops a running /
+ * queued scramble so scroll-away resets can restore the final text. All rAF
+ * loops are cancelled on unmount.
  */
 export function useScramble(): ScrambleControls {
   const frames = useRef(new Map<HTMLElement, number>());
@@ -43,6 +48,20 @@ export function useScramble(): ScrambleControls {
     frames.current.clear();
   }, []);
 
+  const reset = useCallback<ResetScrambleFn>((el) => {
+    if (!el) return;
+
+    const chars = el.querySelectorAll<HTMLElement>('.title-char');
+    if (chars.length > 0) {
+      chars.forEach((char) => {
+        char.textContent = char.dataset.char ?? '';
+      });
+      return;
+    }
+
+    el.textContent = el.dataset.text ?? '';
+  }, []);
+
   const scramble = useCallback<ScrambleFn>(
     (el, duration = SCRAMBLE_MS) => {
       if (!el) return;
@@ -57,28 +76,41 @@ export function useScramble(): ScrambleControls {
       }
 
       if (prefersReducedMotion()) {
-        el.textContent = text;
+        reset(el);
         return;
       }
 
+      const chars = Array.from(el.querySelectorAll<HTMLElement>('.title-char'));
       const start = performance.now();
 
-      const tick = (now: number) => {
-        const p = Math.min(1, (now - start) / duration);
-        const settled = Math.floor(p * text.length);
-        let out = '';
+      const paint = (settled: number) => {
+        if (chars.length > 0) {
+          chars.forEach((char, i) => {
+            const ch = text[i] ?? '';
+            char.textContent =
+              ch === ' ' || i < settled ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0];
+          });
+          return;
+        }
 
+        let out = '';
         for (let i = 0; i < text.length; i += 1) {
           const ch = text[i];
           out += ch === ' ' || i < settled ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0];
         }
-
         el.textContent = out;
+      };
+
+      const tick = (now: number) => {
+        const p = Math.min(1, (now - start) / duration);
+        const settled = Math.floor(p * text.length);
+
+        paint(settled);
 
         if (p < 1) {
           frames.current.set(el, requestAnimationFrame(tick));
         } else {
-          el.textContent = text;
+          reset(el);
           frames.current.delete(el);
           el.closest('.glitch')?.classList.add('is-glitching');
         }
@@ -86,7 +118,7 @@ export function useScramble(): ScrambleControls {
 
       frames.current.set(el, requestAnimationFrame(tick));
     },
-    [],
+    [reset],
   );
 
   useEffect(() => {
@@ -97,5 +129,5 @@ export function useScramble(): ScrambleControls {
     };
   }, []);
 
-  return { scramble, cancel };
+  return { scramble, cancel, reset };
 }

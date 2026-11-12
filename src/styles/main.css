@@ -459,6 +459,9 @@ ul { list-style: none; }
 }
 .title-bar.is-wiping { width: 100%; }
 .title-text { position: relative; z-index: 1; display: inline-block; }
+/* Split letters keep Martian Mono's .7em advance, so a hovered glyph that
+   falls back to another face cannot change the title's width. */
+.title-char { display: inline-block; width: .7em; text-align: center; }
 .section--page .title-text { color: #fff; }
 
 .section--error .title-bar { background: var(--red); }

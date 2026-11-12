@@ -116,7 +116,7 @@ export function Experience({ onNavigate }: ExperienceProps) {
       <div className="container">
         <header className="section-head">
           <p className="section-label anim">// work.log</p>
-          <SectionTitle id="experience-title" text="experience" />
+          <SectionTitle id="experience-title" text="experience" letters />
         </header>
 
         <div className="section-body">

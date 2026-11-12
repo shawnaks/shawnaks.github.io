@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
-import { prefersReducedMotion, useScramble } from '../hooks/useScramble';
+import { prefersReducedMotion, SCRAMBLE_GLYPHS, useScramble } from '../hooks/useScramble';
 
 const SLAB_WIPE_MS = 520;
 const HERO_DELAY_MS = 60;
+const HOVER_GLYPH_MS = 75;
 
 export type SectionTitleProps = {
   text: string;
@@ -11,6 +12,8 @@ export type SectionTitleProps = {
   variant?: 'hero' | 'slab';
   /** Slab heading level; `h1` where the page has no hero (case study, 404). */
   level?: 'h1' | 'h2';
+  /** Split slab text into per-character spans for the hover cycle. */
+  letters?: boolean;
 };
 
 /**
@@ -18,11 +21,18 @@ export type SectionTitleProps = {
  * the title scrolls into view (not at page mount — five stacked titles must
  * not all scramble together). Leaving the viewport resets the bar and the
  * text, so re-entering replays wipe + scramble like the reveals.
- * Reduced motion renders the slab immediately.
+ * With `letters`, the settled title also cycles a single glyph while hovered.
+ * Reduced motion renders the slab immediately and ignores hover.
  */
-export function SectionTitle({ text, id, variant = 'slab', level = 'h2' }: SectionTitleProps) {
+export function SectionTitle({
+  text,
+  id,
+  variant = 'slab',
+  level = 'h2',
+  letters = false,
+}: SectionTitleProps) {
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const { scramble, cancel: cancelScramble } = useScramble();
+  const { scramble, cancel: cancelScramble, reset: resetScramble } = useScramble();
 
   useEffect(() => {
     const title = titleRef.current;
@@ -35,21 +45,65 @@ export function SectionTitle({ text, id, variant = 'slab', level = 'h2' }: Secti
     let raf = 0;
     let timer = 0;
     let entered = false;
+    let hovered: HTMLElement | null = null;
+    let cycleRaf = 0;
+
+    const stopCycle = () => {
+      cancelAnimationFrame(cycleRaf);
+      cycleRaf = 0;
+      if (hovered) hovered.textContent = hovered.dataset.char ?? '';
+      hovered = null;
+    };
+
+    // Entry is driven by real pointer motion: Chrome replays `pointerover` on a
+    // span whose text mutates, which would start the cycle after a scramble.
+    const onPointerMove = (event: PointerEvent) => {
+      if (reduce || !title.classList.contains('is-glitching')) return;
+      const char = (event.target as Element | null)?.closest<HTMLElement>('.title-char');
+      if (!char || char === hovered || !textEl?.contains(char)) return;
+
+      stopCycle();
+      hovered = char;
+
+      let last = 0;
+      const tick = (now: number) => {
+        if (!hovered) return;
+        // Recover if `pointerout` was missed (e.g. the page scrolled under the
+        // pointer): the letter must not keep cycling once it is not hovered.
+        if (!hovered.matches(':hover')) {
+          stopCycle();
+          return;
+        }
+        if (now - last >= HOVER_GLYPH_MS) {
+          last = now;
+          hovered.textContent = SCRAMBLE_GLYPHS[(Math.random() * SCRAMBLE_GLYPHS.length) | 0];
+        }
+        cycleRaf = requestAnimationFrame(tick);
+      };
+      cycleRaf = requestAnimationFrame(tick);
+    };
+
+    const onPointerOut = (event: PointerEvent) => {
+      const char = (event.target as Element | null)?.closest<HTMLElement>('.title-char');
+      if (char && char === hovered) stopCycle();
+    };
 
     const reset = () => {
       window.clearTimeout(timer);
       cancelAnimationFrame(raf);
+      stopCycle();
       bar?.classList.remove('is-wiping');
       title.classList.remove('is-glitching');
       cancelScramble(textEl);
-      if (textEl) textEl.textContent = text;
+      resetScramble(textEl);
     };
 
     const play = () => {
       window.clearTimeout(timer);
       cancelAnimationFrame(raf);
+      stopCycle();
       title.classList.remove('is-glitching');
-      if (textEl) textEl.textContent = text;
+      resetScramble(textEl);
 
       if (variant === 'slab' && bar) {
         bar.classList.remove('is-wiping');
@@ -69,11 +123,19 @@ export function SectionTitle({ text, id, variant = 'slab', level = 'h2' }: Secti
       timer = window.setTimeout(() => scramble(textEl), delay);
     };
 
+    if (letters && variant === 'slab' && textEl) {
+      textEl.addEventListener('pointermove', onPointerMove);
+      textEl.addEventListener('pointerout', onPointerOut);
+    }
+
     if (reduce || typeof IntersectionObserver === 'undefined') {
       play();
       return () => {
         window.clearTimeout(timer);
         cancelAnimationFrame(raf);
+        stopCycle();
+        textEl?.removeEventListener('pointermove', onPointerMove);
+        textEl?.removeEventListener('pointerout', onPointerOut);
         cancelScramble();
       };
     }
@@ -102,9 +164,12 @@ export function SectionTitle({ text, id, variant = 'slab', level = 'h2' }: Secti
       observer.disconnect();
       window.clearTimeout(timer);
       cancelAnimationFrame(raf);
+      stopCycle();
+      textEl?.removeEventListener('pointermove', onPointerMove);
+      textEl?.removeEventListener('pointerout', onPointerOut);
       cancelScramble();
     };
-  }, [variant, text, scramble, cancelScramble]);
+  }, [variant, text, letters, scramble, cancelScramble, resetScramble]);
 
   if (variant === 'hero') {
     return (
@@ -118,11 +183,25 @@ export function SectionTitle({ text, id, variant = 'slab', level = 'h2' }: Secti
 
   const Tag = level;
 
+  // Split letters are announced one by one; keep the heading's name whole.
   return (
-    <Tag ref={titleRef} className="section-title glitch" id={id} tabIndex={-1} data-text={text}>
+    <Tag
+      ref={titleRef}
+      className="section-title glitch"
+      id={id}
+      tabIndex={-1}
+      data-text={text}
+      aria-label={letters ? text : undefined}
+    >
       <span className="title-bar" aria-hidden="true" />
       <span className="title-text" data-text={text}>
-        {text}
+        {letters
+          ? Array.from(text).map((ch, index) => (
+              <span className="title-char" data-char={ch} key={index}>
+                {ch}
+              </span>
+            ))
+          : text}
       </span>
     </Tag>
   );

@@ -65,7 +65,7 @@ export function Contact({ onNavigate }: ContactProps) {
       <div className="container">
         <header className="section-head">
           <p className="section-label anim">// say hello</p>
-          <SectionTitle id="contact-title" text="contact" />
+          <SectionTitle id="contact-title" text="contact" letters />
         </header>
 
         <div className="section-body contact-body">

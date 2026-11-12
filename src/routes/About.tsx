@@ -55,7 +55,7 @@ export function About({ onNavigate }: AboutProps) {
       <div className="container">
         <header className="section-head">
           <p className="section-label anim">// whoami</p>
-          <SectionTitle id="about-title" text="about" />
+          <SectionTitle id="about-title" text="about" letters />
         </header>
 
         <div className="section-body">

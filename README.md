@@ -16,7 +16,7 @@ The visual design is a faithful homage to [oninross.github.io/infinite-imaginati
 | **Routing** | react-router-dom 7 — `HashRouter`; one scrollable page with per-section hashes plus `#/case-study/:slug/` sub-routes |
 | **Styling** | Hand-rolled design system in plain CSS (`src/styles/main.css` plus one stylesheet per section) — no Tailwind, no UI kit |
 | **Text scramble** | Custom `useScramble` hook (baffle.js equivalent) |
-| **Transitions** | Custom expo-eased timing: scroll-driven reveals, section-title wipe + scramble, and a case-study out-stagger |
+| **Transitions** | Custom expo-eased timing: scroll-driven reveals, section-title wipe + scramble, per-letter hover glyph cycling on the four section titles, and a case-study out-stagger |
 | **Fonts** | Self-hosted Martian Mono (400/700, latin woff2 under `public/assets/fonts/`, declared in `src/styles/fonts.css`) — one monospace family for UI and body, no runtime Google Fonts request, with a `ui-monospace` / Cascadia Mono / Consolas fallback stack |
 | **Theme** | Light / dark via a `.theme-dark` class and semantic CSS tokens; persisted in `localStorage`, applied pre-paint |
 | **Icons** | Inline SVG sprite (`IconSprite` + `Icon`) — no icon package |
@@ -55,7 +55,7 @@ Together they cover the path mapping behind the router and the integrity of the 
 - **History.** Moving to a different section pushes a history entry, so browser back/forward returns to the section — and the scroll position — you came from.
 - **Shareable hashes.** `#/hello/`, `#/about/`, `#/experience/`, `#/projects/`, and `#/contact/` deep-link straight to a section with an instant landing; the trailing slash is optional (`#/about` normalises to `#/about/`). Passive scrolling updates the hash silently with `replaceState`, so browsing does not fill up the history stack.
 - **Case studies.** Project cards open the real sub-route `#/case-study/:slug/` with an outgoing content stagger. "back to listing" returns instantly to the projects section; browser back returns to the section you left.
-- **Reduced motion.** `prefers-reduced-motion: reduce` makes scrolling instant, renders reveals, skill bars, and title wipes immediately, and turns off the about falling-leaf rain (no leaves, no animation loop).
+- **Reduced motion.** `prefers-reduced-motion: reduce` makes scrolling instant, renders reveals, skill bars, and title wipes immediately, disables the per-letter title hover cycle, and turns off the about falling-leaf rain (no leaves, no animation loop).
 
 ## Theming
 
@@ -101,7 +101,7 @@ Personal Website/
       Header.tsx                 # fixed header, compact nav, theme switch, scroll state
       ThemeToggle.tsx            # 45px light/dark switch; persists + updates theme-color
       NavTile.tsx                # 2-letter nav tile; intercepts clicks for smooth scrolling
-      SectionTitle.tsx           # observer-triggered slab wipe + scramble, hero variant
+      SectionTitle.tsx           # observer-triggered slab wipe + scramble, per-letter hover cycle, hero variant
       PlanList.tsx / PlanItem.tsx # bordered detail-card list (education, roles, records)
       Portrait.tsx               # framed, grayscale-until-hover owner portrait
       LeafRain.tsx               # full-viewport canvas behind the about content: sparse 16–24px
@@ -117,7 +117,7 @@ Personal Website/
       TransitionLink.tsx         # in-copy link that triggers a transition
       Icon.tsx / IconSprite.tsx  # inline SVG sprite + <use> wrapper
     hooks/
-      useScramble.ts             # character scramble reveal
+      useScramble.ts             # character scramble reveal; split-letter reset for hover cycling
       useReveal.ts               # observer-based staged reveals (replay on re-entry)
       useActiveSection.ts        # useSyncExternalStore subscriber for the scroll-spy section
     lib/
@@ -150,7 +150,7 @@ Personal Website/
 | **Type** | Martian Mono (400/700) for everything; `1em = 10px`. Bold (700) for logo, hero + slab titles, tile abbreviations, `//` labels, plan names/meta, pills, CTAs, stats, skill labels, project-card names, the case pager, contact handles, and course chips; regular (400) for body and secondary copy. No italics. Fallback stack: `ui-monospace, 'Cascadia Mono', Consolas, monospace` |
 | **Borders** | `3px solid --fg` (tiles / detail cards / CTAs), `6px` project cards, `0` border-radius |
 | **Motifs** | title slab + 15px accent spine · `//` labels · 2-letter tile abbreviations (Ho Ab Ex Pr Ct) · diagonal hatch shadows · HUD corner brackets · grayscale screenshots · double-chevron CTAs |
-| **Motion** | expo eases `cubic-bezier(0.19, 1, 0.22, 1)` / `cubic-bezier(0.16, 1, 0.3, 1)`, 0.25s micro / 0.5s layout · scroll-driven reveals · slab wipe + scramble · case-study out-stagger · glitch text on hover |
+| **Motion** | expo eases `cubic-bezier(0.19, 1, 0.22, 1)` / `cubic-bezier(0.16, 1, 0.3, 1)`, 0.25s micro / 0.5s layout · scroll-driven reveals · slab wipe + scramble · per-letter hover glyph cycle · case-study out-stagger · glitch text on hover |
 
 ### Semantic color tokens
 
