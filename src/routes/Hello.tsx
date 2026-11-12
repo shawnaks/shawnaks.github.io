@@ -105,21 +105,7 @@ export function Hello({ onNavigate }: HelloProps) {
               aria-label="scroll down to explore"
               onClick={handleCueClick}
             >
-              <svg
-                className="scroll-cue-ring"
-                viewBox="0 0 50 50"
-                aria-hidden="true"
-                focusable="false"
-              >
-                <circle
-                  className="scroll-cue-circle"
-                  cx="25"
-                  cy="25"
-                  r="20"
-                  fill="none"
-                  strokeWidth="5"
-                />
-              </svg>
+              <span className="scroll-cue-pie" aria-hidden="true" />
             </a>
             {/* Same words as the link's aria-label: hide the visible copy so
                 screen readers announce the cue once, not twice. */}

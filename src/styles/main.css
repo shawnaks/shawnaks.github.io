@@ -14,6 +14,13 @@
   --gray: #6b6d78;
   --accent: #0b852d;         /* the single accent (fills) */
   --accent-ink: #0b852d;     /* accent for small text + thin lines */
+  /* scroll-cue pie: the five leaf-rain greens, dark moss → pale growth.
+     Values match LeafRain's LIGHT_SHADES mixes of --accent. */
+  --cue-shade-1: #064a19;
+  --cue-shade-2: #096823;
+  --cue-shade-3: #0b852d;
+  --cue-shade-4: #3c9d57;
+  --cue-shade-5: #71b885;
   --red: #cc0000;            /* error only */
   --hatch: rgba(43, 44, 51, 0.16);
   --hatch-soft: rgba(43, 44, 51, 0.045);
@@ -38,6 +45,12 @@
   --accent: #1b8843;
   /* text/line accent: 7.5:1 on the page, 5.1:1 on --fill (AA for small bold) */
   --accent-ink: #3cbf6b;
+  /* scroll-cue pie: LeafRain's DARK_SHADES mixes of --accent. */
+  --cue-shade-1: #12582c;
+  --cue-shade-2: #177238;
+  --cue-shade-3: #1b8843;
+  --cue-shade-4: #5ba978;
+  --cue-shade-5: #98c9aa;
   --hatch: rgba(255, 255, 255, 0.10);
   --hatch-soft: rgba(255, 255, 255, 0.06);
   --shadow: rgba(0, 0, 0, 0.45);
@@ -429,7 +442,7 @@ ul { list-style: none; }
 }
 .social-row .icon { width: 20px; height: 20px; }
 
-/* scroll cue — the loader ring, shrunk and linked to the about section */
+/* scroll cue — a pizza of the leaf-rain greens, linked to the about section */
 .scroll-cue {
   display: flex;
   flex-direction: column;
@@ -448,15 +461,27 @@ ul { list-style: none; }
 }
 .scroll-cue-link:hover,
 .scroll-cue-link:focus-visible { transform: scale(1.15); }
-/* Reuses the loader keyframes; only the box size differs. */
-.scroll-cue-ring { width: 24px; height: 24px; animation: loader-rotate 2s linear infinite; }
-.scroll-cue-circle {
-  stroke: var(--accent-ink);
-  stroke-linecap: round;
-  stroke-dasharray: 1, 200;
-  stroke-dashoffset: 0;
-  animation: loader-dash 1.5s ease-in-out infinite;
+/* Six hard-edged 60° sectors from five greens (shade 3 repeats opposite, so
+   no two neighbours match). Reuses the loader keyframes; spins on hover/focus
+   only, and freezes in place when the pointer leaves. */
+.scroll-cue-pie {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from -90deg,
+    var(--cue-shade-1) 0 60deg,
+    var(--cue-shade-3) 60deg 120deg,
+    var(--cue-shade-5) 120deg 180deg,
+    var(--cue-shade-2) 180deg 240deg,
+    var(--cue-shade-4) 240deg 300deg,
+    var(--cue-shade-3) 300deg 360deg
+  );
+  animation: loader-rotate 2s linear infinite;
+  animation-play-state: paused;
 }
+.scroll-cue-link:hover .scroll-cue-pie,
+.scroll-cue-link:focus-visible .scroll-cue-pie { animation-play-state: running; }
 .scroll-cue-text { font: 400 1.2em/1.5 var(--ui); color: var(--gray); }
 
 /* ==========================================================================
@@ -749,6 +774,11 @@ ul { list-style: none; }
     --gray: #6b6d78;
     --accent: #0b852d;
     --accent-ink: #0b852d;
+    --cue-shade-1: #064a19;
+    --cue-shade-2: #096823;
+    --cue-shade-3: #0b852d;
+    --cue-shade-4: #3c9d57;
+    --cue-shade-5: #71b885;
     --hatch: rgba(43, 44, 51, 0.16);
     --hatch-soft: rgba(43, 44, 51, 0.045);
     --shadow: rgba(43, 44, 51, 0.10);
@@ -781,7 +811,6 @@ ul { list-style: none; }
     transition-duration: .01ms !important;
     transition-delay: 0s !important;
   }
-  /* Clamped, the dash animation never advances, so draw the whole ring
-     instead of leaving the 1-unit starting dash (a dot). */
-  .scroll-cue-circle { stroke-dasharray: none; }
+  /* The pie stays perfectly still: no spin even on hover/focus. */
+  .scroll-cue-pie { animation: none; }
 }
