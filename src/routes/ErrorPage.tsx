@@ -24,7 +24,7 @@ export function ErrorPage({ onNavigate }: ErrorPageProps) {
       <div className="container">
         <header className="section-head">
           <p className="section-label anim">// 404 — route not found</p>
-          <SectionTitle id="error-title" text="not found" tone="error" />
+          <SectionTitle id="error-title" text="not found" level="h1" tone="error" />
         </header>
 
         <div className="section-body">

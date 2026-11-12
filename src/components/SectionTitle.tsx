@@ -9,6 +9,8 @@ export type SectionTitleProps = {
   id?: string;
   /** `slab` is the black-wipe page title; `hero` is the home h1. */
   variant?: 'hero' | 'slab';
+  /** Slab heading level; `h1` where the page has no hero (case study, 404). */
+  level?: 'h1' | 'h2';
   /**
    * Accepted for API symmetry with the error page. It adds nothing itself —
    * the error palette comes from `section--error` on the page wrapper.
@@ -23,7 +25,7 @@ export type SectionTitleProps = {
  * text, so re-entering replays wipe + scramble like the reveals.
  * Reduced motion renders the slab immediately.
  */
-export function SectionTitle({ text, id, variant = 'slab' }: SectionTitleProps) {
+export function SectionTitle({ text, id, variant = 'slab', level = 'h2' }: SectionTitleProps) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const { scramble, cancel: cancelScramble } = useScramble();
 
@@ -119,12 +121,14 @@ export function SectionTitle({ text, id, variant = 'slab' }: SectionTitleProps) 
     );
   }
 
+  const Tag = level;
+
   return (
-    <h2 ref={titleRef} className="section-title glitch" id={id} tabIndex={-1} data-text={text}>
+    <Tag ref={titleRef} className="section-title glitch" id={id} tabIndex={-1} data-text={text}>
       <span className="title-bar" aria-hidden="true" />
       <span className="title-text" data-text={text}>
         {text}
       </span>
-    </h2>
+    </Tag>
   );
 }

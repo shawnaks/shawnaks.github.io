@@ -623,6 +623,9 @@ ul { list-style: none; }
 @media (max-width: 1023px) {
   .lead a { white-space: normal; }
   .tile-grid > li { width: 50%; }
+  /* two-column tiles at 390px give the name ~129px; "experience" at the 1.5em
+     base size is ~189px and gets clipped, .9em matches the header tiles */
+  .tile-grid .full { font-size: .9em; }
 }
 
 @media (max-width: 767px) {

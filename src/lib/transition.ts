@@ -7,8 +7,8 @@
 import type { MouseEvent } from 'react';
 import { prefersReducedMotion } from '../hooks/useScramble';
 
-/** Content-out choreography before the route swaps. */
-export const OUT_MS = 420;
+/** Content-out choreography before the route swaps (≥ the .anim 500ms fade). */
+export const OUT_MS = 520;
 
 export type NavigateHandler = (e: MouseEvent, to: string) => void;
 
@@ -32,14 +32,21 @@ function normalizePath(path: string): string {
 function leaveItems(root: ParentNode): void {
   const items = Array.from(root.querySelectorAll<HTMLElement>('.anim, .rule'));
 
-  items.forEach((el, i) => {
-    el.style.transitionDelay = `${(i * 0.04).toFixed(2)}s`;
+  items.forEach((el) => {
+    // Clear useReveal's stagger so only the visible view fades, all at once.
+    el.style.transitionDelay = '';
     el.classList.add('is-leaving');
   });
 }
 
 /** Cancels a queued route swap (e.g. browser back during the out phase). */
 export function endTransition(): void {
+  // A cancelled swap must not leave the outgoing page invisible.
+  document.querySelectorAll<HTMLElement>('#main .is-leaving').forEach((el) => {
+    el.classList.remove('is-leaving');
+    el.style.transitionDelay = '';
+  });
+
   if (outTimer) {
     window.clearTimeout(outTimer);
     outTimer = 0;

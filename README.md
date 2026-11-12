@@ -25,7 +25,7 @@ Libraries the original leaned on (baffle.js for scramble text, GSAP for easing) 
 
 ## Quick start
 
-Requires Node 18+ (Node 22 recommended; the deploy workflow pins 22).
+Requires Node 20.19+ or 22.12+ (Node 22 recommended; the deploy workflow pins 22).
 
 ```bash
 cd "Personal Website"

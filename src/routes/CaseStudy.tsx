@@ -32,7 +32,12 @@ function CaseStudyNotFound({ onNavigate }: CaseStudyProps) {
       <div className="container">
         <header className="section-head">
           <p className="section-label anim">// case study not found</p>
-          <SectionTitle id="case-study-not-found-title" text="not found" tone="error" />
+          <SectionTitle
+            id="case-study-not-found-title"
+            text="not found"
+            level="h1"
+            tone="error"
+          />
         </header>
 
         <div className="section-body">
@@ -78,7 +83,7 @@ function CaseStudyView({ project, onNavigate }: CaseStudyViewProps) {
       <div className="container">
         <header className="section-head">
           <p className="section-label anim">// case study: {project.slug}</p>
-          <SectionTitle id={`${id}-title`} text={project.name} />
+          <SectionTitle id={`${id}-title`} text={project.name} level="h1" />
         </header>
 
         <div className="section-body case-body">

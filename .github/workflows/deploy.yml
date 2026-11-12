@@ -11,10 +11,12 @@ permissions:
   id-token: write
 
 # Allow only one concurrent deployment, skipping queued runs between an
-# in-progress run and a newly queued one.
+# in-progress run and a newly queued one. Do not cancel in-progress runs:
+# a live Pages release must finish, so a newer push replaces the queued run
+# instead of killing the deployment that is already serving.
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
