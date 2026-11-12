@@ -1,0 +1,21 @@
+/* ==========================================================================
+   leaf rain — full-viewport fixed canvas behind the about content
+   page-specific layout only; tokens and primitives live in main.css
+   ========================================================================== */
+
+.leaf-rain {
+  position: fixed;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* the about content stays above the overlay; scoped so no other section's
+   stacking changes */
+#about > .container {
+  position: relative;
+  z-index: 1;
+}

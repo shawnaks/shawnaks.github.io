@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { Cta } from '../components/Cta';
-import { PetalCircle } from '../components/PetalCircle';
+import { LeafRain } from '../components/LeafRain';
 import { PlanList } from '../components/PlanList';
 import type { PlanItemData } from '../components/PlanItem';
 import { Portrait } from '../components/Portrait';
@@ -50,6 +50,8 @@ export function About({ onNavigate }: AboutProps) {
       id="about"
       aria-labelledby="about-title"
     >
+      <LeafRain />
+
       <div className="container">
         <header className="section-head">
           <p className="section-label anim">// whoami</p>
@@ -81,13 +83,10 @@ export function About({ onNavigate }: AboutProps) {
               </p>
             </div>
 
-            <div className="about-aside">
-              <Portrait size="lg" />
-              <PetalCircle />
-            </div>
+            <Portrait size="lg" />
           </div>
 
-          <p className="section-label about-label anim">// education</p>
+          <p id="about-education" className="section-label about-label anim">// education</p>
 
           <PlanList className="about-edu" items={EDUCATION} />
 

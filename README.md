@@ -55,7 +55,7 @@ Together they cover the path mapping behind the router and the integrity of the 
 - **History.** Moving to a different section pushes a history entry, so browser back/forward returns to the section — and the scroll position — you came from.
 - **Shareable hashes.** `#/hello/`, `#/about/`, `#/experience/`, `#/projects/`, and `#/contact/` deep-link straight to a section with an instant landing; the trailing slash is optional (`#/about` normalises to `#/about/`). Passive scrolling updates the hash silently with `replaceState`, so browsing does not fill up the history stack.
 - **Case studies.** Project cards open the real sub-route `#/case-study/:slug/` with an outgoing content stagger. "back to listing" returns instantly to the projects section; browser back returns to the section you left.
-- **Reduced motion.** `prefers-reduced-motion: reduce` makes scrolling instant, renders reveals, skill bars, and title wipes immediately, and holds the about leaf field in its static scattered state.
+- **Reduced motion.** `prefers-reduced-motion: reduce` makes scrolling instant, renders reveals, skill bars, and title wipes immediately, and turns off the about falling-leaf rain (no leaves, no animation loop).
 
 ## Theming
 
@@ -91,7 +91,7 @@ Personal Website/
     routes/
       MainPage.tsx               # the scrollable document: Hello → About → Experience → Projects → Contact
       Hello.tsx                  # #/hello/       — hero, intro, home tile grid, socials
-      About.tsx                  # #/about/       — bio + wind-scattered leaf field, education, coursework, skill bars
+      About.tsx                  # #/about/       — bio + full-screen falling-leaf rain, education, coursework, skill bars
       Experience.tsx             # #/experience/  — 3 roles + 3 hackathon records
       Projects.tsx               # #/projects/    — 6 project cards with ShotSlot frames
       CaseStudy.tsx              # #/case-study/:slug/ — full record + next pager
@@ -104,10 +104,11 @@ Personal Website/
       SectionTitle.tsx           # observer-triggered slab wipe + scramble, hero variant
       PlanList.tsx / PlanItem.tsx # bordered detail-card list (education, roles, records)
       Portrait.tsx               # framed, grayscale-until-hover owner portrait
-      PetalCircle.tsx            # canvas leaf field under the about portrait: dozens of leaves in
-                                 #   5 green shades drift on layered ambient wind and scatter
-                                 #   from the cursor as a wind source; DPR-scaled, continuous
-                                 #   rAF only while visible, static under reduced motion
+      LeafRain.tsx               # full-viewport canvas behind the about content: sparse 16–24px
+                                 #   leaves in 5 theme-aware green shades sway and tumble as they
+                                 #   fall; starts when about fills the viewport, fades out at
+                                 #   education, resumes on scroll-up; DPR-scaled, rAF only while
+                                 #   raining, nothing under reduced motion
       Cta.tsx                    # double-chevron call to action
       SocialRow.tsx              # github / linkedin / email / résumé row
       ShotSlot.tsx               # framed screenshot slot (placeholder or image)
@@ -138,7 +139,7 @@ Personal Website/
       projects.css               # project cards, case-study blocks, screenshot slots
       contact.css                # email hero, channel grid, location/status strip
       portrait.css               # framed portrait + home/about bio layouts
-      petals.css                 # about-aside column + bordered leaf-field circle
+      leaf-rain.css              # fixed full-viewport leaf canvas + about content stacking
 ```
 
 ## Design tokens
@@ -177,7 +178,7 @@ All five sections live on the one stacked document; any section hash opens the s
 | Route | Status | Contents |
 | --- | --- | --- |
 | `#/` or `#/hello/` | **BUILT** — section 1 (top) | "Hello World..." hero with scramble reveal, portrait + intro paragraphs with inline section links, "// navigate" home tile grid (visual sitemap), social row |
-| `#/about/` | **BUILT** — section 2 | Three-paragraph bio with an interactive canvas leaf field (dozens of leaves in 5 green shades drifting on an ambient wind, scattered by the cursor acting as a wind source) beneath the portrait; education card (Georgia Tech B.S. CS Dec 2027, threads: AI & information internetworks, math minor); 8 coursework chips; 8 scroll-triggered skill bars with counters; tools line |
+| `#/about/` | **BUILT** — section 2 | Three-paragraph bio with a full-screen falling-leaf rain behind the content (sparse 16–24px leaves in 5 theme-aware green shades, each swaying and tumbling as it falls; starts when About is reached, stops and fades at education, resumes on scroll-up, static under reduced motion); education card (Georgia Tech B.S. CS Dec 2027, threads: AI & information internetworks, math minor); 8 coursework chips; 8 scroll-triggered skill bars with counters; tools line |
 | `#/experience/` | **BUILT** — section 3 | 3 role records — Delta Dental data engineering intern (May–Aug 2026: Python + Snowflake ETL, 53M+ raw records → 27M refined rows, AI agent saving 80% developer time, 600M+ record validation across 50 sources) · Safe Robotics Lab undergrad research assistant (Dec 2025–present: OpenArm bimanual robot teleop in MuJoCo, robot-learning models) · NASA GeneLab Multi-Omics AWG data analyst intern (Jun 2024–Sep 2025: microscopy, K-Means, six ML models) — plus 3 hackathon records: Hacklytics 2026 2nd place best use of Actian VectorAI (50+ teams), AI ATL 2025 (Hearo), HackGT 2025 team lead (SnapFind) |
 | `#/projects/` | **BUILT** — section 4 | 6 project cards with 6px borders and framed `ShotSlot` screenshot placeholders: SnapFind (React 19, Supabase, FastAPI, ResNet-18, 92% accuracy), RxGuard (Gemini, sentence-transformers, Actian VectorAI, Hacklytics 2nd place), Flight Fare Optimizer (Python, 186 airports, 262k fares, 4 algorithms from scratch; Fall 2024 course build, refreshed against DOT data through Q1 2026), Hearo (React Native, Gemini 2.5 Flash, ElevenLabs), Battle Showdown (Next.js 15, Tailwind 4), Pong (pygame, 2022) |
 | `#/contact/` | **BUILT** — section 5 (bottom) | Email-first: wide `mailto:` hero card, 3 channel cards (LinkedIn, GitHub, résumé PDF download), location & status strip — Atlanta, GA, open to SWE/data internships summer 2027 |
