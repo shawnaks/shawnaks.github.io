@@ -105,7 +105,9 @@ export function Hello({ onNavigate }: HelloProps) {
               aria-label="scroll down to explore"
               onClick={handleCueClick}
             >
-              <span className="scroll-cue-pie" aria-hidden="true" />
+              <span className="scroll-cue-pie" aria-hidden="true">
+                <span className="scroll-cue-pie-face" />
+              </span>
             </a>
             {/* Same words as the link's aria-label: hide the visible copy so
                 screen readers announce the cue once, not twice. */}
