@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import type { MouseEvent } from 'react';
 import { FACTS, HOME_TILES } from '../data/site';
 import { NavTile } from '../components/NavTile';
 import { Portrait } from '../components/Portrait';
@@ -17,6 +18,15 @@ export function Hello({ onNavigate }: HelloProps) {
   const sectionRef = useRef<HTMLElement>(null);
 
   useReveal(sectionRef);
+
+  /* Same click contract as NavTile: modifiers and non-primary buttons keep the
+     browser's link behaviour; plain clicks use the shared section handler. */
+  const handleCueClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (!onNavigate) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    onNavigate(e, '/about/');
+  };
 
   return (
     <section
@@ -87,6 +97,34 @@ export function Hello({ onNavigate }: HelloProps) {
           </ul>
 
           <SocialRow />
+
+          <div className="scroll-cue anim">
+            <a
+              className="scroll-cue-link"
+              href="#/about/"
+              aria-label="scroll down to explore"
+              onClick={handleCueClick}
+            >
+              <svg
+                className="scroll-cue-ring"
+                viewBox="0 0 50 50"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <circle
+                  className="scroll-cue-circle"
+                  cx="25"
+                  cy="25"
+                  r="20"
+                  fill="none"
+                  strokeWidth="5"
+                />
+              </svg>
+            </a>
+            {/* Same words as the link's aria-label: hide the visible copy so
+                screen readers announce the cue once, not twice. */}
+            <p className="scroll-cue-text" aria-hidden="true">scroll down to explore</p>
+          </div>
         </div>
       </div>
     </section>

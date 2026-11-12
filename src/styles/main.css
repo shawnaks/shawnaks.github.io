@@ -409,8 +409,8 @@ ul { list-style: none; }
 .tile-grid { display: flex; flex-wrap: wrap; margin: 0 -10px; }
 .tile-grid > li { width: 25%; padding: 10px; }
 
-/* social icons */
-.social-row { display: flex; gap: 14px; margin-top: 3.2em; }
+/* social icons — centred group; the scroll cue sits below it */
+.social-row { display: flex; justify-content: center; gap: 14px; margin-top: 3.2em; }
 .social-row a {
   display: flex;
   align-items: center;
@@ -428,6 +428,36 @@ ul { list-style: none; }
   transform: scale(1.25);
 }
 .social-row .icon { width: 20px; height: 20px; }
+
+/* scroll cue — the loader ring, shrunk and linked to the about section */
+.scroll-cue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+  margin-top: .8em;
+  padding-bottom: 1em;
+}
+.scroll-cue-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  transition: transform .25s var(--ease);
+}
+.scroll-cue-link:hover,
+.scroll-cue-link:focus-visible { transform: scale(1.15); }
+/* Reuses the loader keyframes; only the box size differs. */
+.scroll-cue-ring { width: 24px; height: 24px; animation: loader-rotate 2s linear infinite; }
+.scroll-cue-circle {
+  stroke: var(--accent-ink);
+  stroke-linecap: round;
+  stroke-dasharray: 1, 200;
+  stroke-dashoffset: 0;
+  animation: loader-dash 1.5s ease-in-out infinite;
+}
+.scroll-cue-text { font: 400 1.2em/1.5 var(--ui); color: var(--gray); }
 
 /* ==========================================================================
    section pages (planned category pages)
@@ -751,4 +781,7 @@ ul { list-style: none; }
     transition-duration: .01ms !important;
     transition-delay: 0s !important;
   }
+  /* Clamped, the dash animation never advances, so draw the whole ring
+     instead of leaving the 1-unit starting dash (a dot). */
+  .scroll-cue-circle { stroke-dasharray: none; }
 }
