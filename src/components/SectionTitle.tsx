@@ -3,7 +3,7 @@ import { prefersReducedMotion, SCRAMBLE_GLYPHS, useScramble } from '../hooks/use
 
 const SLAB_WIPE_MS = 520;
 const HERO_DELAY_MS = 60;
-const HOVER_GLYPH_MS = 75;
+const HOVER_GLYPH_MS = 60;
 
 export type SectionTitleProps = {
   text: string;
