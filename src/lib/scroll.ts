@@ -3,6 +3,7 @@
    ========================================================================== */
 
 import { prefersReducedMotion } from '../hooks/useScramble';
+import { normalizePath } from './sections';
 import type { SectionId } from './sections';
 
 /** Scroll preferences respect reduced motion everywhere. */
@@ -76,11 +77,6 @@ export function scrollToSection(id: SectionId, behavior: ScrollBehavior = 'smoot
   document.getElementById(id)?.scrollIntoView({ behavior, block: 'start' });
 }
 
-function pathKey(pathname: string): string {
-  if (pathname === '' || pathname === '/') return '/';
-  return pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
-}
-
 /**
  * A click-scroll navigates (pushState) and starts its own smooth scroll.
  * The location effect would otherwise perform an instant scroll on the same
@@ -89,12 +85,12 @@ function pathKey(pathname: string): string {
 let localScrollPath: string | null = null;
 
 export function markSectionScroll(pathname: string): void {
-  localScrollPath = pathKey(pathname);
+  localScrollPath = normalizePath(pathname);
 }
 
 /** Returns true when this location change was already scrolled by a click. */
 export function consumeSectionScroll(pathname: string): boolean {
-  const matched = localScrollPath !== null && localScrollPath === pathKey(pathname);
+  const matched = localScrollPath !== null && localScrollPath === normalizePath(pathname);
   localScrollPath = null;
   return matched;
 }

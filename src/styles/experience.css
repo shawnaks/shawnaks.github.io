@@ -34,30 +34,11 @@
   background: var(--accent);
 }
 
-/* Inline project pill inside a card — same language as the .lead pills:
-   ink capsule, accent on hover, compact UI type. */
+/* Inline project pill inside a card — shared pill primitive in main.css,
+   sized for the record list. */
 .record-pill {
-  display: inline-block;
-  font-family: var(--ui);
-  font-weight: 700;
-  font-style: normal;
   font-size: .68em;
-  line-height: 1;
-  color: #fff;
-  background: var(--fill);
   padding: .4em 1em .36em;
-  border-radius: 999px;
-  text-decoration: none;
-  white-space: nowrap;
-  transform: translateY(-.1em);
-  transition: background-color .25s linear;
-}
-
-.record-pill:hover,
-.record-pill:focus-visible {
-  background: var(--accent);
-  text-shadow: -1px 0 rgba(0, 255, 255, .85), 1px 0 rgba(255, 0, 0, .85);
-  animation: pill-jitter .25s steps(2) infinite;
 }
 
 @media (max-width: 767px) {

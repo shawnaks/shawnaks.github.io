@@ -19,8 +19,10 @@ export type HeaderProps = {
  * scroll-up (±8px).
  */
 export function Header({ ready, onNavigate }: HeaderProps) {
-  const [dark, setDark] = useState(false);
-  const [hidden, setHidden] = useState(false);
+  // A restored scroll position renders before any scroll event: seed the
+  // state from it so the header starts dark (and out of the way when deep).
+  const [dark, setDark] = useState(() => window.scrollY > 20);
+  const [hidden, setHidden] = useState(() => window.scrollY > window.innerHeight);
   const lastY = useRef(0);
 
   useEffect(() => {

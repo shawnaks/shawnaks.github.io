@@ -1,8 +1,7 @@
 import type { MouseEvent } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useActiveSection } from '../hooks/useActiveSection';
-import { isCaseStudyPath, isMainPath } from '../lib/sections';
-import type { SectionId } from '../lib/sections';
+import { isCaseStudyPath, isMainPath, sectionIdFromPath } from '../lib/sections';
 import { Icon } from './Icon';
 
 export type NavTileProps = {
@@ -10,8 +9,6 @@ export type NavTileProps = {
   abbr: string;
   full: string;
   icon: string;
-  /** Home-grid only: the descriptive line under the box text. */
-  desc?: string;
   /** `sm` is the compact header variant. */
   size?: 'sm';
   /**
@@ -27,10 +24,10 @@ export type NavTileProps = {
  * store (passive scrolling updates it without touching the router), not from
  * the router location. Case studies still light the projects tile.
  */
-export function NavTile({ to, abbr, full, icon, desc, size, onNavigate }: NavTileProps) {
+export function NavTile({ to, abbr, full, icon, size, onNavigate }: NavTileProps) {
   const { pathname } = useLocation();
   const activeSection = useActiveSection();
-  const section = to.replace(/\//g, '') as SectionId;
+  const section = sectionIdFromPath(to);
 
   const inCaseStudy = section === 'projects' && isCaseStudyPath(pathname);
   const isActive = inCaseStudy || (isMainPath(pathname) && activeSection === section);
@@ -45,8 +42,8 @@ export function NavTile({ to, abbr, full, icon, desc, size, onNavigate }: NavTil
   return (
     <Link
       to={to}
-      data-section={section}
-      aria-current={isActive ? 'location' : undefined}
+      data-section={section ?? undefined}
+      aria-current={isActive && size === 'sm' ? 'location' : undefined}
       className={['element-box', size === 'sm' ? 'element-box--sm' : '', isActive ? 'is-active' : '']
         .filter(Boolean)
         .join(' ')}
@@ -56,7 +53,6 @@ export function NavTile({ to, abbr, full, icon, desc, size, onNavigate }: NavTil
         <span className="abbr">{abbr}</span>
         <span className="full">{full}</span>
       </span>
-      {desc ? <span className="box-desc">{desc}</span> : null}
       <span className="box-icon">
         <Icon name={icon} />
       </span>

@@ -46,6 +46,18 @@ export function MainPage({ onNavigate, onCaseStudyNavigate }: MainPageProps) {
     return stopScrollSpy;
   }, []);
 
+  useEffect(() => {
+    // HashRouter only listens to popstate, so a hash edit in an already-open
+    // tab never reaches the router. Land on the section here instead.
+    const onHashChange = () => {
+      const id = sectionIdFromPath(window.location.hash.slice(1));
+      if (id) scrollToSection(id, 'auto');
+    };
+
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
   return (
     <div className="page-stack">
       <Hello onNavigate={onNavigate} />

@@ -9,10 +9,12 @@ export type PlanItemData = {
 
 export type PlanItemProps = PlanItemData & {
   className?: string;
+  /** Extra detail rendered after the body (e.g. an achievements list). */
+  children?: ReactNode;
 };
 
-/** A planned-content card: HUD corner brackets + name / meta / body. */
-export function PlanItem({ name, meta, body, className }: PlanItemProps) {
+/** A planned-content card: HUD corner brackets + name / meta / body / detail list. */
+export function PlanItem({ name, meta, body, className, children }: PlanItemProps) {
   return (
     <li className={['plan-item', 'hatch', 'anim', className].filter(Boolean).join(' ')}>
       <span className="ui-corner tl" aria-hidden="true" />
@@ -22,6 +24,7 @@ export function PlanItem({ name, meta, body, className }: PlanItemProps) {
       <h3 className="plan-name">{name}</h3>
       {meta != null ? <p className="plan-meta">{meta}</p> : null}
       {body != null ? <p className="plan-body">{body}</p> : null}
+      {children}
     </li>
   );
 }

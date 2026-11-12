@@ -25,7 +25,8 @@ export const SECTIONS = [
 /** A click on a section control (tile, pill, CTA, logo). */
 export type SectionNavHandler = (e: MouseEvent, to: string) => void;
 
-function normalizePath(pathname: string): string {
+/** Trailing-slash-insensitive comparison key; `''` and `/` stay `/`. */
+export function normalizePath(pathname: string): string {
   if (pathname === '' || pathname === '/') return '/';
   return pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
 }
@@ -33,22 +34,9 @@ function normalizePath(pathname: string): string {
 /** The section a hash path belongs to; `null` for everything else. */
 export function sectionIdFromPath(pathname: string): SectionId | null {
   const normalized = normalizePath(pathname);
+  if (normalized === '/') return 'hello';
 
-  switch (normalized) {
-    case '/':
-    case '/hello':
-      return 'hello';
-    case '/about':
-      return 'about';
-    case '/experience':
-      return 'experience';
-    case '/projects':
-      return 'projects';
-    case '/contact':
-      return 'contact';
-    default:
-      return null;
-  }
+  return SECTIONS.find((section) => normalizePath(section.to) === normalized)?.id ?? null;
 }
 
 /** True for the single-page document (all five section paths + bare `/`). */
@@ -57,7 +45,8 @@ export function isMainPath(pathname: string): boolean {
 }
 
 export function isCaseStudyPath(pathname: string): boolean {
-  return normalizePath(pathname).startsWith('/case-study/');
+  // A slug segment is required: bare `#/case-study/` is the 404.
+  return /^\/case-study\/[^/]+\/?$/.test(pathname);
 }
 
 /** The canonical hash path for a section id. */

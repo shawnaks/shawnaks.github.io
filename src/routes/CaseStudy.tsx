@@ -32,12 +32,7 @@ function CaseStudyNotFound({ onNavigate }: CaseStudyProps) {
       <div className="container">
         <header className="section-head">
           <p className="section-label anim">// case study not found</p>
-          <SectionTitle
-            id="case-study-not-found-title"
-            text="not found"
-            level="h1"
-            tone="error"
-          />
+          <SectionTitle id="case-study-not-found-title" text="not found" level="h1" />
         </header>
 
         <div className="section-body">
@@ -110,15 +105,15 @@ function CaseStudyView({ project, onNavigate }: CaseStudyViewProps) {
           </div>
 
           <div className="case-pairs">
-            {project.challenges.map((challenge, i) => (
-              <div className="case-pair anim" key={challenge}>
+            {project.steps.map((step, i) => (
+              <div className="case-pair anim" key={step.challenge}>
                 <div className="case-pair-cell">
                   <span className="case-num" aria-hidden="true">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <div>
                     <p className="case-pair-tag">// challenge</p>
-                    <p className="case-pair-text">{challenge}</p>
+                    <p className="case-pair-text">{step.challenge}</p>
                   </div>
                 </div>
                 <div className="case-pair-cell">
@@ -127,7 +122,7 @@ function CaseStudyView({ project, onNavigate }: CaseStudyViewProps) {
                   </span>
                   <div>
                     <p className="case-pair-tag">// solution</p>
-                    <p className="case-pair-text">{project.solutions[i]}</p>
+                    <p className="case-pair-text">{step.solution}</p>
                   </div>
                 </div>
               </div>

@@ -4,7 +4,6 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // Relative base so the build works on GitHub Pages under any repo name
-  // (and even when opened directly from the filesystem).
+  // Relative base so the build works on GitHub Pages under any repo name.
   base: './',
 })

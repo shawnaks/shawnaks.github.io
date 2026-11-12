@@ -25,7 +25,9 @@
   min-width: 0;
 }
 
-/* the reserved project-card treatment: 6px ink border, no radius */
+/* the reserved project-card treatment: 6px ink border, no radius. The hover
+   state (ink border, lift, shadow) is shared with the contact channel cards
+   in main.css. */
 .project-card {
   display: flex;
   flex-direction: column;
@@ -38,20 +40,13 @@
     box-shadow .45s var(--ease-out);
 }
 
-.project-cell:hover .project-card,
-.project-cell:focus-within .project-card {
-  border-color: var(--accent);
-  transform: translateY(-4px);
-  box-shadow: 0 14px 26px var(--shadow);
-}
-
 .project-card .shot-slot {
   border-bottom: 3px solid var(--fg);
   transition: border-color .45s var(--ease);
 }
 
 .project-cell:hover .project-card .shot-slot {
-  border-bottom-color: var(--accent);
+  border-bottom-color: var(--accent-ink);
 }
 
 .project-card-body {
@@ -119,7 +114,7 @@
 }
 
 .project-card-badge {
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 
 .project-card-date {
@@ -148,7 +143,7 @@
 
 .project-stat-value {
   font-weight: 700;
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 
 /* scaled-down `.cta`, pinned to the bottom of every card */
@@ -250,7 +245,7 @@
 .case-tldr-label {
   font: 700 1.3em/1 var(--ui);
   letter-spacing: .04em;
-  color: var(--accent);
+  color: var(--accent-ink);
   margin-bottom: .7em;
 }
 
@@ -277,7 +272,7 @@
 
 .case-meta-label {
   font: 700 1.3em/1 var(--ui);
-  color: var(--accent);
+  color: var(--accent-ink);
   margin-bottom: .9em;
 }
 
@@ -301,7 +296,7 @@
 .case-tech > li:not(:last-child)::after {
   content: '·';
   margin: 0 9px;
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 
 /* paired challenge / solution rows, index-aligned */
@@ -334,7 +329,7 @@
 
 .case-num {
   font: 700 1.5em/1.3 var(--ui);
-  color: var(--accent);
+  color: var(--accent-ink);
   font-variant-numeric: tabular-nums;
 }
 
@@ -403,21 +398,6 @@
   overflow: hidden;
 }
 
-.case-link::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--accent);
-  transform: translateX(-101%);
-  transition: transform .3s var(--ease);
-  z-index: 1;
-}
-
-.case-link:hover::before,
-.case-link:focus-visible::before {
-  transform: translateX(0);
-}
-
 .case-link-icon,
 .case-link-text {
   position: relative;
@@ -432,7 +412,7 @@
 .case-link-icon .icon {
   width: 17px;
   height: 17px;
-  color: var(--accent);
+  color: var(--accent-ink);
   transition: color .3s linear;
 }
 
@@ -473,21 +453,6 @@
   transition: border-color .3s linear;
 }
 
-.case-next::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--accent);
-  transform: translateX(-101%);
-  transition: transform .35s var(--ease);
-  z-index: 1;
-}
-
-.case-next:hover::before,
-.case-next:focus-visible::before {
-  transform: translateX(0);
-}
-
 .case-next-label,
 .case-next-name,
 .case-next-icon {
@@ -498,7 +463,7 @@
 
 .case-next-label {
   font: 700 1.3em/1 var(--ui);
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 
 .case-next-name {
@@ -514,7 +479,7 @@
 .case-next-icon .icon {
   width: 16px;
   height: 16px;
-  color: var(--accent);
+  color: var(--accent-ink);
   transition: color .3s linear, transform .3s var(--ease);
 }
 
@@ -550,14 +515,6 @@
   color: var(--fg);
   text-decoration: none;
   padding-bottom: 2px;
-  box-shadow: inset 0 -3px 0 var(--accent);
-  transition: background-color .25s linear, color .25s linear;
-}
-
-.case-back a:hover,
-.case-back a:focus-visible {
-  background: var(--accent);
-  color: #fff;
 }
 
 /* ==========================================================================

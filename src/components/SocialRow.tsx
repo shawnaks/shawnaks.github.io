@@ -1,14 +1,10 @@
 import { SOCIALS } from '../data/site';
 import { Icon } from './Icon';
 
-export type SocialRowProps = {
-  className?: string;
-};
-
 /** github · linkedin · email · résumé — external links + PDF download. */
-export function SocialRow({ className }: SocialRowProps) {
+export function SocialRow() {
   return (
-    <ul className={['social-row', 'anim', className].filter(Boolean).join(' ')}>
+    <ul className="social-row anim">
       {SOCIALS.map((social) => (
         <li key={social.id}>
           <a

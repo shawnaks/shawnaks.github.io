@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef } from 'react';
 /** Characters used by the baffle-style scramble (identical to js/main.js). */
 const GLYPHS = '█▓▒░<>/\\|[]{}#@$%&*+=!?';
 
-export const SCRAMBLE_MS = 750;
+const SCRAMBLE_MS = 750;
 
 export function prefersReducedMotion(): boolean {
   return (

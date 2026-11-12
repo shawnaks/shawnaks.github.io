@@ -1,5 +1,6 @@
 /* ==========================================================================
-   site data — single source of truth for navigation, home tiles & socials
+   site data — single source of truth for navigation, home tiles, contact
+   details, shared facts & socials
    strings are copied verbatim from the vanilla build's index.html
    ========================================================================== */
 
@@ -8,7 +9,6 @@ export type IconName =
   | 'user'
   | 'brief'
   | 'code'
-  | 'trophy'
   | 'mail'
   | 'down'
   | 'chev'
@@ -32,32 +32,27 @@ export const NAV_ITEMS = [
 ] as const satisfies readonly NavItem[];
 
 /** The four home-grid tiles (hello itself is never a tile). */
-export const HOME_TILES = [
-  {
-    to: '/about/',
-    abbr: 'Ab',
-    full: 'about',
-    icon: 'user',
-  },
-  {
-    to: '/experience/',
-    abbr: 'Ex',
-    full: 'experience',
-    icon: 'brief',
-  },
-  {
-    to: '/projects/',
-    abbr: 'Pr',
-    full: 'projects',
-    icon: 'code',
-  },
-  {
-    to: '/contact/',
-    abbr: 'Ct',
-    full: 'contact',
-    icon: 'mail',
-  },
-] as const satisfies readonly NavItem[];
+export const HOME_TILES = NAV_ITEMS.slice(1) satisfies readonly NavItem[];
+
+/** Canonical contact details — every section imports these, never re-declares them. */
+export const EMAIL = 'shawnaksa150@gmail.com';
+export const GITHUB_URL = 'https://github.com/shawnaks';
+export const LINKEDIN_URL = 'https://www.linkedin.com/in/shawnaksa/';
+export const RESUME_HREF = 'assets/Shawnak-Samaddar-Resume.pdf';
+
+/** Facts repeated across sections. Strings are the exact displayed copy. */
+export const FACTS = {
+  deltaRecords: '53M+',
+  deltaRows: '27M',
+  validatedRecords: '600M+',
+  dataSources: '50',
+  hackathonPlace: '2nd place',
+  hackathonTeams: '50+ teams',
+  hackathonName: 'Hacklytics',
+  graduation: 'December 2027',
+  graduationShort: 'dec 2027',
+  internshipTerm: 'summer 2027',
+} as const;
 
 export type SocialLink = {
   id: 'github' | 'linkedin' | 'email' | 'resume';
@@ -75,7 +70,7 @@ export type SocialLink = {
 export const SOCIALS: readonly SocialLink[] = [
   {
     id: 'github',
-    href: 'https://github.com/shawnaks',
+    href: GITHUB_URL,
     icon: 'github',
     label: 'github',
     title: 'github',
@@ -83,7 +78,7 @@ export const SOCIALS: readonly SocialLink[] = [
   },
   {
     id: 'linkedin',
-    href: 'https://www.linkedin.com/in/shawnaksa/',
+    href: LINKEDIN_URL,
     icon: 'linkedin',
     label: 'linkedin',
     title: 'linkedin',
@@ -91,14 +86,14 @@ export const SOCIALS: readonly SocialLink[] = [
   },
   {
     id: 'email',
-    href: 'mailto:shawnaksa150@gmail.com',
+    href: `mailto:${EMAIL}`,
     icon: 'mail',
     label: 'email',
     title: 'email',
   },
   {
     id: 'resume',
-    href: 'assets/Shawnak-Samaddar-Resume.pdf',
+    href: RESUME_HREF,
     icon: 'down',
     label: 'download résumé (pdf)',
     title: 'résumé (pdf)',

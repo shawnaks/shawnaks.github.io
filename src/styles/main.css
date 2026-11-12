@@ -12,7 +12,8 @@
   --bg-subtle: #fafafa;      /* screenshot wells */
   --border: #e0e0e0;
   --gray: #6b6d78;
-  --accent: #0b852d;         /* the single accent */
+  --accent: #0b852d;         /* the single accent (fills) */
+  --accent-ink: #0b852d;     /* accent for small text + thin lines */
   --red: #cc0000;            /* error only */
   --hatch: rgba(43, 44, 51, 0.16);
   --hatch-soft: rgba(43, 44, 51, 0.045);
@@ -35,6 +36,8 @@
   --border: #3a3b44;
   --gray: #9aa0ad;
   --accent: #1b8843;
+  /* text/line accent: 7.5:1 on the page, 5.1:1 on --fill (AA for small bold) */
+  --accent-ink: #3cbf6b;
   --hatch: rgba(255, 255, 255, 0.10);
   --hatch-soft: rgba(255, 255, 255, 0.06);
   --shadow: rgba(0, 0, 0, 0.45);
@@ -65,8 +68,10 @@ body.is-loading { overflow: hidden; }
 
 ::selection { background: var(--accent); color: #fff; }
 
-:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 2px; }
 .section-title:focus, .hero-title:focus { outline: none; }
+/* Programmatic route-focus target: no ring around the whole page. */
+#main:focus { outline: none; }
 
 ul { list-style: none; }
 
@@ -112,7 +117,7 @@ ul { list-style: none; }
 .loader.is-done { opacity: 0; pointer-events: none; }
 .loader-ring { width: 50px; height: 50px; animation: loader-rotate 2s linear infinite; }
 .loader-circle {
-  stroke: var(--accent);
+  stroke: var(--accent-ink);
   stroke-linecap: round;
   stroke-dasharray: 1, 200;
   stroke-dashoffset: 0;
@@ -138,6 +143,8 @@ ul { list-style: none; }
   transition: transform .4s var(--ease), background-color .3s linear, border-color .3s linear;
 }
 .header.is-hidden { transform: translateY(-100%); }
+/* Keyboard focus inside the hidden bar brings it back. */
+.header:focus-within { transform: translateY(0); }
 /* Scrolled: the slab fill separates the bar from the page. In dark mode the
    fill is lighter than the page, so the bar still reads without a white flash. */
 .header.is-dark   { background: var(--fill); border-bottom-color: var(--fill); }
@@ -161,7 +168,7 @@ ul { list-style: none; }
   font: 700 1.35em/1 var(--ui);
   white-space: nowrap;
 }
-.logo-mark { color: var(--accent); }
+.logo-mark { color: var(--accent-ink); }
 .header.is-dark .logo-text { color: #fff; }
 
 /* compact header nav */
@@ -185,7 +192,7 @@ ul { list-style: none; }
 .header.is-dark .element-box--sm { border-color: #fff; color: #fff; background: transparent; }
 /* The scroll-spy active tile must stay legible on the dark header; the rule
    above is more specific than `.element-box.is-active`, so restate it here. */
-.header.is-dark .element-box--sm.is-active { border-color: var(--accent); }
+.header.is-dark .element-box--sm.is-active { border-color: var(--accent-ink); }
 
 /* theme switch — same 45px square language as the social row */
 .theme-btn {
@@ -263,27 +270,19 @@ ul { list-style: none; }
 .abbr { display: block; font: 700 3em/1 var(--ui); }
 .full { display: block; font: 400 1.5em/1 var(--ui); margin-top: 5px; }
 
-.box-text, .box-desc {
+.box-text {
   position: relative;
   z-index: 2;
   transition: color .25s linear;
 }
 .element-box:hover .box-text,
-.element-box:focus-visible .box-text,
-.element-box:hover .box-desc,
-.element-box:focus-visible .box-desc { color: #fff; }
-
-.box-desc {
-  display: block;
-  font: 400 1.35em/1.4 var(--serif);
-  color: var(--gray);
-}
+.element-box:focus-visible .box-text { color: #fff; }
 
 .box-icon {
   position: absolute;
   top: 14px; right: 13px;
   width: 22px; height: 22px;
-  color: var(--accent);
+  color: var(--accent-ink);
   opacity: 0;
   transform: scale(.75);
   transition: opacity .25s var(--ease), transform .25s var(--ease), color .25s linear;
@@ -292,8 +291,18 @@ ul { list-style: none; }
 .element-box:hover .box-icon,
 .element-box:focus-visible .box-icon { opacity: 1; transform: scale(1); color: #fff; }
 
-.element-box.is-active { border-color: var(--accent); }
+.element-box.is-active { border-color: var(--accent-ink); }
 .element-box.is-active .box-icon { opacity: 1; transform: scale(1); }
+
+/* card hover — project cards and contact channel cards */
+.project-cell:hover .project-card,
+.project-cell:focus-within .project-card,
+.contact-channel:hover .contact-channel-link,
+.contact-channel:focus-within .contact-channel-link {
+  border-color: var(--accent-ink);
+  transform: translateY(-4px);
+  box-shadow: 0 14px 26px var(--shadow);
+}
 
 /* ==========================================================================
    layout / sections
@@ -349,28 +358,31 @@ ul { list-style: none; }
 .lead + .lead { margin-top: 1em; }
 .lead strong { font-weight: 700; }
 
-/* inline pill links */
-.lead a, .section-intro a {
+/* inline pill links — lead links and the experience record pills */
+.lead a,
+.record-pill {
   display: inline-block;
   font-family: var(--ui);
   font-weight: 700;
   font-style: normal;
-  /* .62em: the long "full-stack web apps & machine-learning tools" pill is
-     44 monospace glyphs and must clear the 150px portrait + 2.6em gap
-     without leaving the 980px container measure. */
-  font-size: .62em;
   line-height: 1;
   color: #fff;
   background: var(--fill);
-  padding: .38em 1em .34em;
   border-radius: 999px;
   text-decoration: none;
   white-space: nowrap;
   transform: translateY(-.1em);
   transition: background-color .25s linear;
 }
+.lead a {
+  /* .62em: the long "full-stack web apps & machine-learning tools" pill is
+     44 monospace glyphs and must clear the 150px portrait + 2.6em gap
+     without leaving the 980px container measure. */
+  font-size: .62em;
+  padding: .38em 1em .34em;
+}
 .lead a:hover, .lead a:focus-visible,
-.section-intro a:hover, .section-intro a:focus-visible {
+.record-pill:hover, .record-pill:focus-visible {
   background: var(--accent);
   text-shadow: -1px 0 rgba(0, 255, 255, .85), 1px 0 rgba(255, 0, 0, .85);
   animation: pill-jitter .25s steps(2) infinite;
@@ -393,7 +405,7 @@ ul { list-style: none; }
 .rule.is-leaving  { width: 0 !important; }
 
 /* home tile grid — the visual sitemap */
-.tile-grid-label { font: 700 1.4em/1 var(--ui); color: var(--accent); margin: 0 0 1.4em; }
+.tile-grid-label { font: 700 1.4em/1 var(--ui); color: var(--accent-ink); margin: 0 0 1.4em; }
 .tile-grid { display: flex; flex-wrap: wrap; margin: 0 -10px; }
 .tile-grid > li { width: 25%; padding: 10px; }
 
@@ -417,20 +429,18 @@ ul { list-style: none; }
 }
 .social-row .icon { width: 20px; height: 20px; }
 
-.colophon { margin-top: 3.5em; font: 400 1.3em/1.6 var(--ui); color: var(--gray); }
-
 /* ==========================================================================
    section pages (planned category pages)
    ========================================================================== */
 .section-head { margin-bottom: 4.5em; }
-.section-label { font: 700 1.4em/1 var(--ui); color: var(--accent); margin: 0 0 1.2em; }
+.section-label { font: 700 1.4em/1 var(--ui); color: var(--accent-ink); margin: 0 0 1.2em; }
 .section--error .section-label { color: var(--red); }
 
 /* the black title slab with blue spine */
 .section-title {
   position: relative;
   display: inline-block;
-  border-left: 15px solid var(--accent);
+  border-left: 15px solid var(--accent-ink);
   padding: .18em .5em .18em .45em;
   font-family: var(--ui);
   font-weight: 700;
@@ -472,11 +482,24 @@ ul { list-style: none; }
 .plan-name a {
   color: inherit;
   text-decoration: none;
-  box-shadow: inset 0 -3px 0 var(--accent);
+}
+/* inset accent underline — plan names, case back-link, channel handles */
+.plan-name a,
+.case-back a,
+.contact-channel-handle {
+  box-shadow: inset 0 -3px 0 var(--accent-ink);
   transition: background-color .25s linear, color .25s linear;
 }
-.plan-name a:hover, .plan-name a:focus-visible { background: var(--accent); color: #fff; }
-.plan-meta { font: 700 1.4em/1.4 var(--ui); color: var(--accent); margin-top: .4em; }
+.plan-name a:hover,
+.plan-name a:focus-visible,
+.case-back a:hover,
+.case-back a:focus-visible,
+.contact-channel:hover .contact-channel-handle,
+.contact-channel:focus-within .contact-channel-handle {
+  background: var(--accent);
+  color: #fff;
+}
+.plan-meta { font: 700 1.4em/1.4 var(--ui); color: var(--accent-ink); margin-top: .4em; }
 .plan-body { font-size: 1.7em; margin-top: .55em; }
 
 .ui-corner { position: absolute; width: 9px; height: 9px; transition: transform .45s var(--ease) .15s; }
@@ -502,7 +525,11 @@ ul { list-style: none; }
   font: 700 1.5em/1 var(--ui);
   overflow: hidden;
 }
-.cta::before {
+/* accent wipe — shared by the cta, case links and the contact hero */
+.cta::before,
+.case-link::before,
+.case-next::before,
+.contact-hero-wipe {
   content: '';
   position: absolute;
   inset: 0;
@@ -511,13 +538,20 @@ ul { list-style: none; }
   transition: transform .3s var(--ease);
   z-index: 1;
 }
-.cta:hover::before, .cta:focus-visible::before { transform: translateX(0); }
+.cta:hover::before,
+.cta:focus-visible::before,
+.case-link:hover::before,
+.case-link:focus-visible::before,
+.case-next:hover::before,
+.case-next:focus-visible::before,
+.contact-hero:hover .contact-hero-wipe,
+.contact-hero:focus-visible .contact-hero-wipe { transform: translateX(0); }
 .cta-text { position: relative; z-index: 2; transition: color .3s linear; }
 .cta:hover .cta-text, .cta:focus-visible .cta-text { color: #fff; }
 .cta-icon { position: relative; z-index: 2; display: flex; }
 .cta-icon .icon {
   width: 15px; height: 15px;
-  color: var(--accent);
+  color: var(--accent-ink);
   transition: transform .3s var(--ease), color .3s linear;
 }
 .cta-icon .icon + .icon { margin-left: -7px; }
@@ -539,13 +573,13 @@ ul { list-style: none; }
   opacity: .45;
   left: 2px;
   text-shadow: -2px 0 rgba(0, 255, 255, .7);
-  animation: glitch-a 2.2s infinite linear alternate-reverse;
+  animation: glitch-a 2.2s 3 linear alternate-reverse forwards;
 }
 .glitch.is-glitching::after {
   opacity: .45;
   left: -2px;
   text-shadow: 2px 0 rgba(255, 0, 0, .7);
-  animation: glitch-b 2.8s infinite linear alternate-reverse;
+  animation: glitch-b 2.8s 3 linear alternate-reverse forwards;
 }
 /* slab titles: white text + matching padding so the copies align */
 .section-title.glitch::before, .section-title.glitch::after {
@@ -553,7 +587,7 @@ ul { list-style: none; }
   color: #fff;
 }
 @keyframes glitch-a {
-  0%   { clip-path: inset(28% 0 62% 0); }
+  0%   { clip-path: inset(50% 0 50% 0); }
   10%  { clip-path: inset(82% 0 4% 0); }
   20%  { clip-path: inset(12% 0 74% 0); }
   30%  { clip-path: inset(64% 0 18% 0); }
@@ -566,7 +600,7 @@ ul { list-style: none; }
   100% { clip-path: inset(72% 0 12% 0); }
 }
 @keyframes glitch-b {
-  0%   { clip-path: inset(65% 0 25% 0); }
+  0%   { clip-path: inset(50% 0 50% 0); }
   10%  { clip-path: inset(15% 0 70% 0); }
   20%  { clip-path: inset(48% 0 42% 0); }
   30%  { clip-path: inset(80% 0 8% 0); }
@@ -636,7 +670,7 @@ ul { list-style: none; }
   /* 8.2vw keeps the 14-glyph nowrap title inside the 265px layout box at a
      320px window with a classic scrollbar, and the 335px one at 390px */
   .hero-title { font-size: min(5.4em, 8.2vw); }
-  .lead a, .section-intro a { white-space: normal; }
+  .lead a { white-space: normal; }
   .lead { font-size: 1.8em; }
   /* "experience" is 10 monospace glyphs: 7.93em of slab + padding must stay
      inside the 335px measure at 390px (classic scrollbar) and the 265px one
@@ -681,6 +715,7 @@ ul { list-style: none; }
     --border: #e0e0e0;
     --gray: #6b6d78;
     --accent: #0b852d;
+    --accent-ink: #0b852d;
     --hatch: rgba(43, 44, 51, 0.16);
     --hatch-soft: rgba(43, 44, 51, 0.045);
     --shadow: rgba(43, 44, 51, 0.10);
@@ -691,6 +726,11 @@ ul { list-style: none; }
   #main { margin-top: 0; }
   .section { display: block !important; min-height: 0; page-break-after: always; }
   .page-stack > .section { padding: 0 0 40px; border-top: 0; }
+  .page-stack > .section--home { min-height: 0; }
+  .page-stack > .section:last-child,
+  #main > .section:last-child { page-break-after: auto; }
+  .skill-fill { width: var(--pct) !important; }
+  .skill-num { display: none; }
   .anim, .rule { opacity: 1 !important; transform: none !important; width: 100% !important; }
   .title-bar { display: none !important; }
   .section--page .title-text { color: var(--fg) !important; }

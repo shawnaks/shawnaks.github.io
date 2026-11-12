@@ -31,7 +31,12 @@ function RouteEffects() {
 
   useLayoutEffect(() => {
     // MainPage owns its own (instant) section landing.
-    if (!isMainPath(location.pathname)) window.scrollTo(0, 0);
+    if (isMainPath(location.pathname)) return;
+
+    window.scrollTo(0, 0);
+    // A route swap replaces the focused control: move keyboard focus into the
+    // new page. Section paths skip this so the clicked tile keeps focus.
+    document.getElementById('main')?.focus({ preventScroll: true });
   }, [location.pathname]);
 
   useEffect(() => {
@@ -117,7 +122,7 @@ function Shell() {
       <Header ready={ready} onNavigate={handleSectionNavigate} />
 
       {ready ? (
-        <main id="main">
+        <main id="main" tabIndex={-1}>
           <Routes>
             <Route
               path="/case-study/:slug"

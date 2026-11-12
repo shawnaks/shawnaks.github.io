@@ -6,6 +6,7 @@ import type { PlanItemData } from '../components/PlanItem';
 import { Portrait } from '../components/Portrait';
 import { SectionTitle } from '../components/SectionTitle';
 import { SkillBars } from '../components/SkillBars';
+import { FACTS } from '../data/site';
 import type { SectionNavHandler } from '../lib/sections';
 import { useReveal } from '../hooks/useReveal';
 import '../styles/about.css';
@@ -13,7 +14,7 @@ import '../styles/about.css';
 const EDUCATION: readonly PlanItemData[] = [
   {
     name: 'Georgia Institute of Technology',
-    meta: 'B.S. computer science · atlanta, ga · dec 2027',
+    meta: `B.S. computer science · atlanta, ga · ${FACTS.graduationShort}`,
     body: 'threads: artificial intelligence & information internetworks · minor in mathematics',
   },
 ];
@@ -61,21 +62,22 @@ export function About({ onNavigate }: AboutProps) {
               <p className="lead anim">
                 I’m <strong>Shawnak Samaddar</strong>, a computer science undergraduate at Georgia
                 Institute of Technology in Atlanta. My threads are artificial intelligence and
-                information internetworks, with a minor in mathematics — expected December 2027.
+                information internetworks, with a minor in mathematics — expected {FACTS.graduation}.
               </p>
 
               <p className="lead anim">
                 I build full-stack web applications and machine-learning tools, and I like turning
-                real-world problems into working software. My work so far spans data engineering — 53M+
-                record pipelines at Delta Dental — applied machine learning — CNNs, semantic search, and
-                six-model ensembles for NASA GeneLab — and robotics research in Georgia Tech’s Safe
-                Robotics Lab.
+                real-world problems into working software. My work so far spans data engineering —{' '}
+                {FACTS.deltaRecords} record pipelines at Delta Dental — applied machine learning — CNNs
+                and six-model ensembles at NASA GeneLab, semantic search in RxGuard — and robotics
+                research in Georgia Tech’s Safe Robotics Lab.
               </p>
 
               <p className="lead anim">
                 I started in 2022 by rebuilding Pong in a single Python file. Since then I’ve led a
-                hackathon team, taken 2nd place out of 50+ teams, and shipped AI-powered products end to
-                end — from React frontends to FastAPI backends to deployed models.
+                hackathon team, taken {FACTS.hackathonPlace} out of {FACTS.hackathonTeams}, and shipped
+                AI-powered products end to end — from React frontends to FastAPI backends to deployed
+                models.
               </p>
             </div>
 

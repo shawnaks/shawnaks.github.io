@@ -3,9 +3,11 @@ import '../styles/experience.css';
 import { useRef } from 'react';
 import type { ReactNode } from 'react';
 import { Cta } from '../components/Cta';
+import { PlanItem } from '../components/PlanItem';
 import { PlanList } from '../components/PlanList';
 import { SectionTitle } from '../components/SectionTitle';
 import { TransitionLink } from '../components/TransitionLink';
+import { FACTS } from '../data/site';
 import type { SectionNavHandler } from '../lib/sections';
 import { useReveal } from '../hooks/useReveal';
 
@@ -21,19 +23,13 @@ type RecordCardData = {
 /** A records card in the plan-item language: hatch, HUD corners, bulleted detail. */
 function RecordCard({ name, meta, achievements }: RecordCardData) {
   return (
-    <li className="plan-item hatch anim record-card">
-      <span className="ui-corner tl" aria-hidden="true" />
-      <span className="ui-corner tr" aria-hidden="true" />
-      <span className="ui-corner bl" aria-hidden="true" />
-      <span className="ui-corner br" aria-hidden="true" />
-      <h3 className="plan-name">{name}</h3>
-      <p className="plan-meta">{meta}</p>
+    <PlanItem name={name} meta={meta}>
       <ul className="record-list">
         {achievements.map((achievement, i) => (
           <li key={i}>{achievement}</li>
         ))}
       </ul>
-    </li>
+    </PlanItem>
   );
 }
 
@@ -42,9 +38,9 @@ const ROLE_ITEMS: readonly RecordCardData[] = [
     name: 'delta dental insurance',
     meta: 'data engineering intern · atlanta, ga · may–aug 2026',
     achievements: [
-      'Engineered a Python + Snowflake ETL pipeline for the National Provider File — 53M+ raw records refined into 27M dashboard-ready rows.',
+      `Engineered a Python + Snowflake ETL pipeline for the National Provider File — ${FACTS.deltaRecords} raw records refined into ${FACTS.deltaRows} dashboard-ready rows.`,
       'Developed a Python AI agent connected to Snowflake and Matillion that builds and QA-checks pipelines from business-logic documents — saving 80% of developer time on manual ETL work.',
-      'Led data validation across environments, ensuring consistent pipeline behavior over 600M+ records and 50 distinct data sources.',
+      `Led data validation across environments, ensuring consistent pipeline behavior over ${FACTS.validatedRecords} records and ${FACTS.dataSources} distinct data sources.`,
     ],
   },
   {
@@ -70,8 +66,8 @@ const ROLE_ITEMS: readonly RecordCardData[] = [
 function hackathonItems(onNavigate?: SectionNavHandler): readonly RecordCardData[] {
   return [
     {
-      name: 'hacklytics 2026 — 2nd place, best use of actian vectorai db',
-      meta: 'georgia tech · 50+ teams',
+      name: `hacklytics 2026 — ${FACTS.hackathonPlace}, best use of actian vectorai db`,
+      meta: `georgia tech · ${FACTS.hackathonTeams}`,
       achievements: [
         <>
           Built{' '}
@@ -128,7 +124,7 @@ export function Experience({ onNavigate }: ExperienceProps) {
             Roles, research, and hackathon results — the record so far:
           </p>
 
-          <PlanList className="record-list-group">
+          <PlanList>
             {ROLE_ITEMS.map((item) => (
               <RecordCard key={item.name} {...item} />
             ))}
@@ -138,7 +134,7 @@ export function Experience({ onNavigate }: ExperienceProps) {
 
           <p className="section-note anim">// hackathons &amp; medals</p>
 
-          <PlanList className="record-list-group">
+          <PlanList>
             {hackathonItems(onNavigate).map((item) => (
               <RecordCard key={item.name} {...item} />
             ))}

@@ -6,6 +6,7 @@
 
 import type { MouseEvent } from 'react';
 import { prefersReducedMotion } from '../hooks/useScramble';
+import { normalizePath } from './sections';
 
 /** Content-out choreography before the route swaps (≥ the .anim 500ms fade). */
 export const OUT_MS = 520;
@@ -21,12 +22,6 @@ export type NavigateOptions = {
 
 let busy = false;
 let outTimer = 0;
-
-/** Trailing-slash-insensitive comparison key. */
-function normalizePath(path: string): string {
-  if (path === '' || path === '/') return '/';
-  return path.endsWith('/') ? path.slice(0, -1) : path;
-}
 
 /** Adds `is-leaving` to every `.anim` / `.rule` in the outgoing page. */
 function leaveItems(root: ParentNode): void {

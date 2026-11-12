@@ -3,11 +3,10 @@ import { Cta } from '../components/Cta';
 import { Icon } from '../components/Icon';
 import { SectionTitle } from '../components/SectionTitle';
 import type { IconName } from '../data/site';
+import { EMAIL, FACTS, GITHUB_URL, LINKEDIN_URL, RESUME_HREF } from '../data/site';
 import type { SectionNavHandler } from '../lib/sections';
 import { useReveal } from '../hooks/useReveal';
 import '../styles/contact.css';
-
-const EMAIL = 'shawnaksa150@gmail.com';
 
 type Channel = {
   name: string;
@@ -25,7 +24,7 @@ const CHANNELS: readonly Channel[] = [
     handle: '/in/shawnaksa',
     description: 'Professional background and network.',
     icon: 'linkedin',
-    href: 'https://www.linkedin.com/in/shawnaksa/',
+    href: LINKEDIN_URL,
     external: true,
   },
   {
@@ -33,7 +32,7 @@ const CHANNELS: readonly Channel[] = [
     handle: '@shawnaks',
     description: 'Code, commits, and project documentation.',
     icon: 'github',
-    href: 'https://github.com/shawnaks',
+    href: GITHUB_URL,
     external: true,
   },
   {
@@ -41,7 +40,7 @@ const CHANNELS: readonly Channel[] = [
     handle: 'download the pdf',
     description: 'The one-page formal version, always current.',
     icon: 'down',
-    href: 'assets/Shawnak-Samaddar-Resume.pdf',
+    href: RESUME_HREF,
     download: true,
   },
 ];
@@ -124,7 +123,7 @@ export function Contact({ onNavigate }: ContactProps) {
             <div className="contact-status-cell">
               <p className="contact-status-label">// status</p>
               <p className="contact-status-open">
-                Open to software engineering &amp; data internships for summer 2027.
+                Open to software engineering &amp; data internships for {FACTS.internshipTerm}.
               </p>
             </div>
           </div>

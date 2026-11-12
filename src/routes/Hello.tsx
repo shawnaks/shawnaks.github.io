@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { HOME_TILES } from '../data/site';
+import { FACTS, HOME_TILES } from '../data/site';
 import { NavTile } from '../components/NavTile';
 import { Portrait } from '../components/Portrait';
 import { SectionTitle } from '../components/SectionTitle';
@@ -51,7 +51,7 @@ export function Hello({ onNavigate }: HelloProps) {
                   Safe Robotics Lab
                 </TransitionLink>
                 , where I teleoperate a bimanual robot and train models for autonomous operation.
-                Previously, I engineered data pipelines refining 53M+ records at{' '}
+                Previously, I engineered data pipelines refining {FACTS.deltaRecords} records at{' '}
                 <TransitionLink to="/experience/" onNavigate={onNavigate}>
                   Delta{'\u00A0'}Dental
                 </TransitionLink>{' '}
@@ -63,8 +63,8 @@ export function Hello({ onNavigate }: HelloProps) {
                 <TransitionLink to="/experience/" onNavigate={onNavigate}>
                   hackathons
                 </TransitionLink>{' '}
-                — most recently earning 2nd place among 50+ teams at Hacklytics. I am always looking
-                for the next hard problem.
+                — most recently earning {FACTS.hackathonPlace} among {FACTS.hackathonTeams} at{' '}
+                {FACTS.hackathonName}. I am always looking for the next hard problem.
               </p>
             </div>
           </div>

@@ -11,11 +11,6 @@ export type SectionTitleProps = {
   variant?: 'hero' | 'slab';
   /** Slab heading level; `h1` where the page has no hero (case study, 404). */
   level?: 'h1' | 'h2';
-  /**
-   * Accepted for API symmetry with the error page. It adds nothing itself —
-   * the error palette comes from `section--error` on the page wrapper.
-   */
-  tone?: 'error';
 };
 
 /**

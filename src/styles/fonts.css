@@ -1,0 +1,17 @@
+/* Self-hosted Martian Mono (latin subset). Vite rewrites the public paths to
+   relative URLs at build time, so this works at the domain root and from file://. */
+@font-face {
+  font-family: 'Martian Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/assets/fonts/martian-mono-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Martian Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/assets/fonts/martian-mono-700.woff2') format('woff2');
+}

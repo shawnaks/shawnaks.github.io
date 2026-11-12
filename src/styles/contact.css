@@ -37,21 +37,6 @@
   width: 100%;
 }
 
-/* accent wipe, same language as the .cta / case links */
-.contact-hero-wipe {
-  position: absolute;
-  inset: 0;
-  background: var(--accent);
-  transform: translateX(-101%);
-  transition: transform .35s var(--ease);
-  z-index: 0;
-}
-
-.contact-hero:hover .contact-hero-wipe,
-.contact-hero:focus-visible .contact-hero-wipe {
-  transform: translateX(0);
-}
-
 .contact-hero:hover,
 .contact-hero:focus-visible {
   border-color: var(--accent);
@@ -72,7 +57,7 @@
   width: 68px;
   height: 68px;
   border: 3px solid var(--fg);
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 
 .contact-hero-icon .icon {
@@ -107,7 +92,7 @@
 .contact-hero-go .icon {
   width: 18px;
   height: 18px;
-  color: var(--accent);
+  color: var(--accent-ink);
   transition: color .3s linear, transform .3s var(--ease);
 }
 
@@ -171,20 +156,13 @@
     box-shadow .4s var(--ease-out);
 }
 
-.contact-channel:hover .contact-channel-link,
-.contact-channel:focus-within .contact-channel-link {
-  border-color: var(--accent);
-  transform: translateY(-4px);
-  box-shadow: 0 14px 26px var(--shadow);
-}
-
 .contact-channel-icon {
   display: grid;
   place-items: center;
   width: 42px;
   height: 42px;
   border: 3px solid var(--fg);
-  color: var(--accent);
+  color: var(--accent-ink);
   margin-bottom: 2.2em;
   transition: background-color .25s linear, border-color .25s linear, color .25s linear;
 }
@@ -205,7 +183,7 @@
   font: 700 1.2em/1 var(--ui);
   letter-spacing: .08em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-ink);
   margin-bottom: .7em;
 }
 
@@ -213,14 +191,6 @@
   font: 700 1.7em/1.2 var(--ui);
   letter-spacing: normal;
   overflow-wrap: anywhere;
-  box-shadow: inset 0 -3px 0 var(--accent);
-  transition: background-color .25s linear, color .25s linear;
-}
-
-.contact-channel:hover .contact-channel-handle,
-.contact-channel:focus-within .contact-channel-handle {
-  background: var(--accent);
-  color: #fff;
 }
 
 .contact-channel-desc {
@@ -251,7 +221,7 @@
 .contact-status-label {
   font: 700 1.25em/1 var(--ui);
   letter-spacing: .04em;
-  color: var(--accent);
+  color: var(--accent-ink);
   margin-bottom: .8em;
 }
 

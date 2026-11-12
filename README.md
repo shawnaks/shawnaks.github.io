@@ -17,7 +17,7 @@ The visual design is a faithful homage to [oninross.github.io/infinite-imaginati
 | **Styling** | Hand-rolled design system in plain CSS (`src/styles/main.css` plus one stylesheet per section) — no Tailwind, no UI kit |
 | **Text scramble** | Custom `useScramble` hook (baffle.js equivalent) |
 | **Transitions** | Custom expo-eased timing: scroll-driven reveals, section-title wipe + scramble, and a case-study out-stagger |
-| **Fonts** | Martian Mono (400/700) via Google Fonts — one monospace family for UI and body, with a `ui-monospace` / Cascadia Mono / Consolas fallback stack |
+| **Fonts** | Self-hosted Martian Mono (400/700, latin woff2 under `public/assets/fonts/`, declared in `src/styles/fonts.css`) — one monospace family for UI and body, no runtime Google Fonts request, with a `ui-monospace` / Cascadia Mono / Consolas fallback stack |
 | **Theme** | Light / dark via a `.theme-dark` class and semantic CSS tokens; persisted in `localStorage`, applied pre-paint |
 | **Icons** | Inline SVG sprite (`IconSprite` + `Icon`) — no icon package |
 
@@ -33,9 +33,19 @@ npm install
 npm run dev      # http://localhost:5173
 npm run build    # type-checks + builds to dist/
 npm run preview  # serve the production build
+npm test         # run the unit suites (Vitest, one pass)
 ```
 
 `npm run lint` runs Oxlint over the project.
+
+## Tests
+
+`npm test` runs [Vitest](https://vitest.dev/) once:
+
+- `src/lib/sections.test.ts` — path normalisation, section-path → section-id mapping, and case-study path detection
+- `src/data/projects.test.ts` — six unique project slugs, non-empty challenge/solution steps, case-insensitive lookup, and next-pager wrapping
+
+Together they cover the path mapping behind the router and the integrity of the project data behind the grid and case studies. There is no browser E2E harness in the repo.
 
 ## Navigation & URL model
 
@@ -53,17 +63,27 @@ The 45px theme switch in the header flips a `.theme-dark` class on `<html>`. The
 
 Every surface reads from semantic tokens, so the loader, title slabs, project cards, case-study grids, contact cards, error page, focus rings, and `::selection` all flip without duplicated component rules. The token palettes are listed [below](#semantic-color-tokens). Native scrollbars follow the theme through `color-scheme`, and print media resets the page to the light palette.
 
+## Metadata & social preview
+
+`index.html` carries the Open Graph and Twitter-card tags. The preview image is `https://shawnaks.github.io/assets/og-image.png` (1200×630) — an **absolute URL**, because social crawlers do not resolve relative paths. It is tied to the current `shawnaks.github.io` domain, so update it if the site moves to a custom domain. `apple-touch-icon.png` is linked for iOS, and `public/site.webmanifest` supplies the 192/512 manifest icons with `theme_color` (and `background_color`) `#ffffff`.
+
 ## Project structure
 
 ```
 Personal Website/
   .github/workflows/deploy.yml   # automatic GitHub Pages deployment
-  index.html                     # Vite entry document (fonts, theme pre-paint script, #root)
+  index.html                     # Vite entry document (meta/social tags, theme pre-paint script, #root)
   vite.config.ts                 # React plugin + base: './' for portable builds
   public/
-    assets/favicon.svg           # 382 B
+    assets/favicon.svg           # SVG favicon
+    assets/apple-touch-icon.png  # 180×180 iOS home-screen icon
+    assets/icon-192.png          # manifest icon
+    assets/icon-512.png          # manifest icon
+    assets/og-image.png          # 1200×630 Open Graph / Twitter preview
+    assets/portrait.jpg          # owner portrait used by the home/about frames
+    assets/fonts/                # self-hosted Martian Mono 400/700 latin woff2
     assets/Shawnak-Samaddar-Resume.pdf   # 108 KB, linked from the social row & contact
-    site.webmanifest             # PWA metadata
+    site.webmanifest             # PWA metadata (theme_color #ffffff)
   src/
     main.tsx                     # React root
     App.tsx                      # HashRouter shell, loader gating, route effects,
@@ -101,13 +121,17 @@ Personal Website/
       useActiveSection.ts        # useSyncExternalStore subscriber for the scroll-spy section
     lib/
       sections.ts                # five-section registry + hash path helpers
+      sections.test.ts           # path normalisation / section mapping / case-study path tests
       scrollSpy.ts               # centre-band IntersectionObserver + shared active store
       scroll.ts                  # smooth/instant section scrolling, programmatic marker
       transition.ts              # case-study out-stagger + navigation guard
     data/
-      site.ts                    # nav items, home tiles, socials — single source of truth
+      site.ts                    # nav items, home tiles, socials, contact details (EMAIL/GITHUB_URL/
+                                 #   LINKEDIN_URL/RESUME_HREF) + shared facts (FACTS) — single source of truth
       projects.ts                # six project records + case-study content
+      projects.test.ts           # project-data integrity: slugs, steps, lookup, next pager
     styles/
+      fonts.css                  # @font-face for the self-hosted Martian Mono woff2 files
       main.css                   # design system: light/dark tokens, shell, primitives
       about.css                  # bio, education, coursework, skill bars
       experience.css             # role/hackathon records, inline project pills
@@ -121,7 +145,7 @@ Personal Website/
 
 | Area | Tokens |
 | --- | --- |
-| **Colors** | Semantic roles only — `--bg`, `--fg`, `--fill`, `--bg-subtle`, `--border`, `--gray`, `--accent`, `--red` — with a light and dark value for each (table below) |
+| **Colors** | Semantic roles only — `--bg`, `--fg`, `--fill`, `--bg-subtle`, `--border`, `--gray`, `--accent`, `--accent-ink`, `--red` — with a light and dark value for each (table below) |
 | **Type** | Martian Mono (400/700) for everything; `1em = 10px`. Bold (700) for logo, hero + slab titles, tile abbreviations, `//` labels, plan names/meta, pills, CTAs, stats, skill labels, project-card names, the case pager, contact handles, and course chips; regular (400) for body and secondary copy. No italics. Fallback stack: `ui-monospace, 'Cascadia Mono', Consolas, monospace` |
 | **Borders** | `3px solid --fg` (tiles / detail cards / CTAs), `6px` project cards, `0` border-radius |
 | **Motifs** | title slab + 15px accent spine · `//` labels · 2-letter tile abbreviations (Ho Ab Ex Pr Ct) · diagonal hatch shadows · HUD corner brackets · grayscale screenshots · double-chevron CTAs |
@@ -138,6 +162,7 @@ Personal Website/
 | `--border` | `#e0e0e0` | `#3a3b44` | hairline dividers |
 | `--gray` | `#6b6d78` | `#9aa0ad` | secondary copy |
 | `--accent` | `#0b852d` | `#1b8843` | the single accent (dark value reaches 4.52:1 with white text and 3.96:1 on the page) |
+| `--accent-ink` | `#0b852d` | `#3cbf6b` | accent for small text and thin lines (dark value 7.5:1 on the page, 5.1:1 on `--fill`) |
 | `--red` | `#cc0000` | `#cc0000` | error slab only |
 | `--hatch` | `rgba(43,44,51,.16)` | `rgba(255,255,255,.10)` | diagonal hatch strips |
 | `--hatch-soft` | `rgba(43,44,51,.045)` | `rgba(255,255,255,.06)` | screenshot-well texture |
@@ -154,7 +179,7 @@ All five sections live on the one stacked document; any section hash opens the s
 | `#/` or `#/hello/` | **BUILT** — section 1 (top) | "Hello World..." hero with scramble reveal, portrait + intro paragraphs with inline section links, "// navigate" home tile grid (visual sitemap), social row |
 | `#/about/` | **BUILT** — section 2 | Three-paragraph bio with an interactive canvas leaf field (26 leaves in 5 green shades drifting on an ambient wind, scattered by the cursor acting as a wind source) beneath the portrait; education card (Georgia Tech B.S. CS Dec 2027, threads: AI & information internetworks, math minor); 8 coursework chips; 8 scroll-triggered skill bars with counters; tools line |
 | `#/experience/` | **BUILT** — section 3 | 3 role records — Delta Dental data engineering intern (May–Aug 2026: Python + Snowflake ETL, 53M+ raw records → 27M refined rows, AI agent saving 80% developer time, 600M+ record validation across 50 sources) · Safe Robotics Lab undergrad research assistant (Dec 2025–present: OpenArm bimanual robot teleop in MuJoCo, robot-learning models) · NASA GeneLab Multi-Omics AWG data analyst intern (Jun 2024–Sep 2025: microscopy, K-Means, six ML models) — plus 3 hackathon records: Hacklytics 2026 2nd place best use of Actian VectorAI (50+ teams), AI ATL 2025 (Hearo), HackGT 2025 team lead (SnapFind) |
-| `#/projects/` | **BUILT** — section 4 | 6 project cards with 6px borders and framed `ShotSlot` screenshot placeholders: SnapFind (React 19, Supabase, FastAPI, ResNet-18, 92% accuracy), RxGuard (Gemini, sentence-transformers, Actian VectorAI, Hacklytics 2nd place), Flight Fare Optimizer (Python, 186 airports, 262k fares, 4 algorithms from scratch), Hearo (React Native, Gemini 2.5 Flash, ElevenLabs), Battle Showdown (Next.js 15, Tailwind 4), Pong (pygame, 2022) |
+| `#/projects/` | **BUILT** — section 4 | 6 project cards with 6px borders and framed `ShotSlot` screenshot placeholders: SnapFind (React 19, Supabase, FastAPI, ResNet-18, 92% accuracy), RxGuard (Gemini, sentence-transformers, Actian VectorAI, Hacklytics 2nd place), Flight Fare Optimizer (Python, 186 airports, 262k fares, 4 algorithms from scratch; Fall 2024 course build, refreshed against DOT data through Q1 2026), Hearo (React Native, Gemini 2.5 Flash, ElevenLabs), Battle Showdown (Next.js 15, Tailwind 4), Pong (pygame, 2022) |
 | `#/contact/` | **BUILT** — section 5 (bottom) | Email-first: wide `mailto:` hero card, 3 channel cards (LinkedIn, GitHub, résumé PDF download), location & status strip — Atlanta, GA, open to SWE/data internships summer 2027 |
 | `#/case-study/:slug/` | **BUILT** — sub-route | Six full case studies (table below) — TLDR; role, technology used, paired challenges & solutions, stats, repo/devpost links, and a `next:` pager that cycles all six; "back to listing" returns to the projects section |
 | anything else | **BUILT** — 404 | "// not found" with a CTA back to the top of the page |
@@ -165,7 +190,7 @@ All five sections live on the one stacked document; any section hash opens the s
 | --- | --- | --- |
 | `#/case-study/snapfind/` | SnapFind | Photo-based campus lost & found — ResNet-18 classifies 12 item categories at 92% accuracy |
 | `#/case-study/rxguard/` | RxGuard | Plain-English drug-regimen search over FDA data — 4 progressive engines, 384-dim embeddings, ~30% better retrieval |
-| `#/case-study/flight-fare-optimizer/` | Flight Fare Optimizer | U.S. airports as fare-weighted graph — 4 hand-rolled algorithms benchmarked on 25,000 routes |
+| `#/case-study/flight-fare-optimizer/` | Flight Fare Optimizer | U.S. airports as fare-weighted graph — 4 hand-rolled algorithms benchmarked on 25,000 routes on DOT fare data (Fall 2024 course build, refreshed against DOT data through Q1 2026) |
 | `#/case-study/hearo/` | Hearo | Voice-first vision assistant for blind and low-vision users — Gemini 2.5 Flash scene descriptions spoken by ElevenLabs |
 | `#/case-study/battle-showdown/` | Battle Showdown | Turn-based browser fighting game — 4 abilities, 100 HP, timed Snowman counterattacks |
 | `#/case-study/pong/` | Pong | The arcade classic in one Python file — 2-player and bot modes, 4 difficulties, zero external assets |
@@ -212,6 +237,6 @@ The original vanilla implementation — a zero-dependency, single-file HTML/CSS/
 ## Credits
 
 - **Design homage:** "infinite imaginations" by Niño Ross Rodriguez ([oninross.github.io/infinite-imaginations](https://oninross.github.io/infinite-imaginations))
-- **Fonts:** Martian Mono 400/700 (Google Fonts), fallbacks `ui-monospace` / Cascadia Mono / Consolas
+- **Fonts:** Martian Mono 400/700, self-hosted latin woff2 in `public/assets/fonts/` ([Martian Mono](https://github.com/evilmartians/mono), SIL Open Font License 1.1); fallbacks `ui-monospace` / Cascadia Mono / Consolas
 - **Icons:** inline SVG sprite, feather-style line icons
 - Built with React 19 + TypeScript + Vite; every animation is a local implementation
