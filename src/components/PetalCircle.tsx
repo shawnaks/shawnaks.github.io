@@ -5,9 +5,9 @@ import '../styles/petals.css';
 /* --------------------------------------------------------------------------
    the field
    -------------------------------------------------------------------------- */
-const LEAF_COUNT = 26;
+const LEAF_COUNT = 48;
 const MIN_LEAF_SIZE = 6;
-const MAX_LEAF_SIZE = 16;
+const MAX_LEAF_SIZE = 14;
 /** Keep every spawn inside this fraction of the radius, leaving edge room. */
 const SPAWN_RADIUS = 0.8;
 
@@ -242,7 +242,7 @@ function clamp(value: number, min: number, max: number): number {
 }
 
 /**
- * A wind-driven leaf field inside a bordered circle. Twenty-six leaves drift
+ * A wind-driven leaf field inside a bordered circle. Dozens of leaves drift
  * on a layered sine wind while visible; the pointer becomes a gust source
  * (radial push + swirl + velocity gust) and the field settles back to ambient
  * drift when it leaves. Geometry is drawn on a DPR-scaled canvas, clipped to
