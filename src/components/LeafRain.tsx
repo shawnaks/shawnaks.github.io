@@ -228,7 +228,7 @@ export function LeafRain() {
       leaf.y = initial
         ? -leaf.size - Math.random() * height * 0.6
         : -leaf.size - Math.random() * 18;
-      leaf.vy = 45 + Math.random() * 55;
+      leaf.vy = 70 + Math.random() * 80;
       leaf.swayPhase = Math.random() * TAU;
       leaf.swayFreq = 0.35 + Math.random() * 0.55;
       leaf.swayAmp = 15 + Math.random() * 20;
