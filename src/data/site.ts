@@ -47,7 +47,7 @@ export const RESUME_HREF = 'assets/Shawnak-Samaddar-Resume.pdf';
  * `https://shawnak-contact.<subdomain>.workers.dev` — no other change needed.
  */
 export const CONTACT: { endpoint: string; email: string } = {
-  endpoint: '',
+  endpoint: 'https://shawnak-contact.shawnaks.workers.dev/',
   email: EMAIL,
 };
 
