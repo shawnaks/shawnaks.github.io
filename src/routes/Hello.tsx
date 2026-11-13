@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 import { HOME_TILES } from '../data/site';
 import { NavTile } from '../components/NavTile';
@@ -7,10 +7,50 @@ import { SectionTitle } from '../components/SectionTitle';
 import { SocialRow } from '../components/SocialRow';
 import type { SectionNavHandler } from '../lib/sections';
 import { useReveal } from '../hooks/useReveal';
+import { prefersReducedMotion } from '../hooks/useScramble';
+import '../styles/terminal.css';
 
 export type HelloProps = {
   onNavigate?: SectionNavHandler;
 };
+
+const STATUS_TEXT = 'currently: robot learning @ the Safe Robotics Lab';
+const TYPE_START_MS = 320;
+const TYPE_CHAR_MS = 32;
+
+/**
+ * Hero status as a terminal line: types once after a short delay, then the
+ * block cursor blinks. The full sentence sits in .sr-only from first paint so
+ * assistive tech never receives it character by character; reduced motion
+ * skips straight to the finished line with a static cursor.
+ */
+function HeroStatus() {
+  const [reduce] = useState(prefersReducedMotion);
+  const [typed, setTyped] = useState(reduce ? STATUS_TEXT.length : 0);
+  const done = typed >= STATUS_TEXT.length;
+
+  useEffect(() => {
+    if (reduce) return;
+
+    let timer = 0;
+    let shown = 0;
+    const step = () => {
+      shown += 1;
+      setTyped(shown);
+      if (shown < STATUS_TEXT.length) timer = window.setTimeout(step, TYPE_CHAR_MS);
+    };
+
+    timer = window.setTimeout(step, TYPE_START_MS);
+    return () => window.clearTimeout(timer);
+  }, [reduce]);
+
+  return (
+    <p className="hero-status anim">
+      <span className="sr-only">{STATUS_TEXT}</span>
+      <span aria-hidden="true">{STATUS_TEXT.slice(0, typed)}<span className={done && !reduce ? 'terminal-cursor is-blinking' : 'terminal-cursor'} /></span>
+    </p>
+  );
+}
 
 /** The hero section, first in the stacked single-page document. */
 export function Hello({ onNavigate }: HelloProps) {
@@ -44,9 +84,7 @@ export function Hello({ onNavigate }: HelloProps) {
             <div className="hero-copy">
               <p className="hero-line anim">Shawnak Samaddar — computer science @ Georgia Tech</p>
 
-              <p className="hero-status anim">
-                currently: robot learning @ the Safe Robotics Lab
-              </p>
+              <HeroStatus />
             </div>
           </div>
 

@@ -7,6 +7,7 @@ import { CommandPalette } from './components/CommandPalette';
 import { Header } from './components/Header';
 import { IconSprite } from './components/IconSprite';
 import { Loader } from './components/Loader';
+import { ResumePreview } from './components/ResumePreview';
 import { markSectionScroll, scrollBehavior, scrollToSection } from './lib/scroll';
 import { isCaseStudyPath, isMainPath, sectionIdFromPath } from './lib/sections';
 import type { SectionNavHandler } from './lib/sections';
@@ -133,6 +134,8 @@ function Shell() {
         onNavigate={handleSectionNavigate}
         onCaseStudyNavigate={handleTransitionNavigate}
       />
+
+      <ResumePreview />
 
       {ready ? (
         <main id="main" tabIndex={-1}>

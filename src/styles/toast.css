@@ -1,0 +1,95 @@
+/* ==========================================================================
+   copy email — the confirmation toast and the two button resets
+   main.css styles the social icons as links; the copier is a <button>, so it
+   repeats those few rules here to stay pixel-identical. Same for contact.css's
+   hero card, which keeps its own visual language and only drops UA button
+   defaults.
+   ========================================================================== */
+
+/* ----- toast: one fixed confirmation, bottom centre ----- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 150;
+  max-width: min(calc(100vw - 32px), 360px);
+  padding: 10px 16px;
+  border: 3px solid var(--fg);
+  border-bottom-color: var(--accent);
+  background: var(--bg);
+  color: var(--fg);
+  font: 700 var(--text-sm)/1.4 var(--ui);
+  text-align: center;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 6px);
+  transition:
+    opacity .18s linear,
+    transform .18s var(--ease-out),
+    visibility 0s linear .18s;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+  transition-delay: 0s;
+}
+
+@media (max-width: 767px) {
+  .toast {
+    /* clears the fixed 56px bottom tab bar plus its home-indicator inset */
+    bottom: calc(56px + env(safe-area-inset-bottom, 0px) + 14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    transition: none;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* ----- social row: icon square, same as its link siblings ----- */
+.social-row .copy-email-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 3px solid var(--fg);
+  border-radius: 0;
+  background: none;
+  color: var(--fg);
+  font: inherit;
+  cursor: pointer;
+  appearance: none;
+  transition: transform .25s var(--ease), background-color .25s linear,
+              color .25s linear, border-color .25s linear;
+}
+
+.social-row .copy-email-icon:hover,
+.social-row .copy-email-icon:focus-visible {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  transform: scale(1.25);
+}
+
+@media (max-width: 420px) {
+  .social-row .copy-email-icon {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* ----- contact hero: a button wearing the card it always had ----- */
+button.contact-hero {
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+}

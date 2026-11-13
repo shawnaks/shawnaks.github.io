@@ -1,0 +1,195 @@
+/* ==========================================================================
+   résumé preview — inline PDF dialog
+   tokens, motion and focus rings come from main.css
+   ========================================================================== */
+
+.resume-preview-overlay {
+  position: fixed;
+  inset: 0;
+  /* The scroll lock's `stable` gutter shrinks the fixed containing block;
+     vw keeps the sheet full-bleed over it. */
+  width: 100vw;
+  z-index: 350; /* above the palette (300), below the loader (400) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 6vh, 64px) 16px;
+  background: rgba(12, 13, 16, .62);
+  animation: resume-preview-fade .16s var(--ease-out) both;
+}
+
+.resume-preview-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(900px, 92vw);
+  height: 84vh;
+  height: 84dvh;
+  max-height: 84dvh;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  border: 3px solid var(--fg);
+  box-shadow: 0 24px 60px var(--shadow);
+  animation: resume-preview-rise .18s var(--ease-out) both;
+}
+
+@keyframes resume-preview-fade {
+  from { opacity: 0; }
+}
+
+@keyframes resume-preview-rise {
+  from { opacity: 0; transform: translateY(8px); }
+}
+
+/* --------------------------------------------------------------------------
+   header bar — title, download / new tab, close
+   -------------------------------------------------------------------------- */
+.resume-preview-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  flex: none;
+  padding: 8px 10px 8px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.resume-preview-title {
+  flex: 1 1 140px;
+  min-width: 0;
+  overflow: hidden;
+  font: 700 var(--text-sm)/1.2 var(--ui);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.resume-preview-mark {
+  color: var(--accent-ink);
+}
+
+.resume-preview-actions {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+
+.resume-preview-action,
+.resume-preview-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 2px solid var(--fg);
+  border-radius: 0;
+  background: transparent;
+  color: var(--fg);
+  font: 700 var(--text-xs)/1 var(--ui);
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .15s linear, color .15s linear, border-color .15s linear;
+}
+
+.resume-preview-close {
+  width: 44px;
+  padding: 0;
+  flex: none;
+  font-size: var(--text-lg);
+}
+
+.resume-preview-action:hover,
+.resume-preview-action:focus-visible,
+.resume-preview-close:hover,
+.resume-preview-close:focus-visible {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   sheet + fallback strip
+   -------------------------------------------------------------------------- */
+.resume-preview-sheet {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: var(--bg-subtle);
+}
+
+.resume-preview-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff; /* PDF paper stays white in both themes */
+}
+
+/* Always rendered: the only reliable way forward when the frame stays blank. */
+.resume-preview-fallback {
+  flex: none;
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+  color: var(--gray);
+  font: 400 var(--text-xs)/1.5 var(--ui);
+}
+
+.resume-preview-fallback a {
+  color: var(--fg);
+  text-decoration: none;
+  box-shadow: inset 0 -2px 0 var(--accent-ink);
+}
+
+.resume-preview-fallback a:hover,
+.resume-preview-fallback a:focus-visible {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   phones — full-bleed sheet, actions on their own row
+   -------------------------------------------------------------------------- */
+@media (max-width: 560px) {
+  .resume-preview-overlay { padding: 0; }
+
+  .resume-preview-panel {
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-width: 0;
+    border-top: 3px solid var(--fg);
+  }
+
+  .resume-preview-bar { padding: 6px 8px 6px 12px; }
+
+  .resume-preview-title { order: 1; flex: 1 1 auto; }
+  .resume-preview-close { order: 2; }
+  .resume-preview-actions {
+    order: 3;
+    flex: 1 0 100%;
+  }
+  .resume-preview-action { flex: 1; }
+
+  .resume-preview-fallback { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+}
+
+/* 320-380px: both action labels cannot share one row in monospace. */
+@media (max-width: 380px) {
+  .resume-preview-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .resume-preview-action {
+    flex: none;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resume-preview-overlay,
+  .resume-preview-panel {
+    animation: none;
+  }
+}

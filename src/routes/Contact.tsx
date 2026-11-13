@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import type { ChangeEvent, FormEvent } from 'react';
+import type { ChangeEvent, CSSProperties, FormEvent } from 'react';
 import { Cta } from '../components/Cta';
+import { COPY_EMAIL_LABEL, copyEmail } from '../components/CopyEmail';
 import { Icon } from '../components/Icon';
+import { openResumePreview } from '../components/ResumePreview';
 import { SectionTitle } from '../components/SectionTitle';
 import type { IconName } from '../data/site';
 import { CONTACT, EMAIL, FACTS, GITHUB_URL, LINKEDIN_URL, RESUME_HREF } from '../data/site';
@@ -52,7 +54,7 @@ const CHANNELS: readonly Channel[] = [
   },
   {
     name: 'Résumé',
-    handle: 'download the pdf',
+    handle: 'preview the pdf',
     description: 'The one-page formal version, always current.',
     icon: 'down',
     href: RESUME_HREF,
@@ -62,6 +64,15 @@ const CHANNELS: readonly Channel[] = [
 
 const MAILTO_SUCCESS = `your mail app should open — if it doesn't, email me directly at ${CONTACT.email}.`;
 const SENT_SUCCESS = "message sent — I'll get back to you.";
+
+/** The channel card as a button: undo the button-only UA chrome, keep the class styling. */
+const CHANNEL_BUTTON_STYLE: CSSProperties = {
+  font: 'inherit',
+  textAlign: 'start',
+  cursor: 'pointer',
+  appearance: 'none',
+  borderRadius: 0,
+};
 
 /** Coarse, human wait for the server's static `retryAfter` seconds. */
 function formatRetryAfter(totalSeconds: number): string {
@@ -300,7 +311,13 @@ export function Contact({ onNavigate }: ContactProps) {
           </p>
 
           <div className="contact-hero-wrap hatch anim">
-            <a className="contact-hero" href={`mailto:${EMAIL}`}>
+            <button
+              type="button"
+              className="contact-hero"
+              aria-label={COPY_EMAIL_LABEL}
+              title={EMAIL}
+              onClick={() => void copyEmail()}
+            >
               <span className="contact-hero-wipe" aria-hidden="true" />
               <span className="contact-hero-icon" aria-hidden="true">
                 <Icon name="mail" />
@@ -315,30 +332,49 @@ export function Contact({ onNavigate }: ContactProps) {
                 <Icon name="chev" />
                 <Icon name="chev" />
               </span>
-            </a>
+            </button>
           </div>
 
           <p className="section-label contact-label anim">// channels</p>
 
           <ul className="contact-channel-grid">
-            {CHANNELS.map((channel) => (
-              <li className="contact-channel anim" key={channel.name}>
-                <a
-                  className="contact-channel-link hatch"
-                  href={channel.href}
-                  target={channel.external ? '_blank' : undefined}
-                  rel={channel.external ? 'noopener noreferrer' : undefined}
-                  download={channel.download ? '' : undefined}
-                >
+            {CHANNELS.map((channel) => {
+              const body = (
+                <>
                   <span className="contact-channel-icon" aria-hidden="true">
                     <Icon name={channel.icon} />
                   </span>
                   <span className="contact-channel-name">{channel.name}</span>
                   <span className="contact-channel-handle">{channel.handle}</span>
                   <span className="contact-channel-desc">{channel.description}</span>
-                </a>
-              </li>
-            ))}
+                </>
+              );
+
+              return (
+                <li className="contact-channel anim" key={channel.name}>
+                  {channel.download ? (
+                    <button
+                      type="button"
+                      className="contact-channel-link hatch"
+                      style={CHANNEL_BUTTON_STYLE}
+                      aria-label="preview résumé"
+                      onClick={openResumePreview}
+                    >
+                      {body}
+                    </button>
+                  ) : (
+                    <a
+                      className="contact-channel-link hatch"
+                      href={channel.href}
+                      target={channel.external ? '_blank' : undefined}
+                      rel={channel.external ? 'noopener noreferrer' : undefined}
+                    >
+                      {body}
+                    </a>
+                  )}
+                </li>
+              );
+            })}
           </ul>
 
           <div className="contact-status hatch anim">

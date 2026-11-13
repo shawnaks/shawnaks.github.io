@@ -18,7 +18,7 @@ The visual design is a faithful homage to [oninross.github.io/infinite-imaginati
 | **Text scramble** | Custom `useScramble` hook (baffle.js equivalent) |
 | **Transitions** | Custom expo-eased timing: scroll-driven reveals, section-title wipe + scramble, per-letter hover glyph cycling on the four section titles, and a case-study out-stagger |
 | **Fonts** | Self-hosted Martian Mono (400/700, latin woff2 under `public/assets/fonts/`, declared in `src/styles/fonts.css`) — one monospace family for UI and body, no runtime Google Fonts request, with a `ui-monospace` / Cascadia Mono / Consolas fallback stack |
-| **Theme** | Light / dark via a `.theme-dark` class and semantic CSS tokens; persisted in `localStorage`, applied pre-paint |
+| **Theme** | Light / dark via a `.theme-dark` class and semantic CSS tokens; defaults to the local clock (dark 19:00–06:59, light 07:00–18:59) unless an explicit choice is stored, applied pre-paint |
 | **Icons** | Inline SVG sprite (`IconSprite` + `Icon`) — no icon package |
 | **Navigation** | Header tiles + scroll spy, a fixed left section rail ≥1200px, a fixed bottom tab bar ≤767px, and a command palette (Ctrl/Cmd+K or `/`) with its own fuzzy ranking |
 | **Type scale** | One `--text-*` token scale on a 62.5% root (`1rem = 10px`): 13px labels, 14px metadata, 17–18px reading copy, 21–24px statements, 24–28px headings, 57.6px section slabs, 97.2px hero |
@@ -42,16 +42,17 @@ npm test         # run the unit suites (Vitest, one pass)
 
 ## Tests
 
-`npm test` runs [Vitest](https://vitest.dev/) once: **57 tests across 6 files**.
+`npm test` runs [Vitest](https://vitest.dev/) once: **63 tests across 7 files**.
 
 - `src/lib/sections.test.ts` — path normalisation, section-path → section-id mapping, and case-study path detection
 - `src/data/projects.test.ts` — six unique project slugs, non-empty challenge/solution steps, case-insensitive lookup, and next-pager wrapping
 - `src/lib/contactForm.test.ts` — field validation and caps, CR/LF stripping, and mailto subject/body encoding (including header-injection attempts)
 - `src/lib/rateLimit.test.ts` — cooldown and rolling-window verdicts, persistence, corrupt-JSON tolerance, and falling back to memory when storage throws
+- `src/lib/theme.test.ts` — time-of-day boundary (07:00 / 19:00), stored-choice override, and invalid/empty storage fallback
 - `worker/src/validate.test.js` — server-side payload rules: required fields, caps, control characters, honeypot, and non-string inputs
 - `worker/src/limit.test.js` — per-IP 60 s / 3-per-15-min windows, retry-after math, window rollover, the global daily cap, and corrupt timestamps
 
-Together they cover the path mapping behind the router, the integrity of the project data behind the grid and case studies, the contact form's validation, encoded mailto, and client-side rate limiting, and the worker's validation and rate-limit math. There is no browser E2E harness in the repo.
+Together they cover the path mapping behind the router, the integrity of the project data behind the grid and case studies, the contact form's validation, encoded mailto, client-side rate limiting, the theme resolver, and the worker's validation and rate-limit math. There is no browser E2E harness in the repo.
 
 ## Navigation & URL model
 
@@ -69,12 +70,16 @@ Together they cover the path mapping behind the router, the integrity of the pro
 ## Interaction details
 
 - **Card scan wipe.** A project card's real screenshot (when one exists) is clipped from the right and wipes in left→right on hover, alongside the existing −4px card lift. It is gated to `(hover: hover) and (pointer: fine)` and off under reduced motion, so touch devices never get a hidden image. The placeholder slots are untouched.
+- **Home-tile glitch.** Hovering or keyboard-focusing one of the four home tiles plays a one-shot ~0.4s chroma-split glitch: two `aria-hidden` copies of the label are clipped and nudged (380ms / 420ms), then settle at zero opacity. The copies are absolutely positioned, so the tile, grid and neighbours never move. It is scoped to `.tile-grid`, gated to `(hover: hover) and (pointer: fine)`, and removed under reduced motion (the panel wipe and colour change remain).
+- **Typewriter status.** The hero's `currently: robot learning @ the Safe Robotics Lab` line types one character per 32ms after a ~320ms pause, then a block cursor blinks at 1.1s `step-end`. The full sentence is in an `.sr-only` span from first paint and the animated copy is `aria-hidden`, so assistive tech never receives it character by character; the line's height is reserved so the portrait, rule and tiles below never move. Reduced motion shows the finished line with a static cursor.
+- **Copy email.** The landing email icon and the Contact email hero card copy `shawnaksa150@gmail.com` and show one bottom-centre `email copied` toast (`role="status"`, 2s, restarting in place rather than stacking). If the Clipboard API is missing or denied, the click opens a `mailto:` and the toast reads `opening your mail app…`.
+- **Résumé preview.** The landing résumé icon and the Contact résumé card open a modal with the PDF inline, download and open-in-new-tab actions, a focus trap, Esc/backdrop/close, a scroll lock and an always-visible fallback strip. Focus returns to the trigger on close; the panel is full-bleed on phones and stacks its actions at 320–380px. Reduced motion skips the fade/rise.
 - **Case-study progress spine.** A 15px accent bar on the page edge fills top→bottom with the `--read` custom property (one rAF per scroll frame), echoing the title slab's spine. It sits inside the article, below the fixed header, and is hidden in print.
 - **Contact feedback.** A success send plays a 420 ms stamp and a hatch flash (restarted per accepted send); an invalid submit shakes only the first bad field once, then focuses it. Both are off under reduced motion, and the form keeps a single polite live region so a message is never announced twice.
 
 ## Theming
 
-The 45px theme switch in the header flips a `.theme-dark` class on `<html>`. The choice is stored in `localStorage` under `theme`; a small inline script in `index.html` applies the class and rewrites `<meta name="theme-color">` before the first paint, so reloading in dark mode never flashes a white page. The first visit defaults to light, and the key survives case-study navigation (it is origin-scoped).
+The 45px theme switch in the header flips a `.theme-dark` class on `<html>`. With no stored choice, the default follows the visitor's local clock — dark from 19:00 through 06:59, light from 07:00 through 18:59 (`themeForHour` / `resolveInitialTheme` in `src/lib/theme.ts`, unit-tested in `theme.test.ts`). Toggling writes an explicit choice to `localStorage` under `theme`; that choice always wins over the clock on later visits, and a `storage` event keeps other open tabs in sync. A small inline script in `index.html` mirrors the same boundary and applies the class plus `<meta name="theme-color">` before the first paint, so neither the time default nor a stored choice flashes a white page; the React switch only takes over after mount. The key survives case-study navigation (it is origin-scoped).
 
 Every surface reads from semantic tokens, so the loader, title slabs, project cards, case-study grids, contact cards, error page, focus rings, and `::selection` all flip without duplicated component rules. The token palettes are listed [below](#semantic-color-tokens). Native scrollbars follow the theme through `color-scheme`, and print media resets the page to the light palette.
 
@@ -108,25 +113,27 @@ Personal Website/
     site.webmanifest             # PWA metadata (theme_color #ffffff)
   src/
     main.tsx                     # React root
-    App.tsx                      # HashRouter shell, loader gating, route effects,
+    App.tsx                      # HashRouter shell, loader gating, route effects, résumé dialog,
                                  #   section scroll handler, command palette, case-study + catch-all routes
     routes/
       MainPage.tsx               # the scrollable document: Hello → About → Experience → Projects → Contact,
                                  #   plus the section rail / mobile tab bar
-      Hello.tsx                  # #/hello/       — hero, identity + current-role lines, home tile grid, socials
+      Hello.tsx                  # #/hello/       — hero, typewritten current-role status, home tile grid, socials
       About.tsx                  # #/about/       — bio (portrait below the copy) + full-screen falling-leaf rain, education, coursework, skill bars
       Experience.tsx             # #/experience/  — 3 roles + 3 hackathon records
       Projects.tsx               # #/projects/    — 6 project cards with ShotSlot frames
       CaseStudy.tsx              # #/case-study/:slug/ — full record + next pager
-      Contact.tsx                # #/contact/     — email-first, channels, status, message form
+      Contact.tsx                # #/contact/     — copy-email hero, channels (résumé preview), status, message form
       ErrorPage.tsx              # catch-all "// not found"
     components/
       Header.tsx                 # fixed header, compact nav, palette trigger, theme switch, scroll state
       CommandPalette.tsx         # Ctrl/Cmd+K dialog: sections, case studies, résumé, email, theme
       SectionRail.tsx            # fixed left section rail (≥1200px) / bottom tab bar (≤767px)
-      ThemeToggle.tsx            # 45px light/dark switch; persists + updates theme-color
-      NavTile.tsx                # 2-letter nav tile; intercepts clicks for smooth scrolling
+      ThemeToggle.tsx            # 45px light/dark switch; follows the clock by default, persists a choice, updates theme-color
+      NavTile.tsx                # 2-letter nav tile; intercepts clicks for smooth scrolling, decorative hover glitch
       SectionTitle.tsx           # observer-triggered slab wipe + scramble, per-letter hover cycle, hero variant
+      CopyEmail.tsx              # clipboard copy + the single role=status "email copied" toast, mailto fallback
+      ResumePreview.tsx          # event-driven résumé dialog: inline PDF, download / new tab, focus trap
       PlanList.tsx / PlanItem.tsx # bordered detail-card list (education, roles, records)
       Portrait.tsx               # framed, grayscale-until-hover owner portrait
       LeafRain.tsx               # full-viewport canvas behind the about content: sparse 16–24px
@@ -135,7 +142,7 @@ Personal Website/
                                  #   education, resumes on scroll-up; DPR-scaled, rAF only while
                                  #   raining, nothing under reduced motion
       Cta.tsx                    # double-chevron call to action
-      SocialRow.tsx              # github / linkedin / email / résumé row
+      SocialRow.tsx              # github / linkedin links, email copy, résumé preview
       ShotSlot.tsx               # framed screenshot slot (placeholder or image)
       SkillBars.tsx              # scroll-triggered skill bars + counters
       Loader.tsx                 # initial loading ring
@@ -155,6 +162,8 @@ Personal Website/
       contactForm.test.ts        # validation / caps / encoding / header-injection tests
       rateLimit.ts               # 60s cooldown + 3-per-15-min limiter, localStorage + memory fallback
       rateLimit.test.ts          # cooldown / rolling window / corrupt + throwing storage tests
+      theme.ts                   # clock default (dark 19:00–06:59) + stored-choice resolver, shared with index.html
+      theme.test.ts              # boundary hours, stored override, invalid/empty storage fallback
     data/
       site.ts                    # nav items, home tiles, socials, contact details (EMAIL/GITHUB_URL/
                                  #   LINKEDIN_URL/RESUME_HREF), form delivery (CONTACT) + facts (FACTS)
@@ -172,6 +181,9 @@ Personal Website/
       leaf-rain.css              # fixed full-viewport leaf canvas + about content stacking
       rail.css                   # section rail (wide) / bottom tab bar (phone) + safe-area padding
       palette.css                # header palette trigger + command-palette dialog
+      terminal.css               # hero status typewriter + blinking block cursor
+      toast.css                  # bottom-centre "email copied" toast + copy-button resets
+      resume-preview.css         # inline-PDF dialog, header actions, fallback strip, phone layout
 ```
 
 ### Contact form delivery
@@ -243,11 +255,11 @@ All five sections live on the one stacked document; any section hash opens the s
 
 | Route | Status | Contents |
 | --- | --- | --- |
-| `#/` or `#/hello/` | **BUILT** — section 1 (top) | "Hello World..." hero with a one-shot scramble reveal, a 150px portrait beside the identity line (`Shawnak Samaddar — computer science @ Georgia Tech`) and the current-role status line (`currently: robot learning @ the Safe Robotics Lab`), "// navigate" home tile grid (visual sitemap), centred social row, and a six-sector leaf-green pie under it that jumps to About (drifts slowly at rest, spins up on hover/focus) |
+| `#/` or `#/hello/` | **BUILT** — section 1 (top) | "Hello World..." hero with a one-shot scramble reveal, a 150px portrait beside the identity line (`Shawnak Samaddar — computer science @ Georgia Tech`) and the current-role status line (`currently: robot learning @ the Safe Robotics Lab`), typed at 32ms/char behind a blinking block cursor (instant with a static cursor under reduced motion), "// navigate" home tile grid (visual sitemap) with the one-shot hover/focus glitch, centred social row where the email icon copies the address (2s toast, `mailto:` fallback) and the résumé icon opens the inline-PDF preview, and a six-sector leaf-green pie under it that jumps to About (drifts slowly at rest, spins up on hover/focus) |
 | `#/about/` | **BUILT** — section 2 | Three-paragraph bio at the 18px reading step with the 300px portrait below the copy (it absorbed the hero's teleoperation clause, the Hacklytics name and the "next hard problem" line), over a full-screen falling-leaf rain behind the content (sparse 16–24px leaves in 5 theme-aware green shades, each swaying and tumbling as it falls; starts when About is reached, stops and fades at education, resumes on scroll-up, static under reduced motion); education card (Georgia Tech B.S. CS Dec 2027, threads: AI & information internetworks, math minor); 8 coursework chips; 8 scroll-triggered skill bars with counters; tools line |
 | `#/experience/` | **BUILT** — section 3 | 3 role records — Delta Dental data engineering intern (May–Aug 2026: Python + Snowflake ETL, 53M+ raw records → 27M refined rows, AI agent saving 80% developer time, 600M+ record validation across 50 sources) · Safe Robotics Lab undergrad research assistant (Dec 2025–present: OpenArm bimanual robot teleop in MuJoCo, robot-learning models) · NASA GeneLab Multi-Omics AWG data analyst intern (Jun 2024–Sep 2025: microscopy, K-Means, six ML models) — plus 3 hackathon records: Hacklytics 2026 2nd place best use of Actian VectorAI (50+ teams), AI ATL 2025 (Hearo), HackGT 2025 team lead (SnapFind) |
 | `#/projects/` | **BUILT** — section 4 | 6 project cards with 6px borders and framed `ShotSlot` screenshot placeholders: SnapFind (React 19, Supabase, FastAPI, ResNet-18, 92% accuracy), RxGuard (Gemini, sentence-transformers, Actian VectorAI, Hacklytics 2nd place), Flight Fare Optimizer (Python, 186 airports, 262k fares, 4 algorithms from scratch; Fall 2024 course build, refreshed against DOT data through Q1 2026), Hearo (React Native, Gemini 2.5 Flash, ElevenLabs), Battle Showdown (Next.js 15, Tailwind 4), Pong (pygame, 2022) |
-| `#/contact/` | **BUILT** — section 5 (bottom) | Email-first: wide `mailto:` hero card, 3 channel cards (LinkedIn, GitHub, résumé PDF download), location & status strip — Atlanta, GA, open to SWE/data internships summer 2027 — and a `// send a message` form (name, email, optional subject, 2000-character message) that POSTs to the live Cloudflare Worker, with inline validation, focus management, one polite live status line, a success stamp, a one-shot error shake, a 60s / 3-per-15-minute client-side rate limit, and the `mailto:` path as fallback if `CONTACT.endpoint` is cleared |
+| `#/contact/` | **BUILT** — section 5 (bottom) | Email-first: wide hero card that copies the address (same 2s toast; `mailto:` fallback when the clipboard is denied), 3 channel cards (LinkedIn, GitHub, résumé opens the PDF preview modal), location & status strip — Atlanta, GA, open to SWE/data internships summer 2027 — and a `// send a message` form (name, email, optional subject, 2000-character message) that POSTs to the live Cloudflare Worker, with inline validation, focus management, one polite live status line, a success stamp, a one-shot error shake, a 60s / 3-per-15-minute client-side rate limit, and the `mailto:` path as fallback if `CONTACT.endpoint` is cleared |
 | `#/case-study/:slug/` | **BUILT** — sub-route | Six full case studies (table below) — TLDR; role, technology used, paired challenges & solutions, stats, repo/devpost links, and a `next:` pager that cycles all six; a 15px reading-progress spine fills with the page; "back to listing" returns to the projects section |
 | anything else | **BUILT** — 404 | "// not found" with a CTA back to the top of the page |
 

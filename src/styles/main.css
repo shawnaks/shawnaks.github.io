@@ -321,6 +321,61 @@ ul { list-style: none; }
 .element-box.is-active { border-color: var(--accent-ink); }
 .element-box.is-active .box-icon { opacity: 1; transform: scale(1); }
 
+/* Home-tile hover glitch: two decorative copies of the label are clipped and
+   nudged for ~0.4s, then settle back to zero opacity. Absolute copies keep
+   the tile, grid and neighbours exactly where they were. */
+.tile-glitch {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+}
+.tile-glitch-copy {
+  position: absolute;
+  inset: 0;
+  color: #fff;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+.tile-glitch-copy:first-child { text-shadow: -2px 0 rgba(0, 255, 255, .7); }
+.tile-glitch-copy:last-child { text-shadow: 2px 0 rgba(255, 0, 0, .7); }
+
+@media (hover: hover) and (pointer: fine) {
+  .tile-grid .element-box:hover .tile-glitch-copy:first-child,
+  .tile-grid .element-box:focus-visible .tile-glitch-copy:first-child {
+    animation: tile-glitch-a 380ms linear 1 both;
+  }
+  .tile-grid .element-box:hover .tile-glitch-copy:last-child,
+  .tile-grid .element-box:focus-visible .tile-glitch-copy:last-child {
+    animation: tile-glitch-b 420ms linear 1 both;
+  }
+}
+@keyframes tile-glitch-a {
+  0%   { opacity: .5;  clip-path: inset(48% 0 44% 0); transform: translate(-1.5px, 0); }
+  18%  { opacity: .5;  clip-path: inset(6% 0 78% 0);  transform: translate(1px, 0); }
+  36%  { opacity: .45; clip-path: inset(72% 0 10% 0); transform: translate(-1px, 0); }
+  54%  { opacity: .4;  clip-path: inset(24% 0 60% 0); transform: translate(1.5px, 0); }
+  72%  { opacity: .3;  clip-path: inset(86% 0 4% 0);  transform: translate(-1px, 0); }
+  88%  { opacity: .18; clip-path: inset(40% 0 46% 0); transform: translate(1px, 0); }
+  100% { opacity: 0;   clip-path: inset(50% 0 40% 0); transform: translate(0, 0); }
+}
+@keyframes tile-glitch-b {
+  0%   { opacity: .5;  clip-path: inset(14% 0 72% 0); transform: translate(1.5px, 0); }
+  18%  { opacity: .45; clip-path: inset(64% 0 22% 0); transform: translate(-1px, 0); }
+  36%  { opacity: .4;  clip-path: inset(30% 0 54% 0); transform: translate(1px, 0); }
+  54%  { opacity: .35; clip-path: inset(82% 0 8% 0);  transform: translate(-1.5px, 0); }
+  72%  { opacity: .25; clip-path: inset(44% 0 40% 0); transform: translate(1px, 0); }
+  88%  { opacity: .15; clip-path: inset(10% 0 84% 0); transform: translate(-1px, 0); }
+  100% { opacity: 0;   clip-path: inset(50% 0 40% 0); transform: translate(0, 0); }
+}
+/* No glitch at all under reduced motion; the panel wipe and colour change
+   remain as the non-motion hover feedback. */
+@media (prefers-reduced-motion: reduce) {
+  .tile-glitch { display: none; }
+  .tile-glitch-copy { animation: none !important; }
+}
+
 /* card hover — project cards and contact channel cards */
 .project-cell:hover .project-card,
 .project-cell:focus-within .project-card,

@@ -7,9 +7,14 @@
 <meta name="description" content="Shawnak Samaddar — computer science student at Georgia Tech building full-stack web apps and machine-learning tools. Atlanta, GA.">
 <meta name="theme-color" content="#ffffff">
 <script>
+  // Default theme by local time — dark 19:00–06:59, light 07:00–18:59.
+  // Must stay in sync with resolveInitialTheme() in src/lib/theme.ts.
   (function () {
     try {
-      var dark = localStorage.getItem('theme') === 'dark';
+      var stored = null;
+      try { stored = localStorage.getItem('theme'); } catch (e) {}
+      var hour = new Date().getHours();
+      var dark = stored === 'dark' || (stored !== 'light' && (hour >= 19 || hour < 7));
       if (dark) document.documentElement.classList.add('theme-dark');
       var meta = document.querySelector('meta[name="theme-color"]');
       if (meta) meta.setAttribute('content', dark ? '#17181d' : '#ffffff');

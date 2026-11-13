@@ -52,6 +52,18 @@ export function NavTile({ to, abbr, full, icon, size, onNavigate }: NavTileProps
       <span className="box-text">
         <span className="abbr">{abbr}</span>
         <span className="full">{full}</span>
+        {/* Decorative RGB-split copies. Hidden from the AX tree so the link
+            still exposes a single label. */}
+        <span className="tile-glitch" aria-hidden="true">
+          <span className="tile-glitch-copy">
+            <span className="abbr">{abbr}</span>
+            <span className="full">{full}</span>
+          </span>
+          <span className="tile-glitch-copy">
+            <span className="abbr">{abbr}</span>
+            <span className="full">{full}</span>
+          </span>
+        </span>
       </span>
       <span className="box-icon">
         <Icon name={icon} />
