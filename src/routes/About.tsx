@@ -72,14 +72,16 @@ export function About({ onNavigate }: AboutProps) {
                 real-world problems into working software. My work so far spans data engineering —{' '}
                 {FACTS.deltaRecords} record pipelines at Delta Dental — applied machine learning — CNNs
                 and six-model ensembles at NASA GeneLab, semantic search in RxGuard — and robotics
-                research in Georgia Tech’s Safe Robotics Lab.
+                research in Georgia Tech’s Safe Robotics Lab, where I teleoperate a bimanual robot and
+                train models for autonomous operation.
               </p>
 
               <p className="lead anim">
                 I started in 2022 by rebuilding Pong in a single Python file. Since then I’ve led a
-                hackathon team, taken {FACTS.hackathonPlace} out of {FACTS.hackathonTeams}, and shipped
-                AI-powered products end to end — from React frontends to FastAPI backends to deployed
-                models.
+                hackathon team, taken {FACTS.hackathonPlace} out of {FACTS.hackathonTeams} at{' '}
+                {FACTS.hackathonName}, and shipped AI-powered products end to end — from React
+                frontends to FastAPI backends to deployed models. I’m always looking for the next hard
+                problem.
               </p>
             </div>
 

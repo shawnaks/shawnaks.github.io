@@ -1,0 +1,174 @@
+/* ==========================================================================
+   section rail — persistent section navigation
+   >=1200px: slim fixed left rail. The 1020px content column leaves a 90px
+   gutter at 1200px (~75px with a classic scrollbar), enough for the 50px
+   rail; below that the gutter is too tight, so the rail hides (the header's
+   own nav covers 768-1199px).
+   <=767px: fixed bottom tab bar instead.
+   ========================================================================== */
+
+.section-rail {
+  display: none;
+}
+
+@media (min-width: 1200px) {
+  .section-rail {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    z-index: 50;
+    display: block;
+    width: 5rem;
+    transform: translateY(-50%);
+  }
+
+  .section-rail-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .section-rail-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 44px;
+    height: 44px;
+    padding-left: 14px;
+    color: var(--gray);
+    text-decoration: none;
+  }
+
+  .section-rail-mark {
+    display: block;
+    width: 14px;
+    height: 3px;
+    background: var(--gray);
+    transition: width .25s var(--ease), background-color .25s linear;
+  }
+  .section-rail-link:hover .section-rail-mark,
+  .section-rail-link:focus-visible .section-rail-mark {
+    width: 24px;
+    background: var(--fg);
+  }
+  .section-rail-link.is-active .section-rail-mark {
+    width: 34px;
+    background: var(--accent-ink);
+  }
+
+  .section-rail-icon,
+  .section-rail-abbr {
+    display: none;
+  }
+
+  /* Visible tooltip-style label on hover and keyboard focus; the link's
+     aria-label keeps the accessible name available at all times. */
+  .section-rail-label {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    padding: 2px 6px;
+    background: var(--bg);
+    color: var(--gray);
+    font: 700 1.4rem/1 var(--ui);
+    letter-spacing: .06em;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translate(-6px, -50%);
+    pointer-events: none;
+    transition: opacity .2s linear, transform .2s var(--ease), color .2s linear;
+  }
+  .section-rail-link:hover .section-rail-label,
+  .section-rail-link:focus-visible .section-rail-label {
+    opacity: 1;
+    transform: translate(0, -50%);
+    color: var(--accent-ink);
+  }
+  .section-rail-link.is-active .section-rail-label {
+    color: var(--accent-ink);
+  }
+}
+
+@media (max-width: 767px) {
+  .section-rail {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 50;
+    display: block;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+  }
+
+  .section-rail-list {
+    display: flex;
+    height: 56px;
+  }
+  .section-rail-list > li {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .section-rail-link {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    height: 56px;
+    color: var(--gray);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* the 3px mark becomes the tab's active top bar */
+  .section-rail-mark {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    width: auto;
+    height: 3px;
+    background: transparent;
+  }
+  .section-rail-link.is-active .section-rail-mark {
+    background: var(--accent-ink);
+  }
+
+  .section-rail-icon {
+    width: 18px;
+    height: 18px;
+  }
+  .section-rail-abbr {
+    font: 700 1.4rem/1 var(--ui);
+    letter-spacing: .02em;
+  }
+
+  .section-rail-link.is-active {
+    color: var(--accent-ink);
+  }
+  /* Inset ring so it stays visible inside the fixed bar's edge. */
+  .section-rail-link:focus-visible {
+    outline-offset: -3px;
+  }
+
+  .section-rail-label {
+    display: none;
+  }
+
+  /* Bar (56px) + home-indicator inset: the contact form's submit button and
+     the final CTA can scroll clear of the fixed bar. */
+  .page-stack {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media print {
+  .section-rail {
+    display: none !important;
+  }
+}

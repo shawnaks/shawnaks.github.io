@@ -3,6 +3,7 @@ import './styles/main.css';
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import type { MouseEvent } from 'react';
 import { HashRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { CommandPalette } from './components/CommandPalette';
 import { Header } from './components/Header';
 import { IconSprite } from './components/IconSprite';
 import { Loader } from './components/Loader';
@@ -70,6 +71,7 @@ function MainRoutes({ onSectionNavigate, onCaseStudyNavigate }: MainRoutesProps)
 
 function Shell() {
   const [ready, setReady] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -119,7 +121,18 @@ function Shell() {
       <IconSprite />
       <Loader onDone={() => setReady(true)} />
       <RouteEffects />
-      <Header ready={ready} onNavigate={handleSectionNavigate} />
+      <Header
+        ready={ready}
+        onNavigate={handleSectionNavigate}
+        onOpenPalette={() => setPaletteOpen(true)}
+      />
+
+      <CommandPalette
+        open={paletteOpen}
+        onOpenChange={setPaletteOpen}
+        onNavigate={handleSectionNavigate}
+        onCaseStudyNavigate={handleTransitionNavigate}
+      />
 
       {ready ? (
         <main id="main" tabIndex={-1}>

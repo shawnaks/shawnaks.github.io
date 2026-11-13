@@ -5,6 +5,7 @@ import { Contact } from './Contact';
 import { Experience } from './Experience';
 import { Hello } from './Hello';
 import { Projects } from './Projects';
+import { SectionRail } from '../components/SectionRail';
 import { consumeSectionScroll, scrollToSection } from '../lib/scroll';
 import { setActiveSection, canonicalizeSectionHash, startScrollSpy, stopScrollSpy } from '../lib/scrollSpy';
 import { sectionIdFromPath } from '../lib/sections';
@@ -59,12 +60,15 @@ export function MainPage({ onNavigate, onCaseStudyNavigate }: MainPageProps) {
   }, []);
 
   return (
-    <div className="page-stack">
-      <Hello onNavigate={onNavigate} />
-      <About onNavigate={onNavigate} />
-      <Experience onNavigate={onNavigate} />
-      <Projects onNavigate={onCaseStudyNavigate} onSectionNavigate={onNavigate} />
-      <Contact onNavigate={onNavigate} />
-    </div>
+    <>
+      <SectionRail onNavigate={onNavigate} />
+      <div className="page-stack">
+        <Hello onNavigate={onNavigate} />
+        <About onNavigate={onNavigate} />
+        <Experience onNavigate={onNavigate} />
+        <Projects onNavigate={onCaseStudyNavigate} onSectionNavigate={onNavigate} />
+        <Contact onNavigate={onNavigate} />
+      </div>
+    </>
   );
 }

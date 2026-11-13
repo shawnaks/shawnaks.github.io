@@ -1,11 +1,10 @@
 import { useRef } from 'react';
 import type { MouseEvent } from 'react';
-import { FACTS, HOME_TILES } from '../data/site';
+import { HOME_TILES } from '../data/site';
 import { NavTile } from '../components/NavTile';
 import { Portrait } from '../components/Portrait';
 import { SectionTitle } from '../components/SectionTitle';
 import { SocialRow } from '../components/SocialRow';
-import { TransitionLink } from '../components/TransitionLink';
 import type { SectionNavHandler } from '../lib/sections';
 import { useReveal } from '../hooks/useReveal';
 
@@ -43,38 +42,10 @@ export function Hello({ onNavigate }: HelloProps) {
             <Portrait size="sm" />
 
             <div className="hero-copy">
-              <p className="lead anim">
-                I’m <strong>Shawnak Samaddar</strong> — a computer science student at{' '}
-                <TransitionLink to="/about/" onNavigate={onNavigate}>
-                  Georgia{'\u00A0'}Tech
-                </TransitionLink>{' '}
-                in Atlanta, building{' '}
-                <TransitionLink to="/projects/" onNavigate={onNavigate}>
-                  full-stack web apps &amp; machine-learning tools
-                </TransitionLink>
-                . I like turning real-world problems into working software.
-              </p>
+              <p className="hero-line anim">Shawnak Samaddar — computer science @ Georgia Tech</p>
 
-              <p className="lead anim">
-                I am currently an undergraduate research assistant at the{' '}
-                <TransitionLink to="/experience/" onNavigate={onNavigate}>
-                  Safe Robotics Lab
-                </TransitionLink>
-                , where I teleoperate a bimanual robot and train models for autonomous operation.
-                Previously, I engineered data pipelines refining {FACTS.deltaRecords} records at{' '}
-                <TransitionLink to="/experience/" onNavigate={onNavigate}>
-                  Delta{'\u00A0'}Dental
-                </TransitionLink>{' '}
-                and analyzed gene-expression patterns at{' '}
-                <TransitionLink to="/experience/" onNavigate={onNavigate}>
-                  NASA{'\u00A0'}GeneLab
-                </TransitionLink>
-                . Outside of my studies and research, I compete in{' '}
-                <TransitionLink to="/experience/" onNavigate={onNavigate}>
-                  hackathons
-                </TransitionLink>{' '}
-                — most recently earning {FACTS.hackathonPlace} among {FACTS.hackathonTeams} at{' '}
-                {FACTS.hackathonName}. I am always looking for the next hard problem.
+              <p className="hero-status anim">
+                currently: robot learning @ the Safe Robotics Lab
               </p>
             </div>
           </div>

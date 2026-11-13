@@ -1,7 +1,7 @@
 /* ==========================================================================
    shawnak samaddar — personal site
    design homage to oninross.github.io/infinite-imaginations
-   hand-coded: no frameworks, no build step
+   hand-written CSS for the React + Vite build: no CSS framework, no UI kit
    ========================================================================== */
 
 /* ----- tokens ----- */
@@ -29,6 +29,20 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);   /* expo out */
   --ui: 'Martian Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
   --serif: 'Martian Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  /* One type scale. The root stays at 62.5% (1rem = 10px), so these read as
+     the px values in the comments and no em chain can compound them. */
+  --text-xs: 1.3rem;         /* 13px — labels, nav microcopy */
+  --text-sm: 1.4rem;         /* 14px — metadata, buttons */
+  --text-base: 1.7rem;       /* 17px — reading copy */
+  --text-md: 1.8rem;         /* 18px — reading copy, wider measure */
+  --text-lg: 2.1rem;         /* 21px — statement tier */
+  --text-xl: 2.4rem;         /* 24px — headings below the slabs */
+  --text-2xl: 2.8rem;        /* 28px — case title, larger headings */
+  --text-3xl: 3.2rem;        /* 32px — stat values */
+  --text-slab: 5.76rem;      /* 57.6px — section slab titles */
+  --text-hero: 9.72rem;      /* 97.2px — hero title */
+  --leading-read: 1.7;
+  --leading-statement: 1.5;
   color-scheme: light;       /* native scrollbars / controls match the page */
 }
 
@@ -71,7 +85,7 @@ html {
 body {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: 1.8em;              /* 18px body copy */
+  font-size: 1.8rem;             /* 18px body copy */
   color: var(--fg);
   background: var(--bg);
   overflow-x: hidden;
@@ -332,7 +346,7 @@ ul { list-style: none; }
    header when scrolled to. */
 .page-stack > .section {
   min-height: 0;
-  padding: 132px 0 150px;
+  padding: 96px 0 112px;
   scroll-margin-top: 90px;
   /* HUD corner brackets start translated 25px outward; clipped at the
      section edge so the stacked off-screen sections cannot widen the page. */
@@ -341,7 +355,7 @@ ul { list-style: none; }
 .page-stack > .section--home {
   display: flex;
   min-height: calc(100vh - 75px);
-  padding: 50px 0 60px;
+  padding: 40px 0 50px;
   scroll-margin-top: 0;
 }
 .page-stack > .section + .section { border-top: 1px solid var(--border); }
@@ -360,19 +374,31 @@ ul { list-style: none; }
      952.6px wide and fits the 980px container measure; 8.9vw keeps the same
      clearance below the 1092px fixed-size crossover and inside the 753px
      layout box at 768px. */
-  font-size: min(5.4em, 8.9vw);
+  font-size: min(var(--text-hero), 8.9vw);
   line-height: 1;
   letter-spacing: normal;
   white-space: nowrap;
-  margin: 0 0 .55em;
+  margin: 0 0 .35em;
 }
 
-.lead { font-size: 2em; }
+/* the two hero statements sit directly under the display title */
+.hero-line {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  line-height: 1.35;
+}
+.hero-status {
+  margin-top: .7em;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--gray);
+}
+
+.lead { font-size: var(--text-base); line-height: var(--leading-read); }
 .lead + .lead { margin-top: 1em; }
 .lead strong { font-weight: 700; }
 
-/* inline pill links — lead links and the experience record pills */
-.lead a,
+/* inline pill links — the experience record pills */
 .record-pill {
   display: inline-block;
   font-family: var(--ui);
@@ -387,14 +413,6 @@ ul { list-style: none; }
   transform: translateY(-.1em);
   transition: background-color .25s linear;
 }
-.lead a {
-  /* .62em: the long "full-stack web apps & machine-learning tools" pill is
-     44 monospace glyphs and must clear the 150px portrait + 2.6em gap
-     without leaving the 980px container measure. */
-  font-size: .62em;
-  padding: .38em 1em .34em;
-}
-.lead a:hover, .lead a:focus-visible,
 .record-pill:hover, .record-pill:focus-visible {
   background: var(--accent);
   text-shadow: -1px 0 rgba(0, 255, 255, .85), 1px 0 rgba(255, 0, 0, .85);
@@ -411,19 +429,21 @@ ul { list-style: none; }
   height: 3px;
   background: var(--fill);
   width: 0;
-  margin: 3.2em 0 2.8em;
+  margin: 2.4em 0 2.1em;
   transition: width .6s var(--ease-out);
 }
+/* the short hero copy leaves a tighter rhythm around its rule */
+.hero > .rule { margin: 1.9em 0 1.8em; }
 .rule.is-entering { width: 100%; }
 .rule.is-leaving  { width: 0 !important; }
 
 /* home tile grid — the visual sitemap */
-.tile-grid-label { font: 700 1.4em/1 var(--ui); color: var(--accent-ink); margin: 0 0 1.4em; }
+.tile-grid-label { font: 700 var(--text-xs)/1 var(--ui); color: var(--accent-ink); margin: 0 0 1.4em; }
 .tile-grid { display: flex; flex-wrap: wrap; margin: 0 -10px; }
 .tile-grid > li { width: 25%; padding: 10px; }
 
 /* social icons — centred group; the scroll cue sits below it */
-.social-row { display: flex; justify-content: center; gap: 14px; margin-top: 3.2em; }
+.social-row { display: flex; justify-content: center; gap: 14px; margin-top: 2.2em; }
 .social-row a {
   display: flex;
   align-items: center;
@@ -490,13 +510,13 @@ ul { list-style: none; }
 }
 .scroll-cue-link:hover .scroll-cue-pie-face,
 .scroll-cue-link:focus-visible .scroll-cue-pie-face { animation-play-state: running; }
-.scroll-cue-text { font: 400 1.2em/1.5 var(--ui); color: var(--gray); }
+.scroll-cue-text { font: 400 var(--text-xs)/1.5 var(--ui); color: var(--gray); }
 
 /* ==========================================================================
    section pages (planned category pages)
    ========================================================================== */
-.section-head { margin-bottom: 4.5em; }
-.section-label { font: 700 1.4em/1 var(--ui); color: var(--accent-ink); margin: 0 0 1.2em; }
+.section-head { margin-bottom: 2.8em; }
+.section-label { font: 700 var(--text-xs)/1 var(--ui); color: var(--accent-ink); margin: 0 0 1.2em; }
 .section--error .section-label { color: var(--red); }
 
 /* the black title slab with blue spine */
@@ -507,7 +527,7 @@ ul { list-style: none; }
   padding: .18em .5em .18em .45em;
   font-family: var(--ui);
   font-weight: 700;
-  font-size: 3.2em;
+  font-size: var(--text-slab);
   line-height: 1;
   letter-spacing: normal;
   white-space: nowrap;
@@ -531,7 +551,11 @@ ul { list-style: none; }
 .section--error .section-title { border-left-color: var(--red); }
 
 .section-body { max-width: 800px; }
-.section-intro { font-size: 2em; margin-bottom: 1.6em; }
+.section-intro {
+  font-size: var(--text-base);
+  line-height: var(--leading-read);
+  margin-bottom: 1.6em;
+}
 
 /* planned-content list with HUD corner brackets */
 .plan-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
@@ -544,7 +568,7 @@ ul { list-style: none; }
   background: var(--bg);
   padding: 20px 22px 18px;
 }
-.plan-name { font: 700 1.8em/1.25 var(--ui); overflow-wrap: anywhere; }
+.plan-name { font: 700 var(--text-xl)/1.25 var(--ui); overflow-wrap: anywhere; }
 .plan-name a {
   color: inherit;
   text-decoration: none;
@@ -565,8 +589,12 @@ ul { list-style: none; }
   background: var(--accent);
   color: #fff;
 }
-.plan-meta { font: 700 1.4em/1.4 var(--ui); color: var(--accent-ink); margin-top: .4em; }
-.plan-body { font-size: 1.7em; margin-top: .55em; }
+.plan-meta { font: 700 var(--text-xs)/1.4 var(--ui); color: var(--accent-ink); margin-top: .4em; }
+.plan-body {
+  font-size: var(--text-base);
+  line-height: var(--leading-read);
+  margin-top: .55em;
+}
 
 .ui-corner { position: absolute; width: 9px; height: 9px; transition: transform .45s var(--ease) .15s; }
 .ui-corner.tl { top: -7px;    left: -7px;  border-top: 3px solid var(--fg);    border-left: 3px solid var(--fg);  transform: translate(-25px, -25px); }
@@ -575,7 +603,7 @@ ul { list-style: none; }
 .ui-corner.br { bottom: -7px; right: -7px; border-bottom: 3px solid var(--fg); border-right: 3px solid var(--fg); transform: translate(25px, 25px); }
 .plan-item.is-entering .ui-corner { transform: translate(0, 0); }
 
-.section-note { font: 400 1.4em/1.5 var(--ui); color: var(--gray); margin: 2.2em 0 1.2em; }
+.section-note { font: 400 var(--text-xs)/1.5 var(--ui); color: var(--gray); margin: 2.2em 0 1.2em; }
 
 /* cta — bordered wide button with blue wipe + chevrons */
 .cta-row { margin-top: 3.2em; }
@@ -588,7 +616,7 @@ ul { list-style: none; }
   padding: 14px 20px;
   text-decoration: none;
   color: var(--fg);
-  font: 700 1.5em/1 var(--ui);
+  font: 700 var(--text-sm)/1 var(--ui);
   overflow: hidden;
 }
 /* accent wipe — shared by the cta, case links and the contact hero */
@@ -694,13 +722,12 @@ ul { list-style: none; }
    responsive
    ========================================================================== */
 /* Compact tiles (abbr + icon only) only where the full labels truly cannot
-   fit. With Martian Mono at .9em the full-label header needs ~1164px of
-   content (logo 313.2 + nav 805.4 + 45px theme button), plus 2x20px wrap
-   padding and 2x16px minimum clearance = 1235.6px of layout — a 1251px
-   window with a classic 15px scrollbar. A 1280px window lays out at 1265px,
-   so full names show with ~31px on either side of the nav; 768-1250px stays
-   compact. */
-@media (max-width: 1250px) {
+   fit. The full-label header budgets 313px (wordmark) + 805px (nav) + 32px
+   (compact palette trigger) + 45px (theme) + 40px wrap padding + 12px gaps
+   = ~1247px of layout, i.e. a 1262px window with a classic 15px scrollbar.
+   The breakpoint keeps ~20px of slack on the right; 768-1280px stays compact
+   (full names from 1281px). */
+@media (max-width: 1280px) {
   .element-box--sm .full { display: none; }
 }
 
@@ -716,12 +743,10 @@ ul { list-style: none; }
   .element-box--sm .abbr { font-size: 1.05em; }
 }
 
-/* The long pills are nowrap inline-blocks and wider in monospace. The home
-   hero starts them 196.8px in (150px portrait + 2.6em gap); the .62em pill is
-   ~732px at its widest, so it clears the 980px container measure from 1024px
-   up but would overflow the 768-1023px band, where pills wrap as on mobile. */
+/* Pills are nowrap inline-blocks and wider in monospace; below 1024px they
+   wrap rather than overflow the record card. */
 @media (max-width: 1023px) {
-  .lead a { white-space: normal; }
+  .record-pill { white-space: normal; }
   .tile-grid > li { width: 50%; }
   /* two-column tiles at 390px give the name ~129px; "experience" at the 1.5em
      base size is ~189px and gets clipped, .9em matches the header tiles */
@@ -729,23 +754,30 @@ ul { list-style: none; }
 }
 
 @media (max-width: 767px) {
+  :root {
+    --text-base: 1.6rem;     /* 16px — mobile reading copy */
+    --text-md: 1.7rem;
+    --text-lg: 2rem;         /* 20px */
+    --text-xl: 2.2rem;       /* 22px */
+    --text-2xl: 2.4rem;      /* 24px */
+    --text-3xl: 2.8rem;      /* 28px */
+  }
   .primary-nav { display: none; }
   /* 4.9vw keeps the nowrap wordmark + 45px theme button inside the 265px
      content box at a 320px window with a classic scrollbar */
   .logo a { font-size: min(1.35em, 4.9vw); }
   /* 8.2vw keeps the 14-glyph nowrap title inside the 265px layout box at a
      320px window with a classic scrollbar, and the 335px one at 390px */
-  .hero-title { font-size: min(5.4em, 8.2vw); }
-  .lead a { white-space: normal; }
-  .lead { font-size: 1.8em; }
+  .hero-title { font-size: min(var(--text-hero), 8.2vw); }
+  /* 16px keeps the identity line to two lines at 390px */
+  .hero-line { font-size: var(--text-base); }
   /* "experience" is 10 monospace glyphs: 7.93em of slab + padding must stay
      inside the 335px measure at 390px (classic scrollbar) and the 265px one
      at 320px */
-  .section-title { font-size: min(2.6em, 9.6vw); }
-  .section-intro { font-size: 1.8em; }
+  .section-title { font-size: min(var(--text-slab), 9.6vw); }
   .plan-item { padding: 16px 16px 14px; }
   .section { padding: 40px 0 50px; }
-  .page-stack > .section { padding: 84px 0 96px; }
+  .page-stack > .section { padding: 60px 0 68px; }
   .page-stack > .section--home { padding: 40px 0 50px; }
 }
 

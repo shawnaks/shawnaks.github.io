@@ -4,10 +4,10 @@
    ========================================================================== */
 
 /* sub-labels between blocks */
-.about-label { margin-top: 3.6em; }
+.about-label { margin-top: 3.2em; }
 
 /* education card — the PlanItem primitive, sized up slightly */
-.about-edu .plan-name { font-size: 2.1em; }
+.about-edu .plan-name { font-size: var(--text-2xl); }
 .about-edu .plan-body { margin-top: .7em; }
 
 /* coursework chips */
@@ -21,13 +21,13 @@
   border: 3px solid var(--fg);
   background: var(--bg);
   padding: .55em .9em .5em;
-  font: 700 1.25em/1.2 var(--ui);
+  font: 700 var(--text-sm)/1.2 var(--ui);
   letter-spacing: .01em;
 }
 
 /* tools & more */
 .tools-line {
-  font: 400 1.6em/1.7 var(--ui);
+  font: 400 var(--text-base)/1.7 var(--ui);
   max-width: 720px;
 }
 
@@ -80,10 +80,9 @@
 .skill-name {
   padding-left: 13px;
   color: #fff;
-  /* mono runs ~40% wider than the old proportional face; 1.05em keeps the
-     longest label ("Machine Learning (PyTorch, TensorFlow)") inside an 80%
-     fill instead of clipping it */
-  font: 700 1.05em/1 var(--ui);
+  /* The longest label ("Machine Learning (PyTorch, TensorFlow)") at 13px
+     stays inside the narrowest fill instead of clipping. */
+  font: 700 var(--text-xs)/1 var(--ui);
   letter-spacing: .01em;
   white-space: nowrap;
 }
@@ -95,7 +94,7 @@
   flex: none;
   width: 3.2em;
   text-align: right;
-  font: 700 1.5em/1 var(--ui);
+  font: 700 var(--text-sm)/1 var(--ui);
   font-variant-numeric: tabular-nums;
 }
 
@@ -111,7 +110,7 @@
    responsive
    ========================================================================== */
 @media (max-width: 800px) {
-  .course-chip { font-size: 1.15em; }
+  .course-chip { font-size: var(--text-xs); }
   .skill-bar {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -126,11 +125,11 @@
     grid-area: name;
     padding-left: 0;
     color: var(--fg);
-    font: 700 1.15em/1.2 var(--ui);
+    font: 700 var(--text-xs)/1.2 var(--ui);
     white-space: normal;
     overflow-wrap: anywhere;
   }
   .skill-fill .skill-name { display: none; }
   .skill-track { height: 32px; grid-area: track; }
-  .skill-num { width: 2.9em; font-size: 1.35em; grid-area: num; }
+  .skill-num { width: 3.2em; font-size: var(--text-sm); grid-area: num; }
 }

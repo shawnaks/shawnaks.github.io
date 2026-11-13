@@ -2,7 +2,7 @@
 
 Personal portfolio of **Shawnak Samaddar** — computer science student at Georgia Tech building full-stack web apps and machine-learning tools.
 
-The site is **one scrollable document**: the hero, about, experience, projects, and contact sections are stacked on a single page. Header tiles, the home-grid tiles, inline pills, and CTAs smooth-scroll between sections, a scroll spy keeps every tile's active state in sync, and the URL tracks the section you are reading (`#/about/`, `#/contact/`, ...) so any section is directly shareable. The six project deep-dives remain real sub-routes at `#/case-study/:slug/`. There is no fullscreen menu: the header carries a compact nav plus a light/dark switch, and on phones navigation is scrolling or the home `// navigate` tile grid.
+The site is **one scrollable document**: the hero, about, experience, projects, and contact sections are stacked on a single page. Header tiles, the home-grid tiles, inline pills, and CTAs smooth-scroll between sections, a scroll spy keeps every tile's active state in sync, and the URL tracks the section you are reading (`#/about/`, `#/contact/`, ...) so any section is directly shareable. The six project deep-dives remain real sub-routes at `#/case-study/:slug/`. Navigation also has two persistent forms: a slim fixed left rail from 1200px and a fixed bottom tab bar on phones (both read the same scroll spy), plus a Ctrl/Cmd+K command palette that jumps to sections, case studies and actions. There is no fullscreen menu: the header carries a compact nav, the palette trigger and a light/dark switch.
 
 The visual design is a faithful homage to [oninross.github.io/infinite-imaginations](https://oninross.github.io/infinite-imaginations/) by Niño Ross Rodriguez, rebuilt from scratch on a modern stack: React + TypeScript + Vite, with every animation and interaction hand-rolled rather than pulled from a library.
 
@@ -20,6 +20,8 @@ The visual design is a faithful homage to [oninross.github.io/infinite-imaginati
 | **Fonts** | Self-hosted Martian Mono (400/700, latin woff2 under `public/assets/fonts/`, declared in `src/styles/fonts.css`) — one monospace family for UI and body, no runtime Google Fonts request, with a `ui-monospace` / Cascadia Mono / Consolas fallback stack |
 | **Theme** | Light / dark via a `.theme-dark` class and semantic CSS tokens; persisted in `localStorage`, applied pre-paint |
 | **Icons** | Inline SVG sprite (`IconSprite` + `Icon`) — no icon package |
+| **Navigation** | Header tiles + scroll spy, a fixed left section rail ≥1200px, a fixed bottom tab bar ≤767px, and a command palette (Ctrl/Cmd+K or `/`) with its own fuzzy ranking |
+| **Type scale** | One `--text-*` token scale on a 62.5% root (`1rem = 10px`): 13px labels, 14px metadata, 17–18px reading copy, 21–24px statements, 24–28px headings, 57.6px section slabs, 97.2px hero |
 
 Libraries the original leaned on (baffle.js for scramble text, GSAP for easing) are replaced by small local implementations in `src/hooks/useScramble.ts`, `src/hooks/useReveal.ts`, and `src/lib/transition.ts`.
 
@@ -40,7 +42,7 @@ npm test         # run the unit suites (Vitest, one pass)
 
 ## Tests
 
-`npm test` runs [Vitest](https://vitest.dev/) once:
+`npm test` runs [Vitest](https://vitest.dev/) once: **57 tests across 6 files**.
 
 - `src/lib/sections.test.ts` — path normalisation, section-path → section-id mapping, and case-study path detection
 - `src/data/projects.test.ts` — six unique project slugs, non-empty challenge/solution steps, case-insensitive lookup, and next-pager wrapping
@@ -54,12 +56,21 @@ Together they cover the path mapping behind the router, the integrity of the pro
 ## Navigation & URL model
 
 - **Smooth scrolling.** All section controls — the five header tiles, the four home-grid tiles, inline pills, and CTAs — scroll to their section instead of swapping pages. The target section leaves a `90px` scroll margin so its title slab clears the fixed 75px header.
-- **Header.** One full-width bar: wordmark flush left, five compact nav tiles, and the 45px theme switch flush right. Full tile names show from 1251px; 768–1250px uses the two-letter abbreviations; at 767px and below the nav is hidden (navigation is scrolling or the home grid). There is no fullscreen menu. On phones the wordmark shrinks with the viewport, and a 768–899px band trims it to `1.1em` so the abbreviated nav still fits.
+- **Header.** One full-width bar: wordmark flush left, five compact nav tiles, the `// goto` palette trigger and the 45px theme switch flush right. Full tile names show from 1281px; 768–1280px uses the two-letter abbreviations (which leaves room for the palette trigger); at 767px and below the nav is hidden behind the bottom tab bar. On phones the wordmark shrinks with the viewport, and a 768–899px band trims it to `1.1em` so the abbreviated nav still fits.
+- **Section rail.** From 1200px, a fixed 50px rail in the left gutter draws one 3px mark per section (the active mark is 34px and accent-coloured) and reveals a `// section` label on hover or keyboard focus. It is mounted only on the main document, never on case-study or error routes, and reads the same scroll-spy store as the header.
+- **Mobile tab bar.** At 767px and below the rail becomes a fixed 56px bottom bar with the five section icons and abbreviations, padded by `env(safe-area-inset-bottom)`. The page adds matching bottom padding so the contact submit and the final CTA scroll clear of it.
+- **Command palette.** Ctrl/Cmd+K toggles it from anywhere; `/` opens it outside form fields (inside the contact form a slash types normally). It lists sections, the six case studies, résumé download, email and a theme toggle, ranked by label then alias (`resume`/`cv`/`pdf`, `whoami`, `work.log`, `rxg`, …). Arrow keys / Home / End move, Enter opens, Esc closes. It is a `dialog` with an `aria-modal` combobox + listbox, keeps Tab inside the search field, restores focus and scroll position on close, and leaves Ctrl/Cmd-click to the browser for a native new tab.
 - **Scroll spy.** A centre-band `IntersectionObserver` (`src/lib/scrollSpy.ts`) tracks which stacked section owns the reading line and drives every tile's active state through a `useSyncExternalStore` store.
 - **History.** Moving to a different section pushes a history entry, so browser back/forward returns to the section — and the scroll position — you came from.
 - **Shareable hashes.** `#/hello/`, `#/about/`, `#/experience/`, `#/projects/`, and `#/contact/` deep-link straight to a section with an instant landing; the trailing slash is optional (`#/about` normalises to `#/about/`). Passive scrolling updates the hash silently with `replaceState`, so browsing does not fill up the history stack.
 - **Case studies.** Project cards open the real sub-route `#/case-study/:slug/` with an outgoing content stagger. "back to listing" returns instantly to the projects section; browser back returns to the section you left.
-- **Reduced motion.** `prefers-reduced-motion: reduce` makes scrolling instant, renders reveals, skill bars, and title wipes immediately, disables the per-letter title hover cycle, renders the hero scroll cue as a static six-sector pie, and turns off the about falling-leaf rain (no leaves, no animation loop).
+- **Reduced motion.** `prefers-reduced-motion: reduce` makes scrolling instant, renders reveals, skill bars, and title wipes immediately, disables the per-letter title hover cycle, renders the hero scroll cue as a static six-sector pie, turns off the about falling-leaf rain (no leaves, no animation loop), and skips the card scan wipe, the contact stamp and the error shake.
+
+## Interaction details
+
+- **Card scan wipe.** A project card's real screenshot (when one exists) is clipped from the right and wipes in left→right on hover, alongside the existing −4px card lift. It is gated to `(hover: hover) and (pointer: fine)` and off under reduced motion, so touch devices never get a hidden image. The placeholder slots are untouched.
+- **Case-study progress spine.** A 15px accent bar on the page edge fills top→bottom with the `--read` custom property (one rAF per scroll frame), echoing the title slab's spine. It sits inside the article, below the fixed header, and is hidden in print.
+- **Contact feedback.** A success send plays a 420 ms stamp and a hatch flash (restarted per accepted send); an invalid submit shakes only the first bad field once, then focuses it. Both are off under reduced motion, and the form keeps a single polite live region so a message is never announced twice.
 
 ## Theming
 
@@ -69,7 +80,7 @@ Every surface reads from semantic tokens, so the loader, title slabs, project ca
 
 ## Metadata & social preview
 
-`index.html` carries the Open Graph and Twitter-card tags. The preview image is `https://shawnaks.github.io/assets/og-image.png` (1200×630) — an **absolute URL**, because social crawlers do not resolve relative paths. It is tied to the current `shawnaks.github.io` domain, so update it if the site moves to a custom domain. `apple-touch-icon.png` is linked for iOS, and `public/site.webmanifest` supplies the 192/512 manifest icons with `theme_color` (and `background_color`) `#ffffff`.
+`index.html` carries the Open Graph and Twitter-card tags. The preview image is `https://shawnaks.github.io/assets/og-image.png` (1200×630) — an **absolute URL**, because social crawlers do not resolve relative paths. It is tied to the current `shawnaks.github.io` domain, so update it if the site moves to a custom domain. `apple-touch-icon.png` is linked for iOS, and `public/site.webmanifest` supplies the 192/512 manifest icons with `theme_color` (and `background_color`) `#ffffff`. The viewport meta includes `viewport-fit=cover`, so the fixed bottom tab bar pads itself with the iOS safe-area inset instead of sitting under the home indicator.
 
 ## Project structure
 
@@ -98,18 +109,21 @@ Personal Website/
   src/
     main.tsx                     # React root
     App.tsx                      # HashRouter shell, loader gating, route effects,
-                                 #   section scroll handler, case-study + catch-all routes
+                                 #   section scroll handler, command palette, case-study + catch-all routes
     routes/
-      MainPage.tsx               # the scrollable document: Hello → About → Experience → Projects → Contact
-      Hello.tsx                  # #/hello/       — hero, intro, home tile grid, socials
-      About.tsx                  # #/about/       — bio + full-screen falling-leaf rain, education, coursework, skill bars
+      MainPage.tsx               # the scrollable document: Hello → About → Experience → Projects → Contact,
+                                 #   plus the section rail / mobile tab bar
+      Hello.tsx                  # #/hello/       — hero, identity + current-role lines, home tile grid, socials
+      About.tsx                  # #/about/       — bio (portrait below the copy) + full-screen falling-leaf rain, education, coursework, skill bars
       Experience.tsx             # #/experience/  — 3 roles + 3 hackathon records
       Projects.tsx               # #/projects/    — 6 project cards with ShotSlot frames
       CaseStudy.tsx              # #/case-study/:slug/ — full record + next pager
       Contact.tsx                # #/contact/     — email-first, channels, status, message form
       ErrorPage.tsx              # catch-all "// not found"
     components/
-      Header.tsx                 # fixed header, compact nav, theme switch, scroll state
+      Header.tsx                 # fixed header, compact nav, palette trigger, theme switch, scroll state
+      CommandPalette.tsx         # Ctrl/Cmd+K dialog: sections, case studies, résumé, email, theme
+      SectionRail.tsx            # fixed left section rail (≥1200px) / bottom tab bar (≤767px)
       ThemeToggle.tsx            # 45px light/dark switch; persists + updates theme-color
       NavTile.tsx                # 2-letter nav tile; intercepts clicks for smooth scrolling
       SectionTitle.tsx           # observer-triggered slab wipe + scramble, per-letter hover cycle, hero variant
@@ -151,10 +165,13 @@ Personal Website/
       main.css                   # design system: light/dark tokens, shell, primitives
       about.css                  # bio, education, coursework, skill bars
       experience.css             # role/hackathon records, inline project pills
-      projects.css               # project cards, case-study blocks, screenshot slots
-      contact.css                # email hero, channel grid, location/status strip, message form
+      projects.css               # project cards, case-study blocks, screenshot slots, card scan wipe
+      contact.css                # email hero, channel grid, location/status strip, message form,
+                                 #   success stamp + one-shot error shake
       portrait.css               # framed portrait + home/about bio layouts
       leaf-rain.css              # fixed full-viewport leaf canvas + about content stacking
+      rail.css                   # section rail (wide) / bottom tab bar (phone) + safe-area padding
+      palette.css                # header palette trigger + command-palette dialog
 ```
 
 ### Contact form delivery
@@ -165,7 +182,7 @@ The form posts JSON to a small **Cloudflare Worker** in `worker/` (plain ESM, no
 static site (GitHub Pages) → Cloudflare Worker → Resend → shawnaksa150@gmail.com
 ```
 
-`src/data/site.ts` exports `CONTACT = { endpoint, email }`. With `endpoint` empty (the current setting) the form builds a fully encoded `mailto:` and opens the visitor's mail app, so the static build makes **no network request**. Paste the deployed worker URL into `endpoint` and the same form `POST`s JSON instead — that one string is the only switch needed to go live. `email` is the address used in the mailto and in the error/fallback copy.
+`src/data/site.ts` exports `CONTACT = { endpoint, email }`. `endpoint` currently points at the deployed worker (`https://shawnak-contact.shawnaks.workers.dev/`), so the form `POST`s JSON and the worker handles delivery. Clearing `endpoint` is the fallback switch: the same form then builds a fully encoded `mailto:` and opens the visitor's mail app, so the static build makes no network request. A 429 from the worker keeps the draft and shows the server's `retryAfter` wait; any other failure keeps every field so nothing typed is lost. `email` is the address used in the mailto and in the error/fallback copy.
 
 The client-side limiter in `src/lib/rateLimit.ts` (one send per 60 seconds, three per rolling 15 minutes, persisted under the `contact-submits-v1` `localStorage` key) is a **UX courtesy only** - clearing storage, or calling the endpoint directly, bypasses it. The worker enforces the real limits: **1 message per IP per 60 s, 3 per IP per rolling 15 min, and 50 send attempts per UTC day globally**. The per-IP timestamp is reserved before the Resend call, so a burst of parallel requests from one IP cannot slip past the cooldown; if the send fails, that reservation is released so the visitor can retry immediately, while the daily attempt stays counted (the daily cap is what protects the Resend quota). It also allows only the site's `Origin` (plus local dev), caps the body at 8 KB, validates every field with the same limits as the client, and drops anything that fills the honeypot. The `Origin` check stops other websites from using the endpoint from a browser, but it is CORS, not authentication - a script can call the worker directly, which is exactly what the rate limits are for. The client-side honeypot plus ~3 s minimum-fill check still runs first and never sends the honeypot field.
 
@@ -176,7 +193,7 @@ The client-side limiter in `src/lib/rateLimit.ts` (one send per 60 seconds, thre
 3. `npx wrangler@4 login`
 4. `npx wrangler@4 secret put RESEND_API_KEY` — paste the key when prompted; it is stored on Cloudflare, never in this repo.
 5. `npx wrangler@4 deploy`
-6. Copy the printed `https://shawnak-contact.<subdomain>.workers.dev` URL into `endpoint` in `src/data/site.ts`.
+6. Confirm the printed `https://shawnak-contact.<subdomain>.workers.dev` URL is the one in `endpoint` in `src/data/site.ts`.
 7. Commit and push — GitHub Actions redeploys the static site.
 
 **Sender caveat:** the default `FROM_EMAIL = "onboarding@resend.dev"` only delivers to the Resend account's own address, which is the destination inbox here. To send anywhere else (or later from a custom domain), verify a domain in Resend and change `FROM_EMAIL` in `worker/wrangler.toml`; Resend rejects unverified senders.
@@ -196,7 +213,7 @@ npx wrangler@4 dev --port 5251 --var RESEND_API_URL:http://127.0.0.1:5252/emails
 | Area | Tokens |
 | --- | --- |
 | **Colors** | Semantic roles only — `--bg`, `--fg`, `--fill`, `--bg-subtle`, `--border`, `--gray`, `--accent`, `--accent-ink`, `--red` — with a light and dark value for each (table below) |
-| **Type** | Martian Mono (400/700) for everything; `1em = 10px`. Bold (700) for logo, hero + slab titles, tile abbreviations, `//` labels, plan names/meta, pills, CTAs, stats, skill labels, project-card names, the case pager, contact handles, and course chips; regular (400) for body and secondary copy. No italics. Fallback stack: `ui-monospace, 'Cascadia Mono', Consolas, monospace` |
+| **Type** | Martian Mono (400/700) for everything on one `--text-*` scale (`1rem = 10px`): `--text-xs` 13px labels/nav microcopy, `--text-sm` 14px metadata/buttons, `--text-base` 17px reading copy, `--text-md` 18px wider-measure bio, `--text-lg` 21px statements, `--text-xl` 24px headings, `--text-2xl` 28px case title, `--text-3xl` 32px stats, `--text-slab` 57.6px section slabs, `--text-hero` 97.2px hero; `--leading-read` 1.7 / `--leading-statement` 1.5. Bold (700) for logo, hero + slab titles, tile abbreviations, `//` labels, plan names/meta, pills, CTAs, stats, skill labels, project-card names, the case pager, contact handles, and course chips; regular (400) for body and secondary copy. No italics. Fallback stack: `ui-monospace, 'Cascadia Mono', Consolas, monospace` |
 | **Borders** | `3px solid --fg` (tiles / detail cards / CTAs), `6px` project cards, `0` border-radius |
 | **Motifs** | title slab + 15px accent spine · `//` labels · 2-letter tile abbreviations (Ho Ab Ex Pr Ct) · diagonal hatch shadows · HUD corner brackets · grayscale screenshots · double-chevron CTAs |
 | **Motion** | expo eases `cubic-bezier(0.19, 1, 0.22, 1)` / `cubic-bezier(0.16, 1, 0.3, 1)`, 0.25s micro / 0.5s layout · scroll-driven reveals · slab wipe + scramble · per-letter hover glyph cycle · case-study out-stagger · glitch text on hover |
@@ -226,12 +243,12 @@ All five sections live on the one stacked document; any section hash opens the s
 
 | Route | Status | Contents |
 | --- | --- | --- |
-| `#/` or `#/hello/` | **BUILT** — section 1 (top) | "Hello World..." hero with scramble reveal, portrait + intro paragraphs with inline section links, "// navigate" home tile grid (visual sitemap), centred social row, and a six-sector leaf-green pie under it that jumps to About (drifts slowly at rest, spins up on hover/focus) |
-| `#/about/` | **BUILT** — section 2 | Three-paragraph bio with a full-screen falling-leaf rain behind the content (sparse 16–24px leaves in 5 theme-aware green shades, each swaying and tumbling as it falls; starts when About is reached, stops and fades at education, resumes on scroll-up, static under reduced motion); education card (Georgia Tech B.S. CS Dec 2027, threads: AI & information internetworks, math minor); 8 coursework chips; 8 scroll-triggered skill bars with counters; tools line |
+| `#/` or `#/hello/` | **BUILT** — section 1 (top) | "Hello World..." hero with a one-shot scramble reveal, a 150px portrait beside the identity line (`Shawnak Samaddar — computer science @ Georgia Tech`) and the current-role status line (`currently: robot learning @ the Safe Robotics Lab`), "// navigate" home tile grid (visual sitemap), centred social row, and a six-sector leaf-green pie under it that jumps to About (drifts slowly at rest, spins up on hover/focus) |
+| `#/about/` | **BUILT** — section 2 | Three-paragraph bio at the 18px reading step with the 300px portrait below the copy (it absorbed the hero's teleoperation clause, the Hacklytics name and the "next hard problem" line), over a full-screen falling-leaf rain behind the content (sparse 16–24px leaves in 5 theme-aware green shades, each swaying and tumbling as it falls; starts when About is reached, stops and fades at education, resumes on scroll-up, static under reduced motion); education card (Georgia Tech B.S. CS Dec 2027, threads: AI & information internetworks, math minor); 8 coursework chips; 8 scroll-triggered skill bars with counters; tools line |
 | `#/experience/` | **BUILT** — section 3 | 3 role records — Delta Dental data engineering intern (May–Aug 2026: Python + Snowflake ETL, 53M+ raw records → 27M refined rows, AI agent saving 80% developer time, 600M+ record validation across 50 sources) · Safe Robotics Lab undergrad research assistant (Dec 2025–present: OpenArm bimanual robot teleop in MuJoCo, robot-learning models) · NASA GeneLab Multi-Omics AWG data analyst intern (Jun 2024–Sep 2025: microscopy, K-Means, six ML models) — plus 3 hackathon records: Hacklytics 2026 2nd place best use of Actian VectorAI (50+ teams), AI ATL 2025 (Hearo), HackGT 2025 team lead (SnapFind) |
 | `#/projects/` | **BUILT** — section 4 | 6 project cards with 6px borders and framed `ShotSlot` screenshot placeholders: SnapFind (React 19, Supabase, FastAPI, ResNet-18, 92% accuracy), RxGuard (Gemini, sentence-transformers, Actian VectorAI, Hacklytics 2nd place), Flight Fare Optimizer (Python, 186 airports, 262k fares, 4 algorithms from scratch; Fall 2024 course build, refreshed against DOT data through Q1 2026), Hearo (React Native, Gemini 2.5 Flash, ElevenLabs), Battle Showdown (Next.js 15, Tailwind 4), Pong (pygame, 2022) |
-| `#/contact/` | **BUILT** — section 5 (bottom) | Email-first: wide `mailto:` hero card, 3 channel cards (LinkedIn, GitHub, résumé PDF download), location & status strip — Atlanta, GA, open to SWE/data internships summer 2027 — and a `// send a message` form (name, email, optional subject, 2000-character message) with inline validation, focus management, a polite live status line, a 60s / 3-per-15-minute client-side rate limit, and a `mailto:` fallback until `CONTACT.endpoint` is set |
-| `#/case-study/:slug/` | **BUILT** — sub-route | Six full case studies (table below) — TLDR; role, technology used, paired challenges & solutions, stats, repo/devpost links, and a `next:` pager that cycles all six; "back to listing" returns to the projects section |
+| `#/contact/` | **BUILT** — section 5 (bottom) | Email-first: wide `mailto:` hero card, 3 channel cards (LinkedIn, GitHub, résumé PDF download), location & status strip — Atlanta, GA, open to SWE/data internships summer 2027 — and a `// send a message` form (name, email, optional subject, 2000-character message) that POSTs to the live Cloudflare Worker, with inline validation, focus management, one polite live status line, a success stamp, a one-shot error shake, a 60s / 3-per-15-minute client-side rate limit, and the `mailto:` path as fallback if `CONTACT.endpoint` is cleared |
+| `#/case-study/:slug/` | **BUILT** — sub-route | Six full case studies (table below) — TLDR; role, technology used, paired challenges & solutions, stats, repo/devpost links, and a `next:` pager that cycles all six; a 15px reading-progress spine fills with the page; "back to listing" returns to the projects section |
 | anything else | **BUILT** — 404 | "// not found" with a CTA back to the top of the page |
 
 ### Case studies

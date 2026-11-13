@@ -15,6 +15,7 @@ import {
 import type { ContactErrors, ContactField, ContactValues } from '../lib/contactForm';
 import { createRateLimiter } from '../lib/rateLimit';
 import { useReveal } from '../hooks/useReveal';
+import { prefersReducedMotion } from '../hooks/useScramble';
 import '../styles/contact.css';
 
 /** Humans take longer than this to fill a real message; bots do not. */
@@ -77,6 +78,7 @@ export type ContactProps = {
 export function Contact({ onNavigate }: ContactProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const statusRef = useRef<HTMLParagraphElement>(null);
   const firstEditAt = useRef<number | null>(null);
 
   // One limiter for the mount; storage + clock are injectable for tests.
@@ -90,6 +92,17 @@ export function Contact({ onNavigate }: ContactProps) {
   const [notice, setNotice] = useState<Notice | null>(null);
 
   useReveal(sectionRef);
+
+  // Restart the success stamp on every accepted send. The class is removed on
+  // animationend; reduced motion skips it so the notice is simply updated.
+  useEffect(() => {
+    if (notice?.kind !== 'success' || prefersReducedMotion()) return;
+    const el = statusRef.current;
+    if (!el) return;
+    el.classList.remove('is-stamped');
+    void el.offsetWidth;
+    el.classList.add('is-stamped');
+  }, [notice]);
 
   // The countdown ticks only while the form is actually limited.
   useEffect(() => {
@@ -154,7 +167,14 @@ export function Contact({ onNavigate }: ContactProps) {
       setNotice({ kind: 'error', text: 'check the highlighted fields above.' });
       const first = invalid[0];
       window.requestAnimationFrame(() => {
-        formRef.current?.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
+        const field = formRef.current?.querySelector<HTMLElement>(`[name="${first}"]`);
+        if (!field) return;
+        if (!prefersReducedMotion()) {
+          field.classList.remove('is-shaking');
+          void field.offsetWidth;
+          field.classList.add('is-shaking');
+        }
+        field.focus();
       });
       return;
     }
@@ -341,6 +361,12 @@ export function Contact({ onNavigate }: ContactProps) {
             className="contact-form hatch anim"
             noValidate
             onSubmit={handleSubmit}
+            onAnimationEnd={(event) => {
+              const target = event.target as HTMLElement;
+              if (target.classList.contains('is-shaking')) {
+                target.classList.remove('is-shaking');
+              }
+            }}
           >
             <div className="contact-form-grid">
               <div className="contact-field">
@@ -457,9 +483,11 @@ export function Contact({ onNavigate }: ContactProps) {
             </div>
 
             <p
+              ref={statusRef}
               className={`contact-form-status contact-form-status--${shownNotice?.kind ?? 'idle'}`}
               role="status"
               aria-live="polite"
+              onAnimationEnd={() => statusRef.current?.classList.remove('is-stamped')}
             >
               {shownNotice?.text ?? ''}
             </p>

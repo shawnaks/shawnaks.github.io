@@ -65,6 +65,50 @@ function CaseStudyView({ project, onNavigate }: CaseStudyViewProps) {
 
   useReveal(sectionRef);
 
+  // Reading progress for the spine: one rAF per scroll frame, written straight
+  // to a custom property so React never re-renders while scrolling.
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const header = 75; // fixed header height; the article starts below it
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const top = section.getBoundingClientRect().top + window.scrollY;
+      const range = Math.max(1, section.offsetHeight - window.innerHeight + header);
+      const read = Math.min(1, Math.max(0, (window.scrollY - top + header) / range));
+      section.style.setProperty('--read', read.toFixed(4));
+    };
+
+    const schedule = () => {
+      if (frame || document.hidden) return;
+      frame = requestAnimationFrame(update);
+    };
+
+    const onVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      } else {
+        schedule();
+      }
+    };
+
+    schedule();
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, []);
+
   const id = `case-study-${project.slug}`;
   const next = getNextProject(project.slug);
 

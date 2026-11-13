@@ -1,0 +1,289 @@
+/* ==========================================================================
+   command palette — header trigger + Ctrl/Cmd+K dialog
+   tokens, motion and focus rings come from main.css
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   header trigger — same 45px, 3px-frame language as the theme switch
+   -------------------------------------------------------------------------- */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+}
+
+.palette-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 45px;
+  padding: 0 10px;
+  border: 3px solid var(--fg);
+  border-radius: 0;
+  background: transparent;
+  color: var(--fg);
+  font: 700 var(--text-sm)/1 var(--ui);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .25s linear, color .25s linear, border-color .25s linear;
+}
+
+.palette-trigger-mark {
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+
+.palette-trigger-kbd {
+  padding: 2px 4px;
+  border: 1px solid currentColor;
+  font: 400 var(--text-xs)/1 var(--ui);
+  opacity: .7;
+}
+
+.palette-trigger:hover,
+.palette-trigger:focus-visible {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.palette-trigger:hover .palette-trigger-mark,
+.palette-trigger:focus-visible .palette-trigger-mark {
+  color: #fff;
+}
+
+.header.is-dark .palette-trigger { border-color: #fff; color: #fff; }
+.header.is-dark .palette-trigger:hover,
+.header.is-dark .palette-trigger:focus-visible { border-color: var(--accent); }
+
+/* same post-loader entrance as the logo / theme switch */
+.header .palette-trigger {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity .5s var(--ease-out), transform .5s var(--ease-out),
+              background-color .25s linear, color .25s linear, border-color .25s linear;
+}
+
+.header.is-ready .palette-trigger {
+  opacity: 1;
+  transform: none;
+  transition-delay: .78s;
+}
+
+.header.is-ready .palette-trigger:hover,
+.header.is-ready .palette-trigger:focus-visible {
+  transition-delay: 0s;
+}
+
+/* --------------------------------------------------------------------------
+   dialog
+   -------------------------------------------------------------------------- */
+.palette-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(12px, 8vh, 92px) 16px 24px;
+  background: rgba(12, 13, 16, .55);
+  animation: palette-fade .16s var(--ease-out) both;
+}
+
+.palette-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 620px;
+  max-height: min(72vh, 640px);
+  background: var(--bg);
+  color: var(--fg);
+  border: 3px solid var(--fg);
+  box-shadow: 0 24px 60px var(--shadow);
+  animation: palette-rise .18s var(--ease-out) both;
+}
+
+@keyframes palette-fade {
+  from { opacity: 0; }
+}
+
+@keyframes palette-rise {
+  from { opacity: 0; transform: translateY(-8px); }
+}
+
+.palette-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--border);
+  flex: none;
+}
+
+.palette-prompt {
+  color: var(--accent-ink);
+  font: 700 var(--text-base)/1 var(--ui);
+  flex: none;
+}
+
+.palette-input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  padding: 14px 0;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  font: 400 var(--text-base)/1.4 var(--ui);
+}
+
+.palette-input::placeholder { color: var(--gray); }
+
+.palette-input:focus-visible {
+  outline: 3px solid var(--accent-ink);
+  outline-offset: -3px;
+}
+
+.palette-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 0 6px;
+}
+
+.palette-group + .palette-group {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+.palette-group-label {
+  padding: 8px 14px 4px;
+  color: var(--accent-ink);
+  font: 700 var(--text-xs)/1.4 var(--ui);
+}
+
+.palette-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-left: 4px solid transparent;
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.palette-row-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  font: 600 var(--text-sm)/1.35 var(--ui);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-row-note {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 58%;
+  overflow: hidden;
+  color: var(--gray);
+  font: 400 var(--text-xs)/1.4 var(--ui);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Arrow-key + hover highlight: accent fill with the page colour as ink. */
+.palette-row[aria-selected='true'] {
+  background: var(--accent-ink);
+  border-left-color: var(--fg);
+  color: var(--bg);
+}
+
+.palette-row[aria-selected='true'] .palette-row-note { color: inherit; }
+
+.palette-empty {
+  padding: 26px 14px;
+  color: var(--gray);
+  font: 400 var(--text-sm)/1.5 var(--ui);
+  overflow-wrap: anywhere;
+}
+
+.palette-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  flex: none;
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+  color: var(--gray);
+  font: 400 var(--text-xs)/1.4 var(--ui);
+}
+
+/* --------------------------------------------------------------------------
+   small screens
+   -------------------------------------------------------------------------- */
+/* Below the widest desktops the full nav names need the room: keep a compact
+   square trigger with the accessible name + title instead of the label. */
+@media (max-width: 1439px) {
+  .palette-trigger {
+    width: 32px;
+    padding: 0;
+    justify-content: center;
+    font-size: var(--text-sm);
+  }
+
+  .palette-trigger-text,
+  .palette-trigger-kbd {
+    display: none;
+  }
+
+  .header-actions { gap: 6px; }
+  /* Only a minimum gap below `space-between`; the visible spacing is unchanged
+     while there is room, this just buys slack on tight widths. */
+  .header-wrap { gap: 6px; }
+}
+
+/* 320-380px: three controls plus the wordmark only fit with tighter gutters. */
+@media (max-width: 380px) {
+  .header-wrap {
+    gap: 4px;
+    padding: 0 12px;
+  }
+
+  .palette-trigger { width: 28px; }
+  .header-actions { gap: 4px; }
+}
+
+@media (max-width: 560px) {
+  .palette-overlay { padding: 0; }
+
+  .palette-panel {
+    max-width: none;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-width: 0;
+    border-top: 3px solid var(--fg);
+  }
+
+  /* Give names the width they need; taglines ellipsize first. */
+  .palette-row-note {
+    max-width: 38%;
+    font-size: var(--text-xs);
+  }
+
+  .palette-foot {
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .palette-overlay,
+  .palette-panel {
+    animation: none;
+  }
+}

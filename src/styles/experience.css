@@ -11,10 +11,10 @@
 .record-list {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: .34em;
+  gap: .5em;
   margin-top: .7em;
-  font-size: 1.7em;
-  line-height: 1.5;
+  font-size: var(--text-base);
+  line-height: var(--leading-read);
 }
 
 .record-list > li {
@@ -37,12 +37,6 @@
 /* Inline project pill inside a card — shared pill primitive in main.css,
    sized for the record list. */
 .record-pill {
-  font-size: .68em;
+  font-size: var(--text-xs);
   padding: .4em 1em .36em;
-}
-
-@media (max-width: 767px) {
-  .record-list {
-    font-size: 1.6em;
-  }
 }

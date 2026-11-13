@@ -11,6 +11,8 @@ export type HeaderProps = {
   ready: boolean;
   /** Optional page-transition hook forwarded to every nav tile / the logo. */
   onNavigate?: (e: MouseEvent, to: string) => void;
+  /** Opens the command palette from the header trigger. */
+  onOpenPalette?: () => void;
 };
 
 /**
@@ -18,7 +20,7 @@ export type HeaderProps = {
  * logic: dark after 20px, auto-hide on downward scroll past 120px, reveal on
  * scroll-up (±8px).
  */
-export function Header({ ready, onNavigate }: HeaderProps) {
+export function Header({ ready, onNavigate, onOpenPalette }: HeaderProps) {
   // A restored scroll position renders before any scroll event: seed the
   // state from it so the header starts dark (and out of the way when deep).
   const [dark, setDark] = useState(() => window.scrollY > 20);
@@ -87,7 +89,27 @@ export function Header({ ready, onNavigate }: HeaderProps) {
           </ul>
         </nav>
 
-        <ThemeToggle />
+        <div className="header-actions">
+          <button
+            className="palette-trigger"
+            type="button"
+            aria-label="open command palette"
+            aria-keyshortcuts="Control+K Meta+K"
+            title="command palette (Ctrl+K)"
+            onClick={onOpenPalette}
+          >
+            <span className="palette-trigger-mark" aria-hidden="true">
+              //
+            </span>
+            <span className="palette-trigger-text" aria-hidden="true">
+              goto
+            </span>
+            <kbd className="palette-trigger-kbd" aria-hidden="true">
+              ⌘K
+            </kbd>
+          </button>
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );

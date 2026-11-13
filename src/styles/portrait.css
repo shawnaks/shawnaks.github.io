@@ -50,13 +50,13 @@
 }
 
 /* ==========================================================================
-   home hero — small portrait beside the two lead paragraphs
+   home hero — small portrait beside the identity and status lines
    ========================================================================== */
 
 .hero-intro {
   display: flex;
-  align-items: flex-start;
-  gap: 2.6em;
+  align-items: center;
+  gap: 2.4em;
 }
 
 .hero-copy {
@@ -65,18 +65,28 @@
 }
 
 /* ==========================================================================
-   about bio — larger headshot to the right of the bio paragraphs
+   about bio — larger headshot below the bio copy
    ========================================================================== */
 
+/* The copy owns the full reading measure; the larger headshot follows it.
+   Side by side, the 300px portrait left the bio a ~470px column (under 40
+   characters), which is not a reading measure. */
 .about-bio {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  gap: 3em;
+  gap: 2em;
 }
 
 .about-bio-copy {
   flex: 1 1 auto;
   min-width: 0;
+}
+
+/* The bio is the longest read on the site, so it takes the 18px step of the
+   scale and the full 800px measure — about 65 characters per line. */
+.about-bio .lead {
+  font-size: var(--text-md);
 }
 
 /* ==========================================================================
@@ -101,7 +111,7 @@
   }
 
   .hero-intro {
-    gap: 1.8em;
+    gap: 1.6em;
   }
 
   .about-bio {

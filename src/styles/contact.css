@@ -79,7 +79,7 @@
 }
 
 .contact-hero-desc {
-  font: 400 1.65em/1.45 var(--serif);
+  font: 400 var(--text-base)/1.65 var(--serif);
   color: var(--gray);
 }
 
@@ -125,7 +125,7 @@
    ========================================================================== */
 
 .contact-label {
-  margin-top: 3.4em;
+  margin-top: 2.6em;
   margin-bottom: 1.4em;
 }
 
@@ -163,7 +163,7 @@
   height: 42px;
   border: 3px solid var(--fg);
   color: var(--accent-ink);
-  margin-bottom: 2.2em;
+  margin-bottom: 1.6em;
   transition: background-color .25s linear, border-color .25s linear, color .25s linear;
 }
 
@@ -180,7 +180,7 @@
 }
 
 .contact-channel-name {
-  font: 700 1.2em/1 var(--ui);
+  font: 700 var(--text-xs)/1 var(--ui);
   letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--accent-ink);
@@ -188,13 +188,13 @@
 }
 
 .contact-channel-handle {
-  font: 700 1.7em/1.2 var(--ui);
+  font: 700 var(--text-lg)/1.2 var(--ui);
   letter-spacing: normal;
   overflow-wrap: anywhere;
 }
 
 .contact-channel-desc {
-  font: 400 1.6em/1.45 var(--serif);
+  font: 400 var(--text-base)/1.65 var(--serif);
   color: var(--gray);
   margin-top: .75em;
 }
@@ -207,7 +207,7 @@
   display: grid;
   grid-template-columns: 1fr 1.6fr;
   gap: 3px;
-  margin-top: 3.2em;
+  margin-top: 2.4em;
   border: 3px solid var(--fg);
   background: var(--fill);
 }
@@ -219,20 +219,20 @@
 }
 
 .contact-status-label {
-  font: 700 1.25em/1 var(--ui);
+  font: 700 var(--text-xs)/1 var(--ui);
   letter-spacing: .04em;
   color: var(--accent-ink);
   margin-bottom: .8em;
 }
 
 .contact-status-value {
-  font: 700 2.4em/1.1 var(--ui);
+  font: 700 var(--text-2xl)/1.1 var(--ui);
   letter-spacing: normal;
   overflow-wrap: anywhere;
 }
 
 .contact-status-open {
-  font: 400 1.7em/1.5 var(--serif);
+  font: 400 var(--text-base)/var(--leading-read) var(--serif);
 }
 
 /* ==========================================================================
@@ -269,7 +269,7 @@
 }
 
 .contact-field-label {
-  font: 700 1.25em/1 var(--ui);
+  font: 700 var(--text-xs)/1.2 var(--ui);
   letter-spacing: .04em;
   text-transform: uppercase;
   color: var(--gray);
@@ -289,7 +289,7 @@
   border-radius: 0;
   background: var(--bg-subtle);
   color: var(--fg);
-  font: 400 1.6em/1.5 var(--ui);
+  font: 400 var(--text-base)/1.5 var(--ui);
   padding: 12px 14px;
   transition: border-color .25s linear;
 }
@@ -312,7 +312,7 @@
 }
 
 .contact-field-error {
-  font: 700 1.2em/1.4 var(--ui);
+  font: 700 var(--text-xs)/1.4 var(--ui);
   color: var(--error);
   margin-top: .7em;
 }
@@ -331,7 +331,7 @@
 
 .contact-count {
   margin-left: auto;
-  font: 400 1.2em/1.4 var(--ui);
+  font: 400 var(--text-xs)/1.4 var(--ui);
   color: var(--gray);
   white-space: nowrap;
 }
@@ -351,13 +351,13 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 14px 20px;
-  margin-top: 2.6em;
+  margin-top: 2em;
 }
 
 button.contact-form-submit {
   appearance: none;
   background: var(--bg);
-  font: 700 1.5em/1 var(--ui);
+  font: 700 var(--text-sm)/1 var(--ui);
   cursor: pointer;
 }
 
@@ -376,14 +376,15 @@ button.contact-form-submit:disabled .cta-icon .icon {
 }
 
 .contact-form-wait {
-  font: 400 1.3em/1.5 var(--ui);
+  font: 400 var(--text-xs)/1.5 var(--ui);
   color: var(--gray);
 }
 
 .contact-form-status {
+  position: relative;
   min-height: 1.5em;
   margin-top: 1.6em;
-  font: 700 1.3em/1.5 var(--ui);
+  font: 700 var(--text-sm)/1.5 var(--ui);
   color: var(--gray);
   /* the success/error copy carries an email that is one long token */
   overflow-wrap: anywhere;
@@ -410,6 +411,62 @@ button.contact-form-submit:disabled .cta-icon .icon {
   color: var(--error);
 }
 
+/* success stamp — one short press + hatch flash, restarted per accepted send */
+@keyframes contact-stamp {
+  0%   { transform: scale(1.03); }
+  30%  { transform: scale(.96); }
+  55%  { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
+
+@keyframes contact-stamp-flash {
+  0%   { transform: scaleX(0); opacity: 1; }
+  70%  { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+.contact-form-status.is-stamped {
+  animation: contact-stamp 420ms var(--ease) both;
+}
+
+/* the flash sits under the copy, never behind it, so the notice stays legible */
+.contact-form-status.is-stamped::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background-image: repeating-linear-gradient(
+    -45deg, var(--accent-ink) 0 2px, transparent 2px 5px);
+  transform-origin: left;
+  animation: contact-stamp-flash 420ms var(--ease-out) both;
+  pointer-events: none;
+}
+
+/* invalid submit — the first bad field shakes once, then focus lands on it */
+@keyframes contact-shake {
+  0%, 100% { transform: translateX(0); }
+  15%      { transform: translateX(-4px); }
+  30%      { transform: translateX(4px); }
+  45%      { transform: translateX(-3px); }
+  60%      { transform: translateX(3px); }
+  75%      { transform: translateX(-2px); }
+  90%      { transform: translateX(1px); }
+}
+
+.contact-input.is-shaking {
+  animation: contact-shake 280ms var(--ease) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-form-status.is-stamped,
+  .contact-form-status.is-stamped::after,
+  .contact-input.is-shaking {
+    animation: none;
+  }
+}
+
 /* ==========================================================================
    responsive — one channel per row, stacked hero and status
    ========================================================================== */
@@ -425,10 +482,6 @@ button.contact-form-submit:disabled .cta-icon .icon {
     display: none;
   }
 
-  .contact-hero-desc {
-    font-size: 1.55em;
-  }
-
   .contact-channel-grid {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -439,11 +492,7 @@ button.contact-form-submit:disabled .cta-icon .icon {
   }
 
   .contact-channel-icon {
-    margin-bottom: 1.6em;
-  }
-
-  .contact-channel-handle {
-    font-size: 1.5em;
+    margin-bottom: 1.2em;
   }
 
   .contact-status {
@@ -470,6 +519,5 @@ button.contact-form-submit:disabled .cta-icon .icon {
 
   button.contact-form-submit {
     justify-content: center;
-    font-size: 1.4em;
   }
 }

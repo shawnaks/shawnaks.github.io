@@ -65,7 +65,7 @@
 }
 
 .project-card-name {
-  font: 700 2em/1.15 var(--ui);
+  font: 700 var(--text-xl)/1.15 var(--ui);
   letter-spacing: normal;
   overflow-wrap: anywhere;
 }
@@ -100,7 +100,7 @@
 }
 
 .project-card-tagline {
-  font: 400 1.75em/1.35 var(--serif);
+  font: 400 var(--text-base)/1.65 var(--serif);
   overflow-wrap: anywhere;
 }
 
@@ -109,7 +109,7 @@
   flex-wrap: wrap;
   align-items: baseline;
   gap: 2px 10px;
-  font: 700 1.15em/1.3 var(--ui);
+  font: 700 var(--text-xs)/1.4 var(--ui);
   letter-spacing: .02em;
 }
 
@@ -123,7 +123,7 @@
 }
 
 .project-card-stack {
-  font: 400 1.25em/1.5 var(--ui);
+  font: 400 var(--text-xs)/1.5 var(--ui);
   color: var(--gray);
 }
 
@@ -131,7 +131,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 2px 1.5em;
-  font: 400 1.25em/1.5 var(--ui);
+  font: 400 var(--text-xs)/1.5 var(--ui);
   color: var(--gray);
   margin-bottom: 8px;
 }
@@ -150,8 +150,8 @@
 .cta.card-cta {
   align-self: flex-start;
   margin-top: auto;
-  padding: 11px 15px;
-  font-size: 1.25em;
+  padding: 13px 14px;
+  font-size: var(--text-xs);
   gap: 10px;
 }
 
@@ -182,7 +182,7 @@
 }
 
 .shot-empty > span {
-  font: 400 1.2em/1.4 var(--ui);
+  font: 400 var(--text-xs)/1.4 var(--ui);
   color: var(--gray);
   text-align: center;
   padding: 0 10px;
@@ -204,6 +204,36 @@
   opacity: 1;
 }
 
+/* Project cards: a left→right scan wipe over the capture, on pointer devices
+   only. Keyed to the real image so placeholder slots are untouched. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .project-card .shot-img {
+    clip-path: inset(0 100% 0 0);
+    filter: grayscale(100%);
+    opacity: .25;
+    transition:
+      clip-path .4s var(--ease),
+      filter .4s var(--ease),
+      opacity .4s var(--ease);
+  }
+
+  .project-cell:hover .project-card .shot-img,
+  .project-card:focus-within .shot-img {
+    clip-path: inset(0 0 0 0);
+    filter: grayscale(0);
+    opacity: 1;
+  }
+}
+
+/* Touch / no-hover devices and reduced motion never get the hidden state. */
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .project-card .shot-img {
+    clip-path: none;
+    filter: none;
+    opacity: 1;
+  }
+}
+
 /* ==========================================================================
    case study
    ========================================================================== */
@@ -212,8 +242,33 @@
   max-width: 860px;
 }
 
-/* long project names wrap instead of inflating the page */
+/* Reading progress: the case-study page edge keeps the same 15px spine
+   language as the title slab and TLDR, and fills top→bottom with --read. */
+.case-study {
+  --read: 0;
+}
+
+.case-study::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 15px;
+  height: calc(var(--read) * 100%);
+  background: var(--accent-ink);
+  pointer-events: none;
+}
+
+@media print {
+  .case-study::after {
+    display: none;
+  }
+}
+
+/* Long project names wrap instead of inflating the page. This is a page
+   title, but it stays below the four section slabs. */
 .case-study .section-title {
+  font-size: var(--text-2xl);
   white-space: normal;
   max-width: 100%;
 }
@@ -228,7 +283,7 @@
 
 .case-shot {
   border: 3px solid var(--fg);
-  margin-bottom: 3em;
+  margin-bottom: 2.4em;
 }
 
 .case-shot .shot-empty {
@@ -239,18 +294,18 @@
 .case-tldr {
   border-left: 15px solid var(--accent);
   padding: .1em 0 .1em .95em;
-  margin-bottom: 3.2em;
+  margin-bottom: 2.4em;
 }
 
 .case-tldr-label {
-  font: 700 1.3em/1 var(--ui);
+  font: 700 var(--text-xs)/1 var(--ui);
   letter-spacing: .04em;
   color: var(--accent-ink);
   margin-bottom: .7em;
 }
 
 .case-tldr-text {
-  font: 400 2em/1.5 var(--serif);
+  font: 400 var(--text-lg)/var(--leading-statement) var(--serif);
   overflow-wrap: anywhere;
 }
 
@@ -259,7 +314,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 3px;
-  margin-bottom: 3.2em;
+  margin-bottom: 2.4em;
   background: var(--fill);
   border: 3px solid var(--fg);
 }
@@ -271,14 +326,14 @@
 }
 
 .case-meta-label {
-  font: 700 1.3em/1 var(--ui);
+  font: 700 var(--text-xs)/1 var(--ui);
   color: var(--accent-ink);
   margin-bottom: .9em;
 }
 
 .case-role {
-  font-size: 1.7em;
-  line-height: 1.5;
+  font-size: var(--text-base);
+  line-height: var(--leading-read);
 }
 
 .case-tech {
@@ -288,7 +343,7 @@
 }
 
 .case-tech > li {
-  font: 400 1.25em/1.7 var(--ui);
+  font: 400 var(--text-xs)/1.7 var(--ui);
   overflow-wrap: anywhere;
 }
 
@@ -302,7 +357,7 @@
 /* paired challenge / solution rows, index-aligned */
 .case-pairs {
   border: 3px solid var(--fg);
-  margin-bottom: 3.2em;
+  margin-bottom: 2.4em;
 }
 
 .case-pair {
@@ -328,21 +383,21 @@
 }
 
 .case-num {
-  font: 700 1.5em/1.3 var(--ui);
+  font: 700 var(--text-sm)/1.3 var(--ui);
   color: var(--accent-ink);
   font-variant-numeric: tabular-nums;
 }
 
 .case-pair-tag {
-  font: 700 1.15em/1.3 var(--ui);
+  font: 700 var(--text-xs)/1.3 var(--ui);
   letter-spacing: .02em;
   color: var(--gray);
   margin-bottom: .3em;
 }
 
 .case-pair-text {
-  font-size: 1.65em;
-  line-height: 1.5;
+  font-size: var(--text-base);
+  line-height: 1.65;
   overflow-wrap: anywhere;
 }
 
@@ -351,7 +406,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 3px;
-  margin-bottom: 3.2em;
+  margin-bottom: 2.4em;
   background: var(--fill);
   border: 3px solid var(--fg);
 }
@@ -364,7 +419,7 @@
 
 .case-stat-value {
   display: block;
-  font: 700 clamp(2em, 5vw, 2.8em)/1 var(--ui);
+  font: 700 clamp(2.2rem, 4.5vw, var(--text-3xl))/1 var(--ui);
   letter-spacing: normal;
   margin-bottom: .5em;
   white-space: normal;
@@ -373,7 +428,7 @@
 
 .case-stat-label {
   display: block;
-  font: 400 1.2em/1.4 var(--ui);
+  font: 400 var(--text-xs)/1.4 var(--ui);
   color: var(--gray);
 }
 
@@ -382,7 +437,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-bottom: 4.2em;
+  margin-bottom: 3em;
 }
 
 .case-link {
@@ -391,10 +446,10 @@
   align-items: center;
   gap: 10px;
   border: 3px solid var(--fg);
-  padding: 12px 16px;
+  padding: 14px 16px;
   color: var(--fg);
   text-decoration: none;
-  font: 700 1.35em/1 var(--ui);
+  font: 700 var(--text-sm)/1 var(--ui);
   overflow: hidden;
 }
 
@@ -462,12 +517,12 @@
 }
 
 .case-next-label {
-  font: 700 1.3em/1 var(--ui);
+  font: 700 var(--text-xs)/1 var(--ui);
   color: var(--accent-ink);
 }
 
 .case-next-name {
-  font: 700 1.7em/1.25 var(--ui);
+  font: 700 var(--text-xl)/1.25 var(--ui);
   overflow-wrap: anywhere;
 }
 
@@ -507,7 +562,7 @@
 }
 
 .case-back {
-  font: 700 1.3em/1 var(--ui);
+  font: 700 var(--text-xs)/1 var(--ui);
 }
 
 .case-back a {
@@ -540,10 +595,6 @@
     inset: 10px;
   }
 
-  .case-tldr-text {
-    font-size: 1.85em;
-  }
-
   .case-meta {
     grid-template-columns: 1fr;
   }
@@ -563,10 +614,6 @@
   .case-pair-cell + .case-pair-cell {
     border-left: 0;
     border-top: 1px solid var(--border);
-  }
-
-  .case-pair-text {
-    font-size: 1.6em;
   }
 
   .case-stat {
