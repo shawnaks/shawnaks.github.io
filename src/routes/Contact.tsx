@@ -20,7 +20,7 @@ import '../styles/contact.css';
 /** Humans take longer than this to fill a real message; bots do not. */
 const MIN_FILL_MS = 3000;
 
-type Notice = { kind: 'success' | 'error' | 'info'; text: string };
+type Notice = { kind: 'success' | 'error' | 'info' | 'wait'; text: string };
 
 type Channel = {
   name: string;
@@ -61,6 +61,13 @@ const CHANNELS: readonly Channel[] = [
 
 const MAILTO_SUCCESS = `your mail app should open — if it doesn't, email me directly at ${CONTACT.email}.`;
 const SENT_SUCCESS = "message sent — I'll get back to you.";
+
+/** Coarse, human wait for the server's static `retryAfter` seconds. */
+function formatRetryAfter(totalSeconds: number): string {
+  if (totalSeconds < 90) return `${Math.ceil(totalSeconds)}s`;
+  if (totalSeconds < 90 * 60) return `${Math.ceil(totalSeconds / 60)} min`;
+  return `${Math.ceil(totalSeconds / 3600)} h`;
+}
 
 export type ContactProps = {
   onNavigate?: SectionNavHandler;
@@ -177,16 +184,19 @@ export function Contact({ onNavigate }: ContactProps) {
     }
 
     const cleaned = result.values;
+    const endpoint = CONTACT.endpoint.trim();
     setSending(true);
     setNotice(null);
 
     try {
       let mailto: string | null = null;
 
-      if (CONTACT.endpoint) {
-        // Backend path: `endpoint` is set in src/data/site.ts. Any non-2xx or
-        // network rejection falls through to the error message below.
-        const response = await fetch(CONTACT.endpoint, {
+      if (endpoint) {
+        // Backend path: `endpoint` is set in src/data/site.ts. The server is
+        // the real rate limiter, so a 429 reports its wait and keeps the
+        // draft; any other non-2xx or network rejection falls through to the
+        // error message below. The honeypot (`website`) is never sent.
+        const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -196,7 +206,33 @@ export function Contact({ onNavigate }: ContactProps) {
             message: cleaned.message,
           }),
           credentials: 'omit',
+          mode: 'cors',
+          // A stalled connection must not leave the button saying "sending…".
+          signal:
+            typeof AbortSignal !== 'undefined' && 'timeout' in AbortSignal
+              ? AbortSignal.timeout(15000)
+              : undefined,
         });
+        if (response.status === 429) {
+          const body = (await response.json().catch(() => null)) as {
+            retryAfter?: number;
+          } | null;
+          const wait =
+            typeof body?.retryAfter === 'number' && body.retryAfter > 0
+              ? Math.ceil(body.retryAfter)
+              : null;
+          setNotice({
+            // `wait`, not `info`: the info line is screen-reader-only because
+            // the button already shows the client-side wait, and the server
+            // limit does not set that line.
+            kind: 'wait',
+            text: wait
+              ? `too many messages — try again in ${formatRetryAfter(wait)}.`
+              : 'too many messages — try again a little later.',
+          });
+          // No limiter.record(): the server did not accept this message.
+          return;
+        }
         if (!response.ok) throw new Error(`contact endpoint returned ${response.status}`);
       } else {
         // Pre-backend path: no endpoint configured, so hand the message to

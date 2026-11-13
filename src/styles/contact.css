@@ -385,6 +385,8 @@ button.contact-form-submit:disabled .cta-icon .icon {
   margin-top: 1.6em;
   font: 700 1.3em/1.5 var(--ui);
   color: var(--gray);
+  /* the success/error copy carries an email that is one long token */
+  overflow-wrap: anywhere;
 }
 
 /* The limit line next to the button already states this for sighted users;

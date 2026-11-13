@@ -41,9 +41,10 @@ export const LINKEDIN_URL = 'https://www.linkedin.com/in/shawnaksa/';
 export const RESUME_HREF = 'assets/Shawnak-Samaddar-Resume.pdf';
 
 /**
- * Contact-form delivery. Leave `endpoint` empty to use the mailto fallback;
- * set it to a form-backend URL (Formspree, Cloudflare Worker, ...) to POST
- * JSON instead. That one string is the only change needed to go live.
+ * Contact-form delivery. Leave `endpoint` empty to use the mailto fallback.
+ * To switch to server delivery (the Cloudflare Worker in `worker/`), paste the
+ * deployed worker URL here, e.g.
+ * `https://shawnak-contact.<subdomain>.workers.dev` — no other change needed.
  */
 export const CONTACT: { endpoint: string; email: string } = {
   endpoint: '',

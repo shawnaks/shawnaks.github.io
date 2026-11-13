@@ -46,8 +46,10 @@ npm test         # run the unit suites (Vitest, one pass)
 - `src/data/projects.test.ts` — six unique project slugs, non-empty challenge/solution steps, case-insensitive lookup, and next-pager wrapping
 - `src/lib/contactForm.test.ts` — field validation and caps, CR/LF stripping, and mailto subject/body encoding (including header-injection attempts)
 - `src/lib/rateLimit.test.ts` — cooldown and rolling-window verdicts, persistence, corrupt-JSON tolerance, and falling back to memory when storage throws
+- `worker/src/validate.test.js` — server-side payload rules: required fields, caps, control characters, honeypot, and non-string inputs
+- `worker/src/limit.test.js` — per-IP 60 s / 3-per-15-min windows, retry-after math, window rollover, the global daily cap, and corrupt timestamps
 
-Together they cover the path mapping behind the router, the integrity of the project data behind the grid and case studies, and the contact form's validation, encoded mailto, and client-side rate limiting. There is no browser E2E harness in the repo.
+Together they cover the path mapping behind the router, the integrity of the project data behind the grid and case studies, the contact form's validation, encoded mailto, and client-side rate limiting, and the worker's validation and rate-limit math. There is no browser E2E harness in the repo.
 
 ## Navigation & URL model
 
@@ -76,6 +78,13 @@ Personal Website/
   .github/workflows/deploy.yml   # automatic GitHub Pages deployment
   index.html                     # Vite entry document (meta/social tags, theme pre-paint script, #root)
   vite.config.ts                 # React plugin + base: './' for portable builds
+  worker/                        # Cloudflare Worker for contact delivery (not built by Vite)
+    wrangler.toml                # name, vars, Durable Object binding + SQLite migration
+    src/index.js                 # fetch handler: CORS, body cap, limits, Resend send; RateLimiter DO
+    src/validate.js              # pure contact-payload validation
+    src/limit.js                 # pure per-IP window + daily-cap math
+    src/validate.test.js         # payload validation tests (run by the root vitest)
+    src/limit.test.js            # rate-limit math tests (run by the root vitest)
   public/
     assets/favicon.svg           # SVG favicon
     assets/apple-touch-icon.png  # 180×180 iOS home-screen icon
@@ -150,9 +159,37 @@ Personal Website/
 
 ### Contact form delivery
 
-`src/data/site.ts` exports `CONTACT = { endpoint, email }`. With `endpoint` empty (the current setting) the form builds a fully encoded `mailto:` and opens the visitor's mail app, so the static build makes **no network request**. Set `endpoint` to a form-backend URL (Formspree, a Cloudflare Worker, …) and the same form `POST`s JSON instead — that one string is the only switch needed to go live. `email` is the address used in the mailto and in the error/fallback copy.
+The form posts JSON to a small **Cloudflare Worker** in `worker/` (plain ESM, no dependencies), which sends the message through [Resend](https://resend.com) to `shawnaksa150@gmail.com`:
 
-The form is rate-limited in `src/lib/rateLimit.ts`: one send per 60 seconds, at most three per rolling 15 minutes, persisted under the `contact-submits-v1` `localStorage` key with an in-memory fallback when storage is unavailable. This is a **client-side courtesy, not security** - clearing storage (or calling the endpoint directly) bypasses it, so a real endpoint needs its own server-side limit. A hidden honeypot field plus a minimum-fill check (a submit under ~3 s after the first edit) fake a successful send for obvious bots, leaving no rate-limit timestamp behind.
+```
+static site (GitHub Pages) → Cloudflare Worker → Resend → shawnaksa150@gmail.com
+```
+
+`src/data/site.ts` exports `CONTACT = { endpoint, email }`. With `endpoint` empty (the current setting) the form builds a fully encoded `mailto:` and opens the visitor's mail app, so the static build makes **no network request**. Paste the deployed worker URL into `endpoint` and the same form `POST`s JSON instead — that one string is the only switch needed to go live. `email` is the address used in the mailto and in the error/fallback copy.
+
+The client-side limiter in `src/lib/rateLimit.ts` (one send per 60 seconds, three per rolling 15 minutes, persisted under the `contact-submits-v1` `localStorage` key) is a **UX courtesy only** - clearing storage, or calling the endpoint directly, bypasses it. The worker enforces the real limits: **1 message per IP per 60 s, 3 per IP per rolling 15 min, and 50 send attempts per UTC day globally**. The per-IP timestamp is reserved before the Resend call, so a burst of parallel requests from one IP cannot slip past the cooldown; if the send fails, that reservation is released so the visitor can retry immediately, while the daily attempt stays counted (the daily cap is what protects the Resend quota). It also allows only the site's `Origin` (plus local dev), caps the body at 8 KB, validates every field with the same limits as the client, and drops anything that fills the honeypot. The `Origin` check stops other websites from using the endpoint from a browser, but it is CORS, not authentication - a script can call the worker directly, which is exactly what the rate limits are for. The client-side honeypot plus ~3 s minimum-fill check still runs first and never sends the honeypot field.
+
+#### Deploying the worker
+
+1. Create a free [Resend](https://resend.com) account and an API key with sending access.
+2. `cd worker`
+3. `npx wrangler@4 login`
+4. `npx wrangler@4 secret put RESEND_API_KEY` — paste the key when prompted; it is stored on Cloudflare, never in this repo.
+5. `npx wrangler@4 deploy`
+6. Copy the printed `https://shawnak-contact.<subdomain>.workers.dev` URL into `endpoint` in `src/data/site.ts`.
+7. Commit and push — GitHub Actions redeploys the static site.
+
+**Sender caveat:** the default `FROM_EMAIL = "onboarding@resend.dev"` only delivers to the Resend account's own address, which is the destination inbox here. To send anywhere else (or later from a custom domain), verify a domain in Resend and change `FROM_EMAIL` in `worker/wrangler.toml`; Resend rejects unverified senders.
+
+#### Local testing
+
+`worker/` has no `package.json` and no dependencies. Run `npx wrangler@4 dev` from `worker/` and point `RESEND_API_URL` at a local mock so nothing real is sent (any server that answers `200` with JSON works):
+
+```bash
+npx wrangler@4 dev --port 5251 --var RESEND_API_URL:http://127.0.0.1:5252/emails --var RESEND_API_KEY:test
+```
+
+`npm test` at the repo root also runs `worker/src/*.test.js` (payload validation and the pure rate-limit math). The CORS allowlist is `ALLOWED_ORIGIN` in `worker/wrangler.toml`, plus `http://localhost:5173` and `http://127.0.0.1:5173` for dev, hardcoded in `worker/src/index.js` — add a custom domain to `ALLOWED_ORIGIN` and redeploy when one arrives.
 
 ## Design tokens
 

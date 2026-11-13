@@ -1,0 +1,20 @@
+name = "shawnak-contact"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+workers_dev = true
+
+[vars]
+TO_EMAIL = "shawnaksa150@gmail.com"
+FROM_EMAIL = "onboarding@resend.dev"
+ALLOWED_ORIGIN = "https://shawnaks.github.io"
+# Overridable so local tests can point the worker at a mock server.
+RESEND_API_URL = "https://api.resend.com/emails"
+
+[[durable_objects.bindings]]
+name = "LIMITER"
+class_name = "RateLimiter"
+
+# SQLite-backed Durable Objects are the free-plan option.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["RateLimiter"]
