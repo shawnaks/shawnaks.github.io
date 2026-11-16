@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 import { HOME_TILES } from '../data/site';
+import { AsciiHero } from '../components/AsciiHero';
 import { NavTile } from '../components/NavTile';
 import { Portrait } from '../components/Portrait';
-import { SectionTitle } from '../components/SectionTitle';
 import { SocialRow } from '../components/SocialRow';
 import type { SectionNavHandler } from '../lib/sections';
 import { useReveal } from '../hooks/useReveal';
@@ -76,7 +76,7 @@ export function Hello({ onNavigate }: HelloProps) {
     >
       <div className="container">
         <div className="hero">
-          <SectionTitle variant="hero" id="hello-title" text="Hello World..." />
+          <AsciiHero />
 
           <div className="hero-intro">
             <Portrait size="sm" />

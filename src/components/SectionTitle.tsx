@@ -2,14 +2,11 @@ import { useEffect, useRef } from 'react';
 import { prefersReducedMotion, SCRAMBLE_GLYPHS, useScramble } from '../hooks/useScramble';
 
 const SLAB_WIPE_MS = 520;
-const HERO_DELAY_MS = 60;
 const HOVER_GLYPH_MS = 60;
 
 export type SectionTitleProps = {
   text: string;
   id?: string;
-  /** `slab` is the black-wipe page title; `hero` is the home h1. */
-  variant?: 'hero' | 'slab';
   /** Slab heading level; `h1` where the page has no hero (case study, 404). */
   level?: 'h1' | 'h2';
   /** Split slab text into per-character spans for the hover cycle. */
@@ -27,7 +24,6 @@ export type SectionTitleProps = {
 export function SectionTitle({
   text,
   id,
-  variant = 'slab',
   level = 'h2',
   letters = false,
 }: SectionTitleProps) {
@@ -105,7 +101,7 @@ export function SectionTitle({
       title.classList.remove('is-glitching');
       resetScramble(textEl);
 
-      if (variant === 'slab' && bar) {
+      if (bar) {
         bar.classList.remove('is-wiping');
 
         if (reduce) {
@@ -119,11 +115,10 @@ export function SectionTitle({
 
       if (reduce) return;
 
-      const delay = variant === 'slab' ? SLAB_WIPE_MS : HERO_DELAY_MS;
-      timer = window.setTimeout(() => scramble(textEl), delay);
+      timer = window.setTimeout(() => scramble(textEl), SLAB_WIPE_MS);
     };
 
-    if (letters && variant === 'slab' && textEl) {
+    if (letters && textEl) {
       textEl.addEventListener('pointermove', onPointerMove);
       textEl.addEventListener('pointerout', onPointerOut);
     }
@@ -169,17 +164,7 @@ export function SectionTitle({
       textEl?.removeEventListener('pointerout', onPointerOut);
       cancelScramble();
     };
-  }, [variant, text, letters, scramble, cancelScramble, resetScramble]);
-
-  if (variant === 'hero') {
-    return (
-      <h1 ref={titleRef} className="hero-title glitch anim" id={id} tabIndex={-1} data-text={text}>
-        <span className="title-text" data-text={text}>
-          {text}
-        </span>
-      </h1>
-    );
-  }
+  }, [text, letters, scramble, cancelScramble, resetScramble]);
 
   const Tag = level;
 

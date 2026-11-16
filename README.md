@@ -15,13 +15,13 @@ The visual design is a faithful homage to [oninross.github.io/infinite-imaginati
 | **Build** | Vite 8 (`npm run build` type-checks with `tsc -b`, then bundles to `dist/`) |
 | **Routing** | react-router-dom 7 — `HashRouter`; one scrollable page with per-section hashes plus `#/case-study/:slug/` sub-routes |
 | **Styling** | Hand-rolled design system in plain CSS (`src/styles/main.css` plus one stylesheet per section) — no Tailwind, no UI kit |
-| **Text scramble** | Custom `useScramble` hook (baffle.js equivalent) |
-| **Transitions** | Custom expo-eased timing: scroll-driven reveals, section-title wipe + scramble, per-letter hover glyph cycling on the four section titles, and a case-study out-stagger |
+| **Text scramble** | Custom `useScramble` hook (baffle.js equivalent) for the section titles |
+| **Transitions** | Custom expo-eased timing: scroll-driven reveals, the ASCII particle-rain hero, section-title wipe + scramble, per-letter hover glyph cycling on the four section titles, and a case-study out-stagger |
 | **Fonts** | Self-hosted Martian Mono (400/700, latin woff2 under `public/assets/fonts/`, declared in `src/styles/fonts.css`) — one monospace family for UI and body, no runtime Google Fonts request, with a `ui-monospace` / Cascadia Mono / Consolas fallback stack |
 | **Theme** | Light / dark via a `.theme-dark` class and semantic CSS tokens; defaults to the local clock (dark 19:00–06:59, light 07:00–18:59) unless an explicit choice is stored, applied pre-paint |
 | **Icons** | Inline SVG sprite (`IconSprite` + `Icon`) — no icon package |
 | **Navigation** | Header tiles + scroll spy, a fixed left section rail ≥1200px, a fixed bottom tab bar ≤767px, and a command palette (Ctrl/Cmd+K or `/`) with its own fuzzy ranking |
-| **Type scale** | One `--text-*` token scale on a 62.5% root (`1rem = 10px`): 13px labels, 14px metadata, 17–18px reading copy, 21–24px statements, 24–28px headings, 57.6px section slabs, 97.2px hero |
+| **Type scale** | One `--text-*` token scale on a 62.5% root (`1rem = 10px`): 13px labels, 14px metadata, 17–18px reading copy, 21–24px statements, 24–28px headings, 57.6px section slabs |
 
 Libraries the original leaned on (baffle.js for scramble text, GSAP for easing) are replaced by small local implementations in `src/hooks/useScramble.ts`, `src/hooks/useReveal.ts`, and `src/lib/transition.ts`.
 
@@ -42,17 +42,18 @@ npm test         # run the unit suites (Vitest, one pass)
 
 ## Tests
 
-`npm test` runs [Vitest](https://vitest.dev/) once: **63 tests across 7 files**.
+`npm test` runs [Vitest](https://vitest.dev/) once: **75 tests across 8 files**.
 
 - `src/lib/sections.test.ts` — path normalisation, section-path → section-id mapping, and case-study path detection
 - `src/data/projects.test.ts` — six unique project slugs, non-empty challenge/solution steps, case-insensitive lookup, and next-pager wrapping
+- `src/components/asciiHero.test.ts` — 5×7 block-font masks, HELLO/WORLD rasters, grid scaling and centring, the five leaf shades, and the 767px breakpoint
 - `src/lib/contactForm.test.ts` — field validation and caps, CR/LF stripping, and mailto subject/body encoding (including header-injection attempts)
 - `src/lib/rateLimit.test.ts` — cooldown and rolling-window verdicts, persistence, corrupt-JSON tolerance, and falling back to memory when storage throws
 - `src/lib/theme.test.ts` — time-of-day boundary (07:00 / 19:00), stored-choice override, and invalid/empty storage fallback
 - `worker/src/validate.test.js` — server-side payload rules: required fields, caps, control characters, honeypot, and non-string inputs
 - `worker/src/limit.test.js` — per-IP 60 s / 3-per-15-min windows, retry-after math, window rollover, the global daily cap, and corrupt timestamps
 
-Together they cover the path mapping behind the router, the integrity of the project data behind the grid and case studies, the contact form's validation, encoded mailto, client-side rate limiting, the theme resolver, and the worker's validation and rate-limit math. There is no browser E2E harness in the repo.
+Together they cover the path mapping behind the router, the integrity of the project data behind the grid and case studies, the hero wordmark's font and raster geometry, the contact form's validation, encoded mailto, client-side rate limiting, the theme resolver, and the worker's validation and rate-limit math. There is no browser E2E harness in the repo.
 
 ## Navigation & URL model
 
@@ -65,12 +66,13 @@ Together they cover the path mapping behind the router, the integrity of the pro
 - **History.** Moving to a different section pushes a history entry, so browser back/forward returns to the section — and the scroll position — you came from.
 - **Shareable hashes.** `#/hello/`, `#/about/`, `#/experience/`, `#/projects/`, and `#/contact/` deep-link straight to a section with an instant landing; the trailing slash is optional (`#/about` normalises to `#/about/`). Passive scrolling updates the hash silently with `replaceState`, so browsing does not fill up the history stack.
 - **Case studies.** Project cards open the real sub-route `#/case-study/:slug/` with an outgoing content stagger. "back to listing" returns instantly to the projects section; browser back returns to the section you left.
-- **Reduced motion.** `prefers-reduced-motion: reduce` makes scrolling instant, renders reveals, skill bars, and title wipes immediately, disables the per-letter title hover cycle, renders the hero scroll cue as a static six-sector pie, turns off the about falling-leaf rain (no leaves, no animation loop), and skips the card scan wipe, the contact stamp and the error shake.
+- **Reduced motion.** `prefers-reduced-motion: reduce` makes scrolling instant, renders reveals, skill bars, and title wipes immediately, draws the ASCII hero wordmark as one static frame (no rAF loop), disables the per-letter title hover cycle, renders the hero scroll cue as a static six-sector pie, turns off the about falling-leaf rain (no leaves, no animation loop), and skips the card scan wipe, the contact stamp and the error shake.
 
 ## Interaction details
 
 - **Card scan wipe.** A project card's real screenshot (when one exists) is clipped from the right and wipes in left→right on hover, alongside the existing −4px card lift. It is gated to `(hover: hover) and (pointer: fine)` and off under reduced motion, so touch devices never get a hidden image. The placeholder slots are untouched.
 - **Home-tile glitch.** Hovering or keyboard-focusing one of the four home tiles plays a one-shot ~0.4s chroma-split glitch: two `aria-hidden` copies of the label are clipped and nudged (380ms / 420ms), then settle at zero opacity. The copies are absolutely positioned, so the tile, grid and neighbours never move. It is scoped to `.tile-grid`, gated to `(hover: hover) and (pointer: fine)`, and removed under reduced motion (the panel wipe and colour change remain).
+- **ASCII hero wordmark.** The home `h1` is visually hidden; the canvas above it draws `HELLO` ↔ `WORLD` in a hand-built 5×7 block font on a 100×16 character grid (36×12 at ≤767px), one word every 6.6s: grains fall with gravity, flash the lightest leaf green on landing, hold, then pour off the bottom. The five greens come from the same `--cue-shade-1…5` tokens as the scroll-cue pie and are re-read when the theme class flips. The canvas is DPR-capped at 2, stops its rAF loop when off-screen or the tab is hidden, and draws a single static frame under reduced motion. It is `aria-hidden` (decorative), so assistive tech gets the hidden `Hello World...` heading only.
 - **Typewriter status.** The hero's `currently: robot learning @ the Safe Robotics Lab` line types one character per 32ms after a ~320ms pause, then a block cursor blinks at 1.1s `step-end`. The full sentence is in an `.sr-only` span from first paint and the animated copy is `aria-hidden`, so assistive tech never receives it character by character; the line's height is reserved so the portrait, rule and tiles below never move. Reduced motion shows the finished line with a static cursor.
 - **Copy email.** The landing email icon and the Contact email hero card copy `shawnaksa150@gmail.com` and show one bottom-centre `email copied` toast (`role="status"`, 2s, restarting in place rather than stacking). If the Clipboard API is missing or denied, the click opens a `mailto:` and the toast reads `opening your mail app…`.
 - **Résumé preview.** The landing résumé icon and the Contact résumé card open a modal with the PDF inline, download and open-in-new-tab actions, a focus trap, Esc/backdrop/close, a scroll lock and an always-visible fallback strip. Focus returns to the trigger on close; the panel is full-bleed on phones and stacks its actions at 320–380px. Reduced motion skips the fade/rise.
@@ -118,7 +120,7 @@ Personal Website/
     routes/
       MainPage.tsx               # the scrollable document: Hello → About → Experience → Projects → Contact,
                                  #   plus the section rail / mobile tab bar
-      Hello.tsx                  # #/hello/       — hero, typewritten current-role status, home tile grid, socials
+      Hello.tsx                  # #/hello/       — ASCII wordmark hero, typewritten current-role status, home tile grid, socials
       About.tsx                  # #/about/       — bio (portrait below the copy) + full-screen falling-leaf rain, education, coursework, skill bars
       Experience.tsx             # #/experience/  — 3 roles + 3 hackathon records
       Projects.tsx               # #/projects/    — 6 project cards with ShotSlot frames
@@ -131,7 +133,9 @@ Personal Website/
       SectionRail.tsx            # fixed left section rail (≥1200px) / bottom tab bar (≤767px)
       ThemeToggle.tsx            # 45px light/dark switch; follows the clock by default, persists a choice, updates theme-color
       NavTile.tsx                # 2-letter nav tile; intercepts clicks for smooth scrolling, decorative hover glitch
-      SectionTitle.tsx           # observer-triggered slab wipe + scramble, per-letter hover cycle, hero variant
+      AsciiHero.tsx              # particle-rain wordmark: 5×7 block font, character grid, 6.6s cycle, DPR-capped canvas
+      asciiHero.test.ts          # block-font/raster geometry, grid fitting and the 767px breakpoint
+      SectionTitle.tsx           # observer-triggered slab wipe + scramble, per-letter hover cycle
       CopyEmail.tsx              # clipboard copy + the single role=status "email copied" toast, mailto fallback
       ResumePreview.tsx          # event-driven résumé dialog: inline PDF, download / new tab, focus trap
       PlanList.tsx / PlanItem.tsx # bordered detail-card list (education, roles, records)
@@ -172,6 +176,7 @@ Personal Website/
     styles/
       fonts.css                  # @font-face for the self-hosted Martian Mono woff2 files
       main.css                   # design system: light/dark tokens, shell, primitives
+      ascii-hero.css             # hero canvas box + aspect ratio (desktop / mobile grids)
       about.css                  # bio, education, coursework, skill bars
       experience.css             # role/hackathon records, inline project pills
       projects.css               # project cards, case-study blocks, screenshot slots, card scan wipe
@@ -225,10 +230,10 @@ npx wrangler@4 dev --port 5251 --var RESEND_API_URL:http://127.0.0.1:5252/emails
 | Area | Tokens |
 | --- | --- |
 | **Colors** | Semantic roles only — `--bg`, `--fg`, `--fill`, `--bg-subtle`, `--border`, `--gray`, `--accent`, `--accent-ink`, `--red` — with a light and dark value for each (table below) |
-| **Type** | Martian Mono (400/700) for everything on one `--text-*` scale (`1rem = 10px`): `--text-xs` 13px labels/nav microcopy, `--text-sm` 14px metadata/buttons, `--text-base` 17px reading copy, `--text-md` 18px wider-measure bio, `--text-lg` 21px statements, `--text-xl` 24px headings, `--text-2xl` 28px case title, `--text-3xl` 32px stats, `--text-slab` 57.6px section slabs, `--text-hero` 97.2px hero; `--leading-read` 1.7 / `--leading-statement` 1.5. Bold (700) for logo, hero + slab titles, tile abbreviations, `//` labels, plan names/meta, pills, CTAs, stats, skill labels, project-card names, the case pager, contact handles, and course chips; regular (400) for body and secondary copy. No italics. Fallback stack: `ui-monospace, 'Cascadia Mono', Consolas, monospace` |
+| **Type** | Martian Mono (400/700) for everything on one `--text-*` scale (`1rem = 10px`): `--text-xs` 13px labels/nav microcopy, `--text-sm` 14px metadata/buttons, `--text-base` 17px reading copy, `--text-md` 18px wider-measure bio, `--text-lg` 21px statements, `--text-xl` 24px headings, `--text-2xl` 28px case title, `--text-3xl` 32px stats, `--text-slab` 57.6px section slabs; `--leading-read` 1.7 / `--leading-statement` 1.5. Bold (700) for logo, slab titles, tile abbreviations, `//` labels, plan names/meta, pills, CTAs, stats, skill labels, project-card names, the case pager, contact handles, and course chips; regular (400) for body and secondary copy. No italics. Fallback stack: `ui-monospace, 'Cascadia Mono', Consolas, monospace` |
 | **Borders** | `3px solid --fg` (tiles / detail cards / CTAs), `6px` project cards, `0` border-radius |
 | **Motifs** | title slab + 15px accent spine · `//` labels · 2-letter tile abbreviations (Ho Ab Ex Pr Ct) · diagonal hatch shadows · HUD corner brackets · grayscale screenshots · double-chevron CTAs |
-| **Motion** | expo eases `cubic-bezier(0.19, 1, 0.22, 1)` / `cubic-bezier(0.16, 1, 0.3, 1)`, 0.25s micro / 0.5s layout · scroll-driven reveals · slab wipe + scramble · per-letter hover glyph cycle · case-study out-stagger · glitch text on hover |
+| **Motion** | expo eases `cubic-bezier(0.19, 1, 0.22, 1)` / `cubic-bezier(0.16, 1, 0.3, 1)`, 0.25s micro / 0.5s layout · scroll-driven reveals · ASCII particle-rain hero · slab wipe + scramble · per-letter hover glyph cycle · case-study out-stagger · glitch text on hover |
 
 ### Semantic color tokens
 
@@ -255,7 +260,7 @@ All five sections live on the one stacked document; any section hash opens the s
 
 | Route | Status | Contents |
 | --- | --- | --- |
-| `#/` or `#/hello/` | **BUILT** — section 1 (top) | "Hello World..." hero with a one-shot scramble reveal, a 150px portrait beside the identity line (`Shawnak Samaddar — computer science @ Georgia Tech`) and the current-role status line (`currently: robot learning @ the Safe Robotics Lab`), typed at 32ms/char behind a blinking block cursor (instant with a static cursor under reduced motion), "// navigate" home tile grid (visual sitemap) with the one-shot hover/focus glitch, centred social row where the email icon copies the address (2s toast, `mailto:` fallback) and the résumé icon opens the inline-PDF preview, and a six-sector leaf-green pie under it that jumps to About (drifts slowly at rest, spins up on hover/focus) |
+| `#/` or `#/hello/` | **BUILT** — section 1 (top) | "Hello World..." rendered as an ASCII particle-rain wordmark (`HELLO` ↔ `WORLD`, hand-built 5×7 block font, falling grains in the five leaf greens, one word every 6.6s; one static frame under reduced motion) with the words also present as a visually hidden `h1`, a 150px portrait beside the identity line (`Shawnak Samaddar — computer science @ Georgia Tech`) and the current-role status line (`currently: robot learning @ the Safe Robotics Lab`), typed at 32ms/char behind a blinking block cursor (instant with a static cursor under reduced motion), "// navigate" home tile grid (visual sitemap) with the one-shot hover/focus glitch, centred social row where the email icon copies the address (2s toast, `mailto:` fallback) and the résumé icon opens the inline-PDF preview, and a six-sector leaf-green pie under it that jumps to About (drifts slowly at rest, spins up on hover/focus) |
 | `#/about/` | **BUILT** — section 2 | Three-paragraph bio at the 18px reading step with the 300px portrait below the copy (it absorbed the hero's teleoperation clause, the Hacklytics name and the "next hard problem" line), over a full-screen falling-leaf rain behind the content (sparse 16–24px leaves in 5 theme-aware green shades, each swaying and tumbling as it falls; starts when About is reached, stops and fades at education, resumes on scroll-up, static under reduced motion); education card (Georgia Tech B.S. CS Dec 2027, threads: AI & information internetworks, math minor); 8 coursework chips; 8 scroll-triggered skill bars with counters; tools line |
 | `#/experience/` | **BUILT** — section 3 | 3 role records — Delta Dental data engineering intern (May–Aug 2026: Python + Snowflake ETL, 53M+ raw records → 27M refined rows, AI agent saving 80% developer time, 600M+ record validation across 50 sources) · Safe Robotics Lab undergrad research assistant (Dec 2025–present: OpenArm bimanual robot teleop in MuJoCo, robot-learning models) · NASA GeneLab Multi-Omics AWG data analyst intern (Jun 2024–Sep 2025: microscopy, K-Means, six ML models) — plus 3 hackathon records: Hacklytics 2026 2nd place best use of Actian VectorAI (50+ teams), AI ATL 2025 (Hearo), HackGT 2025 team lead (SnapFind) |
 | `#/projects/` | **BUILT** — section 4 | 6 project cards with 6px borders and framed `ShotSlot` screenshot placeholders: SnapFind (React 19, Supabase, FastAPI, ResNet-18, 92% accuracy), RxGuard (Gemini, sentence-transformers, Actian VectorAI, Hacklytics 2nd place), Flight Fare Optimizer (Python, 186 airports, 262k fares, 4 algorithms from scratch; Fall 2024 course build, refreshed against DOT data through Q1 2026), Hearo (React Native, Gemini 2.5 Flash, ElevenLabs), Battle Showdown (Next.js 15, Tailwind 4), Pong (pygame, 2022) |

@@ -1,0 +1,31 @@
+/* ==========================================================================
+   ascii hero — particle-rain wordmark (character-grid canvas)
+   the word is drawn in the component; this file only reserves its box
+   ========================================================================== */
+
+.ascii-hero {
+  width: 100%;
+  margin: 0 0 16px;
+}
+
+/* aspect-ratio keeps the hero height stable before the canvas is painted and
+   after the font loads (the canvas never feeds back into layout). Values must
+   match DESKTOP_WORD / MOBILE_WORD in AsciiHero.tsx — the component also sets
+   the inline ratio on breakpoint changes. */
+.ascii-hero-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 100 / 16;
+}
+
+/* Short desktop/tablet windows: hand back a few pixels to the hero rhythm
+   above (main.css trims the rest) so the scroll cue clears the first fold. */
+@media (min-width: 768px) and (max-height: 900px) {
+  .ascii-hero { margin-bottom: 10px; }
+}
+
+@media (max-width: 767px) {
+  .ascii-hero { margin-bottom: 14px; }
+  .ascii-hero-canvas { aspect-ratio: 36 / 12; }
+}
