@@ -1,7 +1,8 @@
 import type { MouseEvent, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { isPlainClick } from '../lib/sections';
 
-export type TransitionLinkProps = {
+type TransitionLinkProps = {
   to: string;
   children: ReactNode;
   className?: string;
@@ -16,8 +17,7 @@ export type TransitionLinkProps = {
  */
 export function TransitionLink({ to, children, className, onNavigate }: TransitionLinkProps) {
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (!onNavigate) return;
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    if (!onNavigate || !isPlainClick(e)) return;
     e.preventDefault();
     onNavigate(e, to);
   };

@@ -9,11 +9,11 @@ import { prefersReducedMotion } from '../hooks/useScramble';
 import { normalizePath } from './sections';
 
 /** Content-out choreography before the route swaps (≥ the .anim 500ms fade). */
-export const OUT_MS = 520;
+const OUT_MS = 520;
 
 export type NavigateHandler = (e: MouseEvent, to: string) => void;
 
-export type NavigateOptions = {
+type NavigateOptions = {
   /** The router's current pathname (used for the same-route check). */
   currentPath: string;
   /** react-router's navigate(). */

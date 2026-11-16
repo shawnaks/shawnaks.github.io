@@ -15,9 +15,9 @@ export const RATE_LIMIT = {
 /** The part of `Storage` this module needs, so tests can inject a fake. */
 export type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 
-export type RateLimitReason = 'cooldown' | 'window';
+type RateLimitReason = 'cooldown' | 'window';
 
-export type RateLimitStatus =
+type RateLimitStatus =
   | { allowed: true; retryAfterMs: 0 }
   | { allowed: false; reason: RateLimitReason; retryAfterMs: number };
 
@@ -85,7 +85,7 @@ export type RateLimiter = {
   record: (now?: number) => void;
 };
 
-export type RateLimiterOptions = {
+type RateLimiterOptions = {
   /** Defaults to localStorage when available, memory when not. */
   storage?: StorageLike | null;
   /** Injected for tests; defaults to Date.now. */

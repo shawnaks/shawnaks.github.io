@@ -336,16 +336,6 @@
   white-space: nowrap;
 }
 
-/* honeypot — off-screen but still submittable */
-.contact-hp {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
 .contact-form-actions {
   display: flex;
   align-items: center;
@@ -390,17 +380,12 @@ button.contact-form-submit:disabled .cta-icon .icon {
   overflow-wrap: anywhere;
 }
 
-/* The limit line next to the button already states this for sighted users;
-   keep the live-region copy for screen readers without repeating it. */
+/* .sr-only clips this line; these keep it out of the form's flow, since
+   main.css loads before the section styles. */
 .contact-form-status--info {
   position: absolute;
-  width: 1px;
-  height: 1px;
   min-height: 0;
   margin: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
 }
 
 .contact-form-status--success {

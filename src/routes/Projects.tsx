@@ -2,9 +2,9 @@ import '../styles/projects.css';
 
 import { useRef } from 'react';
 import { Cta } from '../components/Cta';
-import { Icon } from '../components/Icon';
+import { Chevrons, Icon } from '../components/Icon';
 import { SectionTitle } from '../components/SectionTitle';
-import { ShotSlot } from '../components/ShotSlot';
+import { ScreenshotFrame } from '../components/ScreenshotFrame';
 import { TransitionLink } from '../components/TransitionLink';
 import { PROJECTS } from '../data/projects';
 import type { ProjectData } from '../data/projects';
@@ -23,7 +23,7 @@ function ProjectCard({ project, onNavigate }: ProjectCardProps) {
 
   return (
     <article className="project-card">
-      <ShotSlot alt={`${project.name} — screenshot coming soon`} />
+      <ScreenshotFrame alt={`${project.name} — screenshot coming soon`} />
 
       <div className="project-card-body">
         <div className="project-card-head">
@@ -65,17 +65,14 @@ function ProjectCard({ project, onNavigate }: ProjectCardProps) {
           onNavigate={onNavigate}
         >
           <span className="cta-text">see case study</span>
-          <span className="cta-icon" aria-hidden="true">
-            <Icon name="chev" />
-            <Icon name="chev" />
-          </span>
+          <Chevrons />
         </TransitionLink>
       </div>
     </article>
   );
 }
 
-export type ProjectsProps = {
+type ProjectsProps = {
   /** Case-study links keep the outgoing route transition. */
   onNavigate?: NavigateHandler;
   /** The section CTA scrolls back to hello. */

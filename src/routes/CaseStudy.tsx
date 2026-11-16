@@ -3,16 +3,16 @@ import '../styles/projects.css';
 import { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Cta } from '../components/Cta';
-import { Icon } from '../components/Icon';
+import { Chevrons, Icon } from '../components/Icon';
 import { SectionTitle } from '../components/SectionTitle';
-import { ShotSlot } from '../components/ShotSlot';
+import { ScreenshotFrame } from '../components/ScreenshotFrame';
 import { TransitionLink } from '../components/TransitionLink';
 import { getNextProject, getProject } from '../data/projects';
 import type { ProjectData } from '../data/projects';
 import type { NavigateHandler } from '../lib/transition';
 import { useReveal } from '../hooks/useReveal';
 
-export type CaseStudyProps = {
+type CaseStudyProps = {
   onNavigate?: NavigateHandler;
 };
 
@@ -126,7 +126,7 @@ function CaseStudyView({ project, onNavigate }: CaseStudyViewProps) {
         </header>
 
         <div className="section-body case-body">
-          <ShotSlot className="case-shot" alt={`${project.name} — screenshot coming soon`} />
+          <ScreenshotFrame className="case-shot" alt={`${project.name} — screenshot coming soon`} />
 
           <div className="case-tldr anim">
             <p className="case-tldr-label">TLDR;</p>
@@ -207,10 +207,7 @@ function CaseStudyView({ project, onNavigate }: CaseStudyViewProps) {
             >
               <span className="case-next-label">next:</span>
               <span className="case-next-name">{next.name}</span>
-              <span className="case-next-icon" aria-hidden="true">
-                <Icon name="chev" />
-                <Icon name="chev" />
-              </span>
+              <Chevrons className="case-next-icon" />
             </TransitionLink>
 
             <p className="case-back">

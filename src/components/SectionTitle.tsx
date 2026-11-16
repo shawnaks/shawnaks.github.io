@@ -4,7 +4,7 @@ import { prefersReducedMotion, SCRAMBLE_GLYPHS, useScramble } from '../hooks/use
 const SLAB_WIPE_MS = 520;
 const HOVER_GLYPH_MS = 60;
 
-export type SectionTitleProps = {
+type SectionTitleProps = {
   text: string;
   id?: string;
   /** Slab heading level; `h1` where the page has no hero (case study, 404). */

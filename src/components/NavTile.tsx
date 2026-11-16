@@ -1,14 +1,15 @@
 import type { MouseEvent } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import type { IconName } from '../data/site';
 import { useActiveSection } from '../hooks/useActiveSection';
-import { isCaseStudyPath, isMainPath, sectionIdFromPath } from '../lib/sections';
+import { isCaseStudyPath, isMainPath, isPlainClick, sectionIdFromPath } from '../lib/sections';
 import { Icon } from './Icon';
 
-export type NavTileProps = {
+type NavTileProps = {
   to: string;
   abbr: string;
   full: string;
-  icon: string;
+  icon: IconName;
   /** `sm` is the compact header variant. */
   size?: 'sm';
   /**
@@ -33,8 +34,7 @@ export function NavTile({ to, abbr, full, icon, size, onNavigate }: NavTileProps
   const isActive = inCaseStudy || (isMainPath(pathname) && activeSection === section);
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (!onNavigate) return;
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    if (!onNavigate || !isPlainClick(e)) return;
     e.preventDefault();
     onNavigate(e, to);
   };

@@ -62,7 +62,7 @@ export function validateContact(values: ContactValues): {
   return { values: cleaned, errors };
 }
 
-export type MailtoValues = Pick<ContactValues, 'name' | 'email' | 'subject' | 'message'>;
+type MailtoValues = Pick<ContactValues, 'name' | 'email' | 'subject' | 'message'>;
 
 /**
  * Build the pre-backend `mailto:` link. Everything user-typed is encoded, and

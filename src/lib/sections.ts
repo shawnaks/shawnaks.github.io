@@ -6,7 +6,7 @@ import type { MouseEvent } from 'react';
 
 export type SectionId = 'hello' | 'about' | 'experience' | 'projects' | 'contact';
 
-export type SectionDef = {
+type SectionDef = {
   /** The section element's id, used by scrollIntoView + the scroll spy. */
   id: SectionId;
   /** Hash path, kept compatible with the old per-page URLs. */
@@ -24,6 +24,17 @@ export const SECTIONS = [
 
 /** A click on a section control (tile, pill, CTA, logo). */
 export type SectionNavHandler = (e: MouseEvent, to: string) => void;
+
+/** True for a primary, unmodified click: the only case our handlers intercept. */
+export function isPlainClick(event: {
+  metaKey: boolean;
+  ctrlKey: boolean;
+  shiftKey: boolean;
+  altKey: boolean;
+  button: number;
+}): boolean {
+  return !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey && event.button === 0;
+}
 
 /** Trailing-slash-insensitive comparison key; `''` and `/` stay `/`. */
 export function normalizePath(pathname: string): string {

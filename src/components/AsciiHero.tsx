@@ -47,7 +47,7 @@ export const FONT_5X7: Record<string, readonly string[]> = {
   O: ['.###.', '#...#', '#...#', '#...#', '#...#', '#...#', '.###.'],
 };
 
-export type WordConfig = {
+type WordConfig = {
   cols: number;
   rows: number;
   scaleX: number;
@@ -60,7 +60,7 @@ export type WordConfig = {
 export const DESKTOP_WORD: WordConfig = { cols: 100, rows: 20, scaleX: 3, scaleY: 2 };
 /* One-cell pixels: 29 of 36 columns (80%), 7 of 14 rows from row 4. */
 export const MOBILE_WORD: WordConfig = { cols: 36, rows: 14, scaleX: 1, scaleY: 1 };
-export const MOBILE_MAX_WIDTH = 767;
+const MOBILE_MAX_WIDTH = 767;
 
 /** The floor line and its puddles sit two rows above the canvas bottom. */
 export function floorRow(config: WordConfig): number {

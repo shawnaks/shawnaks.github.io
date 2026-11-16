@@ -46,14 +46,17 @@ function showToast(text: string): void {
  * Copy the site email and confirm it. If the Clipboard API is missing or
  * blocked (insecure context, denied permission), the click still does
  * something: it hands the same link to the mail app.
+ * Resolves `true` only when the clipboard actually received the address.
  */
-export async function copyEmail(): Promise<void> {
+export async function copyEmail(): Promise<boolean> {
   try {
     if (!navigator.clipboard?.writeText) throw new Error('clipboard unavailable');
     await navigator.clipboard.writeText(EMAIL);
     showToast(COPIED);
+    return true;
   } catch {
     showToast(MAIL_APP);
     window.location.href = `mailto:${EMAIL}`;
+    return false;
   }
 }

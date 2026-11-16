@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { PlanItem } from './PlanItem';
 import type { PlanItemData } from './PlanItem';
 
-export type PlanListProps = {
+type PlanListProps = {
   /** Data-driven items; omit and pass children for fully custom lists. */
   items?: readonly PlanItemData[];
   children?: ReactNode;

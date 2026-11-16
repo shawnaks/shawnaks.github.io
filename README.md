@@ -17,7 +17,7 @@ The visual design is a faithful homage to [oninross.github.io/infinite-imaginati
 | **Styling** | Hand-rolled design system in plain CSS (`src/styles/main.css` plus one stylesheet per section) — no Tailwind, no UI kit |
 | **Text scramble** | Custom `useScramble` hook (baffle.js equivalent) for the section titles |
 | **Transitions** | Custom expo-eased timing: scroll-driven reveals, the ASCII particle-rain hero, section-title wipe + scramble, per-letter hover glyph cycling on the four section titles, and a case-study out-stagger |
-| **Fonts** | Self-hosted Martian Mono (400/700, latin woff2 under `public/assets/fonts/`, declared in `src/styles/fonts.css`) — one monospace family for UI, body and the hero canvas, no runtime Google Fonts request, with a `ui-monospace` / Cascadia Mono / Consolas fallback stack |
+| **Fonts** | Self-hosted Martian Mono (variable `wght` 100–800, one latin woff2 under `public/assets/fonts/`, declared in `src/styles/fonts.css`) — one monospace family for UI, body and the hero canvas, no runtime Google Fonts request, with a `ui-monospace` / Cascadia Mono / Consolas fallback stack |
 | **Theme** | Light / dark via a `.theme-dark` class and semantic CSS tokens; defaults to the local clock (dark 19:00–06:59, light 07:00–18:59) unless an explicit choice is stored, applied pre-paint |
 | **Icons** | Inline SVG sprite (`IconSprite` + `Icon`) — no icon package |
 | **Navigation** | Header tiles + scroll spy, a fixed left section rail ≥1200px, a fixed bottom tab bar ≤767px, and a command palette (Ctrl/Cmd+K or `/`) with its own fuzzy ranking |
@@ -42,9 +42,9 @@ npm test         # run the unit suites (Vitest, one pass)
 
 ## Tests
 
-`npm test` runs [Vitest](https://vitest.dev/) once: **78 tests across 8 files**.
+`npm test` runs [Vitest](https://vitest.dev/) once: **81 tests across 8 files**.
 
-- `src/lib/sections.test.ts` — path normalisation, section-path → section-id mapping, and case-study path detection
+- `src/lib/sections.test.ts` — path normalisation, section-path → section-id mapping, case-study path detection, and plain-click semantics
 - `src/data/projects.test.ts` — six unique project slugs, non-empty challenge/solution steps, case-insensitive lookup, and next-pager wrapping
 - `src/components/asciiHero.test.ts` — the single-word `HELLO` raster, the `0` / `1` / `|` / `·` glyph map, 5×7 letter masks, grid scaling and centring, the five leaf shades, and the 767px breakpoint
 - `src/lib/contactForm.test.ts` — field validation and caps, CR/LF stripping, and mailto subject/body encoding (including header-injection attempts)
@@ -110,7 +110,7 @@ Personal Website/
     assets/icon-512.png          # manifest icon
     assets/og-image.png          # 1200×630 Open Graph / Twitter preview
     assets/portrait.jpg          # owner portrait used by the home/about frames
-    assets/fonts/                # self-hosted Martian Mono 400/700 latin woff2
+    assets/fonts/                # self-hosted Martian Mono variable woff2 (wght 100–800)
     assets/Shawnak-Samaddar-Resume.pdf   # 108 KB, linked from the social row & contact
     site.webmanifest             # PWA metadata (theme_color #ffffff)
   src/
@@ -123,7 +123,7 @@ Personal Website/
       Hello.tsx                  # #/hello/       — ASCII wordmark hero, typewritten current-role status, home tile grid, socials
       About.tsx                  # #/about/       — bio (portrait below the copy) + full-screen falling-leaf rain, education, coursework, skill bars
       Experience.tsx             # #/experience/  — 3 roles + 3 hackathon records
-      Projects.tsx               # #/projects/    — 6 project cards with ShotSlot frames
+      Projects.tsx               # #/projects/    — 6 project cards with ScreenshotFrame placeholders
       CaseStudy.tsx              # #/case-study/:slug/ — full record + next pager
       Contact.tsx                # #/contact/     — copy-email hero, channels (résumé preview), status, message form
       ErrorPage.tsx              # catch-all "// not found"
@@ -137,7 +137,6 @@ Personal Website/
                                  #   100×20 (36×14 ≤767px), 6.9s cycle, DPR-capped canvas
       asciiHero.test.ts          # single-word raster, glyph map, grid fitting and the 767px breakpoint
       SectionTitle.tsx           # observer-triggered slab wipe + scramble, per-letter hover cycle
-      CopyEmail.tsx              # clipboard copy + the single role=status "email copied" toast, mailto fallback
       ResumePreview.tsx          # event-driven résumé dialog: inline PDF, download / new tab, focus trap
       PlanList.tsx / PlanItem.tsx # bordered detail-card list (education, roles, records)
       Portrait.tsx               # framed, grayscale-until-hover owner portrait
@@ -148,7 +147,7 @@ Personal Website/
                                  #   raining, nothing under reduced motion
       Cta.tsx                    # double-chevron call to action
       SocialRow.tsx              # github / linkedin links, email copy, résumé preview
-      ShotSlot.tsx               # framed screenshot slot (placeholder or image)
+      ScreenshotFrame.tsx        # framed screenshot slot (placeholder or image)
       SkillBars.tsx              # scroll-triggered skill bars + counters
       Loader.tsx                 # initial loading ring
       TransitionLink.tsx         # in-copy link that triggers a transition
@@ -163,6 +162,7 @@ Personal Website/
       scrollSpy.ts               # centre-band IntersectionObserver + shared active store
       scroll.ts                  # smooth/instant section scrolling, programmatic marker
       transition.ts              # case-study out-stagger + navigation guard
+      copyEmail.ts               # clipboard copy + the single role=status "email copied" toast, mailto fallback
       contactForm.ts             # contact validation, field caps, CR/LF-safe mailto builder
       contactForm.test.ts        # validation / caps / encoding / header-injection tests
       rateLimit.ts               # 60s cooldown + 3-per-15-min limiter, localStorage + memory fallback
@@ -175,7 +175,7 @@ Personal Website/
       projects.ts                # six project records + case-study content
       projects.test.ts           # project-data integrity: slugs, steps, lookup, next pager
     styles/
-      fonts.css                  # @font-face for the self-hosted Martian Mono woff2 files
+      fonts.css                  # single @font-face for the variable Martian Mono woff2
       main.css                   # design system: light/dark tokens, shell, primitives
       ascii-hero.css             # hero canvas box + aspect ratio (desktop / mobile grids)
       about.css                  # bio, education, coursework, skill bars
@@ -231,7 +231,7 @@ npx wrangler@4 dev --port 5251 --var RESEND_API_URL:http://127.0.0.1:5252/emails
 | Area | Tokens |
 | --- | --- |
 | **Colors** | Semantic roles only — `--bg`, `--fg`, `--fill`, `--bg-subtle`, `--border`, `--gray`, `--accent`, `--accent-ink`, `--red` — with a light and dark value for each (table below) |
-| **Type** | Martian Mono (400/700) for everything on one `--text-*` scale (`1rem = 10px`): `--text-xs` 13px labels/nav microcopy, `--text-sm` 14px metadata/buttons, `--text-base` 17px reading copy, `--text-md` 18px wider-measure bio, `--text-lg` 21px statements, `--text-xl` 24px headings, `--text-2xl` 28px case title, `--text-3xl` 32px stats, `--text-slab` 57.6px section slabs; `--leading-read` 1.7 / `--leading-statement` 1.5. Bold (700) for logo, slab titles, tile abbreviations, `//` labels, plan names/meta, pills, CTAs, stats, skill labels, project-card names, the case pager, contact handles, and course chips; regular (400) for body and secondary copy. No italics. Fallback stack: `ui-monospace, 'Cascadia Mono', Consolas, monospace` |
+| **Type** | Martian Mono (variable, `wght` 100–800; 400/700 used) for everything on one `--text-*` scale (`1rem = 10px`): `--text-xs` 13px labels/nav microcopy, `--text-sm` 14px metadata/buttons, `--text-base` 17px reading copy, `--text-md` 18px wider-measure bio, `--text-lg` 21px statements, `--text-xl` 24px headings, `--text-2xl` 28px case title, `--text-3xl` 32px stats, `--text-slab` 57.6px section slabs; `--leading-read` 1.7 / `--leading-statement` 1.5. Bold (700) for logo, slab titles, tile abbreviations, `//` labels, plan names/meta, pills, CTAs, stats, skill labels, project-card names, the case pager, contact handles, and course chips; regular (400) for body and secondary copy. No italics. Fallback stack: `ui-monospace, 'Cascadia Mono', Consolas, monospace` |
 | **Borders** | `3px solid --fg` (tiles / detail cards / CTAs), `6px` project cards, `0` border-radius |
 | **Motifs** | title slab + 15px accent spine · `//` labels · 2-letter tile abbreviations (Ho Ab Ex Pr Ct) · diagonal hatch shadows · HUD corner brackets · grayscale screenshots · double-chevron CTAs |
 | **Motion** | expo eases `cubic-bezier(0.19, 1, 0.22, 1)` / `cubic-bezier(0.16, 1, 0.3, 1)`, 0.25s micro / 0.5s layout · scroll-driven reveals · ASCII particle-rain hero · slab wipe + scramble · per-letter hover glyph cycle · case-study out-stagger · glitch text on hover |
@@ -264,7 +264,7 @@ All five sections live on the one stacked document; any section hash opens the s
 | `#/` or `#/hello/` | **BUILT** — section 1 (top) | `Hello` as an ASCII particle-rain wordmark in Martian Mono: a single `HELLO` where `0`s form the letters and splash on the floor, a row of `1`s marks the floor, `|` trails follow the falling grains and `·` drizzle drifts between words (100×20 character grid, 36×14 at ≤767px, one 6.9s rain → hold → pour cycle; one static complete frame under reduced motion), with the word also present as a visually hidden `h1`, a 150px portrait beside the identity line (`Shawnak Samaddar — computer science @ Georgia Tech`) and the current-role status line (`currently: robot learning @ the Safe Robotics Lab`), typed at 32ms/char behind a blinking block cursor (instant with a static cursor under reduced motion), "// navigate" home tile grid (visual sitemap) with the one-shot hover/focus glitch, centred social row where the email icon copies the address (2s toast, `mailto:` fallback) and the résumé icon opens the inline-PDF preview, and a six-sector leaf-green pie under it that jumps to About (drifts slowly at rest, spins up on hover/focus) |
 | `#/about/` | **BUILT** — section 2 | Three-paragraph bio at the 18px reading step with the 300px portrait below the copy (it absorbed the hero's teleoperation clause, the Hacklytics name and the "next hard problem" line), over a full-screen falling-leaf rain behind the content (sparse 16–24px leaves in 5 theme-aware green shades, each swaying and tumbling as it falls; starts when About is reached, stops and fades at education, resumes on scroll-up, static under reduced motion); education card (Georgia Tech B.S. CS Dec 2027, threads: AI & information internetworks, math minor); 8 coursework chips; 8 scroll-triggered skill bars with counters; tools line |
 | `#/experience/` | **BUILT** — section 3 | 3 role records — Delta Dental data engineering intern (May–Aug 2026: Python + Snowflake ETL, 53M+ raw records → 27M refined rows, AI agent saving 80% developer time, 600M+ record validation across 50 sources) · Safe Robotics Lab undergrad research assistant (Dec 2025–present: OpenArm bimanual robot teleop in MuJoCo, robot-learning models) · NASA GeneLab Multi-Omics AWG data analyst intern (Jun 2024–Sep 2025: microscopy, K-Means, six ML models) — plus 3 hackathon records: Hacklytics 2026 2nd place best use of Actian VectorAI (50+ teams), AI ATL 2025 (Hearo), HackGT 2025 team lead (SnapFind) |
-| `#/projects/` | **BUILT** — section 4 | 6 project cards with 6px borders and framed `ShotSlot` screenshot placeholders: SnapFind (React 19, Supabase, FastAPI, ResNet-18, 92% accuracy), RxGuard (Gemini, sentence-transformers, Actian VectorAI, Hacklytics 2nd place), Flight Fare Optimizer (Python, 186 airports, 262k fares, 4 algorithms from scratch; Fall 2024 course build, refreshed against DOT data through Q1 2026), Hearo (React Native, Gemini 2.5 Flash, ElevenLabs), Battle Showdown (Next.js 15, Tailwind 4), Pong (pygame, 2022) |
+| `#/projects/` | **BUILT** — section 4 | 6 project cards with 6px borders and framed `ScreenshotFrame` screenshot placeholders: SnapFind (React 19, Supabase, FastAPI, ResNet-18, 92% accuracy), RxGuard (Gemini, sentence-transformers, Actian VectorAI, Hacklytics 2nd place), Flight Fare Optimizer (Python, 186 airports, 262k fares, 4 algorithms from scratch; Fall 2024 course build, refreshed against DOT data through Q1 2026), Hearo (React Native, Gemini 2.5 Flash, ElevenLabs), Battle Showdown (Next.js 15, Tailwind 4), Pong (pygame, 2022) |
 | `#/contact/` | **BUILT** — section 5 (bottom) | Email-first: wide hero card that copies the address (same 2s toast; `mailto:` fallback when the clipboard is denied), 3 channel cards (LinkedIn, GitHub, résumé opens the PDF preview modal), location & status strip — Atlanta, GA, open to SWE/data internships summer 2027 — and a `// send a message` form (name, email, optional subject, 2000-character message) that POSTs to the live Cloudflare Worker, with inline validation, focus management, one polite live status line, a success stamp, a one-shot error shake, a 60s / 3-per-15-minute client-side rate limit, and the `mailto:` path as fallback if `CONTACT.endpoint` is cleared |
 | `#/case-study/:slug/` | **BUILT** — sub-route | Six full case studies (table below) — TLDR; role, technology used, paired challenges & solutions, stats, repo/devpost links, and a `next:` pager that cycles all six; a 15px reading-progress spine fills with the page; "back to listing" returns to the projects section |
 | anything else | **BUILT** — 404 | "// not found" with a CTA back to the top of the page |
@@ -311,7 +311,7 @@ Then set **Settings → Pages → Source: Deploy from a branch → `gh-pages` / 
 
 ## Roadmap
 
-1. Drop real screenshots into the framed `ShotSlot` placeholders in the projects section and each case study
+1. Drop real screenshots into the framed `ScreenshotFrame` placeholders in the projects section and each case study
 2. Optional live demo links for SnapFind, Battle Showdown, and Hearo
 3. Custom domain (owner plans to add one later)
 
@@ -322,6 +322,6 @@ The original vanilla implementation — a zero-dependency, single-file HTML/CSS/
 ## Credits
 
 - **Design homage:** "infinite imaginations" by Niño Ross Rodriguez ([oninross.github.io/infinite-imaginations](https://oninross.github.io/infinite-imaginations))
-- **Fonts:** Martian Mono 400/700, self-hosted latin woff2 in `public/assets/fonts/` ([Martian Mono](https://github.com/evilmartians/mono), SIL Open Font License 1.1); fallbacks `ui-monospace` / Cascadia Mono / Consolas
+- **Fonts:** Martian Mono variable (`wght` 100–800), one self-hosted latin woff2 in `public/assets/fonts/` ([Martian Mono](https://github.com/evilmartians/mono), SIL Open Font License 1.1); fallbacks `ui-monospace` / Cascadia Mono / Consolas
 - **Icons:** inline SVG sprite, feather-style line icons
 - Built with React 19 + TypeScript + Vite; every animation is a local implementation

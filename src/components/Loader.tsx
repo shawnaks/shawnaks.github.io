@@ -7,7 +7,7 @@ const FADE_MS = 1100;
 /** Module boot timestamp — the closest React analogue to the vanilla `t0`. */
 const BOOT_TIME = performance.now();
 
-export type LoaderProps = {
+type LoaderProps = {
   /** Fires exactly once, when the fade-out starts (body `is-loading` removed). */
   onDone: () => void;
 };
@@ -57,7 +57,7 @@ export function Loader({ onDone }: LoaderProps) {
   if (gone) return null;
 
   return (
-    <div className="loader" id="loader" aria-hidden="true" ref={rootRef}>
+    <div className="loader" aria-hidden="true" ref={rootRef}>
       <svg className="loader-ring" viewBox="0 0 50 50">
         <circle className="loader-circle" cx="25" cy="25" r="20" fill="none" strokeWidth="5" />
       </svg>

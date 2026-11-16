@@ -4,19 +4,19 @@
 
 import { FACTS, GITHUB_URL } from './site';
 
-export type ProjectStat = {
+type ProjectStat = {
   label: string;
   value: string;
 };
 
-export type ProjectLink = {
+type ProjectLink = {
   label: string;
   href: string;
   external?: boolean;
 };
 
 /** A challenge and its solution, always rendered as one numbered pair. */
-export type ProjectStep = {
+type ProjectStep = {
   challenge: string;
   solution: string;
 };

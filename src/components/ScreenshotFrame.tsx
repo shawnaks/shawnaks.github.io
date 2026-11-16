@@ -1,4 +1,4 @@
-export type ShotSlotProps = {
+type ScreenshotFrameProps = {
   /** Real capture. Omit for the framed "coming soon" placeholder. */
   src?: string;
   /** Describes the capture (and the placeholder slot) for assistive tech. */
@@ -17,7 +17,7 @@ export type ShotSlotProps = {
  * Image state: the reference site's treatment — desaturated at 25% opacity,
  * full colour on hover (the CSS is ready; no usage yet).
  */
-export function ShotSlot({ src, alt = '', ratio = 16 / 10, className }: ShotSlotProps) {
+export function ScreenshotFrame({ src, alt = '', ratio = 16 / 10, className }: ScreenshotFrameProps) {
   const label = alt || 'screenshot coming soon';
 
   return (

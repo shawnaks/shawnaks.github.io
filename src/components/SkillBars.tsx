@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { CSSProperties } from 'react';
+import { prefersReducedMotion } from '../hooks/useScramble';
 
 /** label — percent, in display order. */
 const SKILLS = [
@@ -47,11 +48,7 @@ export function SkillBars() {
       });
     };
 
-    const reduce =
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (reduce) {
+    if (prefersReducedMotion()) {
       setNumbers(1);
       root.classList.add('is-live');
       return;
@@ -117,7 +114,6 @@ export function SkillBars() {
         <li
           className="skill-bar"
           key={skill.label}
-          data-percent={skill.percent}
           style={{ '--pct': `${skill.percent}%` } as CSSProperties}
         >
           <span className="skill-name skill-name--top" aria-hidden="true">

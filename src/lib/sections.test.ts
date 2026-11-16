@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   SECTIONS,
   isCaseStudyPath,
+  isPlainClick,
   normalizePath,
   sectionIdFromPath,
 } from './sections';
@@ -45,5 +46,32 @@ describe('isCaseStudyPath', () => {
   it('rejects a missing slug or extra segments', () => {
     expect(isCaseStudyPath('/case-study/')).toBe(false);
     expect(isCaseStudyPath('/case-study/x/y')).toBe(false);
+  });
+});
+
+describe('isPlainClick', () => {
+  const click = (overrides: Partial<Parameters<typeof isPlainClick>[0]> = {}) => ({
+    metaKey: false,
+    ctrlKey: false,
+    shiftKey: false,
+    altKey: false,
+    button: 0,
+    ...overrides,
+  });
+
+  it('accepts a primary, unmodified click', () => {
+    expect(isPlainClick(click())).toBe(true);
+  });
+
+  it('rejects every modifier', () => {
+    expect(isPlainClick(click({ metaKey: true }))).toBe(false);
+    expect(isPlainClick(click({ ctrlKey: true }))).toBe(false);
+    expect(isPlainClick(click({ shiftKey: true }))).toBe(false);
+    expect(isPlainClick(click({ altKey: true }))).toBe(false);
+  });
+
+  it('rejects middle and right clicks', () => {
+    expect(isPlainClick(click({ button: 1 }))).toBe(false);
+    expect(isPlainClick(click({ button: 2 }))).toBe(false);
   });
 });

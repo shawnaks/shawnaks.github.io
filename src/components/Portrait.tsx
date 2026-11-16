@@ -1,6 +1,8 @@
 import '../styles/portrait.css';
 
-export type PortraitProps = {
+import { HudCorners } from './Icon';
+
+type PortraitProps = {
   /** `sm` for the home intro (~150px), `lg` for the about bio (~300px). */
   size?: 'sm' | 'lg';
   className?: string;
@@ -18,10 +20,7 @@ export function Portrait({ size = 'sm', className }: PortraitProps) {
         .join(' ')}
     >
       <div className="portrait-frame">
-        <span className="ui-corner tl" aria-hidden="true" />
-        <span className="ui-corner tr" aria-hidden="true" />
-        <span className="ui-corner bl" aria-hidden="true" />
-        <span className="ui-corner br" aria-hidden="true" />
+        <HudCorners />
         <span className="portrait-media">
           <img
             className="portrait-img"

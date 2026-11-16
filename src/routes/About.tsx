@@ -33,7 +33,7 @@ const COURSES = [
 const TOOLS =
   'Git · VS Code · IntelliJ & PyCharm · Jupyter · Claude Code & GitHub Copilot · Figma · Agile/Scrum · Prompt Engineering';
 
-export type AboutProps = {
+type AboutProps = {
   onNavigate?: SectionNavHandler;
 };
 

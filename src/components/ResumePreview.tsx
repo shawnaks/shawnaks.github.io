@@ -2,9 +2,10 @@ import '../styles/resume-preview.css';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { RESUME_HREF } from '../data/site';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 /** Any trigger can open the preview without prop drilling. */
-export const RESUME_PREVIEW_EVENT = 'resume:preview';
+const RESUME_PREVIEW_EVENT = 'resume:preview';
 
 export function openResumePreview() {
   window.dispatchEvent(new Event(RESUME_PREVIEW_EVENT));
@@ -45,23 +46,13 @@ export function ResumePreview() {
     return () => window.removeEventListener(RESUME_PREVIEW_EVENT, onOpen);
   }, []);
 
-  // Scroll lock + focus in, mirroring the palette's scrollbar-gutter trick.
+  useScrollLock(open);
+
+  // Focus in, mirroring the palette's dialog.
   useEffect(() => {
     if (!open) return;
 
-    const body = document.body;
-    const root = document.documentElement;
-    const previousOverflow = body.style.overflow;
-    const previousGutter = root.style.scrollbarGutter;
-
-    body.style.overflow = 'hidden';
-    root.style.scrollbarGutter = 'stable';
     closeRef.current?.focus({ preventScroll: true });
-
-    return () => {
-      body.style.overflow = previousOverflow;
-      root.style.scrollbarGutter = previousGutter;
-    };
   }, [open]);
 
   // Esc closes; Tab cycles the dialog's own controls (the frame is not tabbable).

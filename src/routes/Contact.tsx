@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, CSSProperties, FormEvent } from 'react';
 import { Cta } from '../components/Cta';
-import { COPY_EMAIL_LABEL, copyEmail } from '../components/CopyEmail';
-import { Icon } from '../components/Icon';
+import { COPY_EMAIL_LABEL } from '../lib/copyEmail';
+import { Chevrons, Icon } from '../components/Icon';
 import { openResumePreview } from '../components/ResumePreview';
 import { SectionTitle } from '../components/SectionTitle';
 import type { IconName } from '../data/site';
@@ -17,6 +17,7 @@ import {
 import type { ContactErrors, ContactField, ContactValues } from '../lib/contactForm';
 import { createRateLimiter } from '../lib/rateLimit';
 import { useReveal } from '../hooks/useReveal';
+import { useEmailCopy } from '../hooks/useEmailCopy';
 import { prefersReducedMotion } from '../hooks/useScramble';
 import '../styles/contact.css';
 
@@ -32,7 +33,7 @@ type Channel = {
   icon: IconName;
   href: string;
   external?: boolean;
-  download?: boolean;
+  opensResumePreview?: boolean;
 };
 
 const CHANNELS: readonly Channel[] = [
@@ -58,7 +59,7 @@ const CHANNELS: readonly Channel[] = [
     description: 'The one-page formal version, always current.',
     icon: 'down',
     href: RESUME_HREF,
-    download: true,
+    opensResumePreview: true,
   },
 ];
 
@@ -81,7 +82,7 @@ function formatRetryAfter(totalSeconds: number): string {
   return `${Math.ceil(totalSeconds / 3600)} h`;
 }
 
-export type ContactProps = {
+type ContactProps = {
   onNavigate?: SectionNavHandler;
 };
 
@@ -101,6 +102,7 @@ export function Contact({ onNavigate }: ContactProps) {
   const [errors, setErrors] = useState<ContactErrors>({});
   const [sending, setSending] = useState(false);
   const [notice, setNotice] = useState<Notice | null>(null);
+  const { copied, copy } = useEmailCopy();
 
   useReveal(sectionRef);
 
@@ -316,11 +318,11 @@ export function Contact({ onNavigate }: ContactProps) {
               className="contact-hero"
               aria-label={COPY_EMAIL_LABEL}
               title={EMAIL}
-              onClick={() => void copyEmail()}
+              onClick={() => void copy()}
             >
               <span className="contact-hero-wipe" aria-hidden="true" />
               <span className="contact-hero-icon" aria-hidden="true">
-                <Icon name="mail" />
+                <Icon name={copied ? 'check' : 'mail'} />
               </span>
               <span className="contact-hero-copy">
                 <span className="contact-hero-address">{EMAIL}</span>
@@ -328,10 +330,7 @@ export function Contact({ onNavigate }: ContactProps) {
                   The fastest way to reach me — for internships, collaborations, or questions.
                 </span>
               </span>
-              <span className="contact-hero-go" aria-hidden="true">
-                <Icon name="chev" />
-                <Icon name="chev" />
-              </span>
+              <Chevrons className="contact-hero-go" />
             </button>
           </div>
 
@@ -352,7 +351,7 @@ export function Contact({ onNavigate }: ContactProps) {
 
               return (
                 <li className="contact-channel anim" key={channel.name}>
-                  {channel.download ? (
+                  {channel.opensResumePreview ? (
                     <button
                       type="button"
                       className="contact-channel-link hatch"
@@ -505,7 +504,7 @@ export function Contact({ onNavigate }: ContactProps) {
             </div>
 
             {/* Bots fill every field; people never see this one. */}
-            <div className="contact-hp" aria-hidden="true">
+            <div className="contact-hp sr-only" aria-hidden="true">
               <label htmlFor="contact-website">website</label>
               <input
                 id="contact-website"
@@ -520,7 +519,7 @@ export function Contact({ onNavigate }: ContactProps) {
 
             <p
               ref={statusRef}
-              className={`contact-form-status contact-form-status--${shownNotice?.kind ?? 'idle'}`}
+              className={`contact-form-status contact-form-status--${shownNotice?.kind ?? 'idle'}${shownNotice?.kind === 'info' ? ' sr-only' : ''}`}
               role="status"
               aria-live="polite"
               onAnimationEnd={() => statusRef.current?.classList.remove('is-stamped')}
@@ -538,10 +537,7 @@ export function Contact({ onNavigate }: ContactProps) {
                 <span className="cta-text">
                   {sending ? 'sending…' : limit.allowed ? 'send message' : `wait ${seconds}s`}
                 </span>
-                <span className="cta-icon" aria-hidden="true">
-                  <Icon name="chev" />
-                  <Icon name="chev" />
-                </span>
+                <Chevrons />
               </button>
 
               {!limit.allowed ? (

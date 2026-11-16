@@ -4,9 +4,10 @@ import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { EMAIL, RESUME_HREF } from '../data/site';
 import { PROJECTS } from '../data/projects';
-import { SECTIONS, sectionIdFromPath } from '../lib/sections';
+import { SECTIONS, isPlainClick, sectionIdFromPath } from '../lib/sections';
 import type { SectionNavHandler } from '../lib/sections';
 import type { NavigateHandler } from '../lib/transition';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 type GroupId = 'sections' | 'case studies' | 'actions';
 type ItemKind = 'section' | 'case' | 'resume' | 'email' | 'theme';
@@ -189,7 +190,7 @@ function isEditable(target: EventTarget | null): boolean {
   return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable;
 }
 
-export type CommandPaletteProps = {
+type CommandPaletteProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   /** Section controls use the header tiles' scroll contract. */
@@ -259,7 +260,9 @@ export function CommandPalette({
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [open, close, onOpenChange]);
 
-  // Capture the opener once per open, lock the page and focus the field.
+  useScrollLock(open);
+
+  // Capture the opener once per open and focus the field.
   useEffect(() => {
     if (open && !wasOpen.current) {
       const current = document.activeElement;
@@ -274,20 +277,7 @@ export function CommandPalette({
 
     if (!open) return;
 
-    const body = document.body;
-    const root = document.documentElement;
-    const previousOverflow = body.style.overflow;
-    const previousGutter = root.style.scrollbarGutter;
-
-    body.style.overflow = 'hidden';
-    // Reserve the scrollbar gutter so locking does not shift the page.
-    root.style.scrollbarGutter = 'stable';
     inputRef.current?.focus();
-
-    return () => {
-      body.style.overflow = previousOverflow;
-      root.style.scrollbarGutter = previousGutter;
-    };
   }, [open]);
 
   // Keep the highlighted row visible inside the dialog's own scroller.
@@ -303,7 +293,7 @@ export function CommandPalette({
 
   const activate = (event: MouseEvent<HTMLAnchorElement>, item: PaletteItem) => {
     // Modified clicks keep the browser's native new-tab behaviour.
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+    if (!isPlainClick(event)) return;
 
     if (item.kind === 'section') {
       event.preventDefault();
@@ -385,7 +375,6 @@ export function CommandPalette({
           </span>
           <input
             ref={inputRef}
-            id="palette-input"
             className="palette-input"
             type="text"
             role="combobox"

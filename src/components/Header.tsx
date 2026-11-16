@@ -3,10 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { NAV_ITEMS } from '../data/site';
 import { isProgrammaticScroll } from '../lib/scroll';
+import { isPlainClick } from '../lib/sections';
 import { NavTile } from './NavTile';
 import { ThemeToggle } from './ThemeToggle';
 
-export type HeaderProps = {
+type HeaderProps = {
   /** Adds `is-ready`, which runs the post-loader entrance. */
   ready: boolean;
   /** Optional page-transition hook forwarded to every nav tile / the logo. */
@@ -57,8 +58,7 @@ export function Header({ ready, onNavigate, onOpenPalette }: HeaderProps) {
   }, []);
 
   const handleLogoClick = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (!onNavigate) return;
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    if (!onNavigate || !isPlainClick(e)) return;
     e.preventDefault();
     onNavigate(e, '/hello/');
   };

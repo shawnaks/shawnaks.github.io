@@ -2,12 +2,12 @@ import type { MouseEvent } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { NAV_ITEMS } from '../data/site';
 import { useActiveSection } from '../hooks/useActiveSection';
-import { isMainPath, sectionIdFromPath } from '../lib/sections';
+import { isMainPath, isPlainClick, sectionIdFromPath } from '../lib/sections';
 import type { SectionNavHandler } from '../lib/sections';
 import { Icon } from './Icon';
 import '../styles/rail.css';
 
-export type SectionRailProps = {
+type SectionRailProps = {
   /** Same section contract as the header tiles: modifier clicks stay native. */
   onNavigate?: SectionNavHandler;
 };
@@ -23,8 +23,7 @@ export function SectionRail({ onNavigate }: SectionRailProps) {
   const activeSection = useActiveSection();
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>, to: string) => {
-    if (!onNavigate) return;
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    if (!onNavigate || !isPlainClick(e)) return;
     e.preventDefault();
     onNavigate(e, to);
   };

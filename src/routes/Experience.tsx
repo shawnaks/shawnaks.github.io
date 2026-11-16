@@ -96,7 +96,7 @@ function hackathonItems(onNavigate?: SectionNavHandler): readonly RecordCardData
   ];
 }
 
-export type ExperienceProps = {
+type ExperienceProps = {
   onNavigate?: SectionNavHandler;
 };
 

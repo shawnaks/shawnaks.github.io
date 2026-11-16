@@ -14,11 +14,11 @@ export function prefersReducedMotion(): boolean {
   );
 }
 
-export type ScrambleFn = (el: HTMLElement | null, duration?: number) => void;
-export type CancelScrambleFn = (el?: HTMLElement | null) => void;
-export type ResetScrambleFn = (el?: HTMLElement | null) => void;
+type ScrambleFn = (el: HTMLElement | null, duration?: number) => void;
+type CancelScrambleFn = (el?: HTMLElement | null) => void;
+type ResetScrambleFn = (el?: HTMLElement | null) => void;
 
-export type ScrambleControls = {
+type ScrambleControls = {
   scramble: ScrambleFn;
   cancel: CancelScrambleFn;
   /** Restore the settled text, or every `.title-char` to its true glyph. */

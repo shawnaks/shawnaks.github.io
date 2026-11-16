@@ -12,7 +12,7 @@ import { sectionIdFromPath } from '../lib/sections';
 import type { SectionNavHandler } from '../lib/sections';
 import type { NavigateHandler } from '../lib/transition';
 
-export type MainPageProps = {
+type MainPageProps = {
   /** Section controls scroll (tiles, pills, CTAs, logo). */
   onNavigate?: SectionNavHandler;
   /** Project cards / case-study links keep the route transition. */

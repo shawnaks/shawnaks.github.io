@@ -10,12 +10,15 @@ export type IconName =
   | 'brief'
   | 'code'
   | 'mail'
+  | 'check'
   | 'down'
   | 'chev'
+  | 'sun'
+  | 'moon'
   | 'github'
   | 'linkedin';
 
-export type NavItem = {
+type NavItem = {
   to: string;
   abbr: string;
   full: string;
@@ -65,7 +68,7 @@ export const FACTS = {
   internshipTerm: 'summer 2027',
 } as const;
 
-export type SocialLink = {
+type SocialLink = {
   id: 'github' | 'linkedin' | 'email' | 'resume';
   href: string;
   icon: IconName;

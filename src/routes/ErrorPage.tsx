@@ -4,7 +4,7 @@ import { SectionTitle } from '../components/SectionTitle';
 import type { NavigateHandler } from '../lib/transition';
 import { useReveal } from '../hooks/useReveal';
 
-export type ErrorPageProps = {
+type ErrorPageProps = {
   onNavigate?: NavigateHandler;
 };
 

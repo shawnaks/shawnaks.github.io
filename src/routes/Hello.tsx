@@ -5,12 +5,13 @@ import { AsciiHero } from '../components/AsciiHero';
 import { NavTile } from '../components/NavTile';
 import { Portrait } from '../components/Portrait';
 import { SocialRow } from '../components/SocialRow';
+import { isPlainClick } from '../lib/sections';
 import type { SectionNavHandler } from '../lib/sections';
 import { useReveal } from '../hooks/useReveal';
 import { prefersReducedMotion } from '../hooks/useScramble';
 import '../styles/terminal.css';
 
-export type HelloProps = {
+type HelloProps = {
   onNavigate?: SectionNavHandler;
 };
 
@@ -61,8 +62,7 @@ export function Hello({ onNavigate }: HelloProps) {
   /* Same click contract as NavTile: modifiers and non-primary buttons keep the
      browser's link behaviour; plain clicks use the shared section handler. */
   const handleCueClick = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (!onNavigate) return;
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    if (!onNavigate || !isPlainClick(e)) return;
     e.preventDefault();
     onNavigate(e, '/about/');
   };

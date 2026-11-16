@@ -101,6 +101,19 @@ body.is-loading { overflow: hidden; }
 
 ul { list-style: none; }
 
+/* Visually hidden but still in the accessibility tree. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 .icon { display: block; width: 100%; height: 100%; }
 
 /* diagonal hatch texture — two strips offset below/right of the box,

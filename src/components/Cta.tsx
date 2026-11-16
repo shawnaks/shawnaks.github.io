@@ -1,8 +1,9 @@
 import type { MouseEvent, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { Icon } from './Icon';
+import { isPlainClick } from '../lib/sections';
+import { Chevrons } from './Icon';
 
-export type CtaProps = {
+type CtaProps = {
   /** Defaults to the home route. */
   to?: string;
   /** Defaults to the backup's "back to hello". */
@@ -15,8 +16,7 @@ export type CtaProps = {
 /** The wide bordered CTA link with the double-chevron icon. */
 export function Cta({ to = '/hello/', children = 'back to hello', className, onNavigate }: CtaProps) {
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (!onNavigate) return;
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    if (!onNavigate || !isPlainClick(e)) return;
     e.preventDefault();
     onNavigate(e, to);
   };
@@ -24,10 +24,7 @@ export function Cta({ to = '/hello/', children = 'back to hello', className, onN
   return (
     <Link to={to} className={['cta', className].filter(Boolean).join(' ')} onClick={handleClick}>
       <span className="cta-text">{children}</span>
-      <span className="cta-icon" aria-hidden="true">
-        <Icon name="chev" />
-        <Icon name="chev" />
-      </span>
+      <Chevrons />
     </Link>
   );
 }
