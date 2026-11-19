@@ -126,7 +126,14 @@ function CaseStudyView({ project, onNavigate }: CaseStudyViewProps) {
         </header>
 
         <div className="section-body case-body">
-          <ScreenshotFrame className="case-shot" alt={`${project.name} — screenshot coming soon`} />
+          <ScreenshotFrame
+            className="case-shot"
+            src={project.image?.src}
+            alt={project.image?.alt ?? `${project.name} — screenshot coming soon`}
+            fit={project.image?.fit}
+            width={project.image?.w}
+            height={project.image?.h}
+          />
 
           <div className="case-tldr anim">
             <p className="case-tldr-label">TLDR;</p>

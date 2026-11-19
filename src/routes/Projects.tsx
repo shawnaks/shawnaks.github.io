@@ -23,7 +23,13 @@ function ProjectCard({ project, onNavigate }: ProjectCardProps) {
 
   return (
     <article className="project-card">
-      <ScreenshotFrame alt={`${project.name} — screenshot coming soon`} />
+      <ScreenshotFrame
+        src={project.image?.src}
+        alt={project.image?.alt ?? `${project.name} — screenshot coming soon`}
+        fit={project.image?.fit}
+        width={project.image?.w}
+        height={project.image?.h}
+      />
 
       <div className="project-card-body">
         <div className="project-card-head">

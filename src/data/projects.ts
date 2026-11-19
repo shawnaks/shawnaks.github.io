@@ -21,6 +21,18 @@ type ProjectStep = {
   solution: string;
 };
 
+/** Real capture shown in the card and case-study frame. */
+type ProjectImage = {
+  /** Relative to `public/`, like RESUME_HREF — survives the relative Pages base. */
+  src: string;
+  alt: string;
+  /** Portrait captures letterbox instead of cropping mid-UI. */
+  fit?: 'cover' | 'contain';
+  /** Intrinsic size; rendered as width/height so the browser reserves space. */
+  w: number;
+  h: number;
+};
+
 export type ProjectData = {
   slug: string;
   name: string;
@@ -34,6 +46,8 @@ export type ProjectData = {
   tech: string[];
   steps: ProjectStep[];
   links: ProjectLink[];
+  /** Omitted projects fall back to the framed placeholder. */
+  image?: ProjectImage;
 };
 
 /** All six projects, in the order they appear on `#/projects/`. */
@@ -85,6 +99,13 @@ export const PROJECTS: readonly ProjectData[] = [
       },
     ],
     links: [{ label: 'Code', href: `${GITHUB_URL}/SnapFind`, external: true }],
+    image: {
+      src: 'assets/projects/snapfind.webp',
+      alt: 'SnapFind lost-and-found feed with wallet, backpack, bottle and headphones item cards.',
+      fit: 'contain',
+      w: 1600,
+      h: 930,
+    },
   },
   {
     slug: 'rxguard',
@@ -139,6 +160,12 @@ export const PROJECTS: readonly ProjectData[] = [
       { label: 'Code', href: `${GITHUB_URL}/RxGuard`, external: true },
       { label: 'Devpost', href: 'https://devpost.com/software/guess-xp546j', external: true },
     ],
+    image: {
+      src: 'assets/projects/rxguard.webp',
+      alt: 'RxGuard dashboard summarizing 1,532 FDA drug-interaction reports with bar and donut charts.',
+      w: 1440,
+      h: 900,
+    },
   },
   {
     slug: 'flight-fare-optimizer',
@@ -182,6 +209,13 @@ export const PROJECTS: readonly ProjectData[] = [
       },
     ],
     links: [{ label: 'Code', href: `${GITHUB_URL}/Flight-Fare-Optimizer`, external: true }],
+    image: {
+      src: 'assets/projects/flight-fare-optimizer.webp',
+      alt: 'Horizontal matplotlib bar chart comparing total runtime of four pathfinding algorithms.',
+      fit: 'contain',
+      w: 671,
+      h: 433,
+    },
   },
   {
     slug: 'hearo',
@@ -229,6 +263,13 @@ export const PROJECTS: readonly ProjectData[] = [
       },
     ],
     links: [{ label: 'Code', href: `${GITHUB_URL}/Hearo`, external: true }],
+    image: {
+      src: 'assets/projects/hearo.webp',
+      alt: 'Hearo home screen with a purple camera tile and a How to Use button.',
+      fit: 'contain',
+      w: 738,
+      h: 1600,
+    },
   },
   {
     slug: 'battle-showdown',
@@ -271,6 +312,12 @@ export const PROJECTS: readonly ProjectData[] = [
       },
     ],
     links: [{ label: 'Code', href: `${GITHUB_URL}/Battle-showdown-game`, external: true }],
+    image: {
+      src: 'assets/projects/battle-showdown.webp',
+      alt: 'Battle Simulator arena mid-fight: Jack at 28 HP against a snowman at 41 HP.',
+      w: 1440,
+      h: 900,
+    },
   },
   {
     slug: 'pong',
@@ -305,6 +352,13 @@ export const PROJECTS: readonly ProjectData[] = [
       },
     ],
     links: [{ label: 'Code', href: `${GITHUB_URL}/Pong`, external: true }],
+    image: {
+      src: 'assets/projects/pong.webp',
+      alt: "Pong's blue court at kickoff, two red paddles and a score of zero to zero.",
+      fit: 'contain',
+      w: 1400,
+      h: 1000,
+    },
   },
 ];
 
