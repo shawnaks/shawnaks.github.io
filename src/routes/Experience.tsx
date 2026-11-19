@@ -2,7 +2,6 @@ import '../styles/experience.css';
 
 import { useRef } from 'react';
 import type { ReactNode } from 'react';
-import { Cta } from '../components/Cta';
 import { PlanItem } from '../components/PlanItem';
 import { PlanList } from '../components/PlanList';
 import { SectionTitle } from '../components/SectionTitle';
@@ -139,10 +138,6 @@ export function Experience({ onNavigate }: ExperienceProps) {
               <RecordCard key={item.name} {...item} />
             ))}
           </PlanList>
-
-          <p className="cta-row anim">
-            <Cta onNavigate={onNavigate} />
-          </p>
         </div>
       </div>
     </section>

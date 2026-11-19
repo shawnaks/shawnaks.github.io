@@ -64,9 +64,9 @@ export function MainPage({ onNavigate, onCaseStudyNavigate }: MainPageProps) {
       <SectionRail onNavigate={onNavigate} />
       <div className="page-stack">
         <Hello onNavigate={onNavigate} />
-        <About onNavigate={onNavigate} />
+        <About />
         <Experience onNavigate={onNavigate} />
-        <Projects onNavigate={onCaseStudyNavigate} onSectionNavigate={onNavigate} />
+        <Projects onNavigate={onCaseStudyNavigate} />
         <Contact onNavigate={onNavigate} />
       </div>
     </>

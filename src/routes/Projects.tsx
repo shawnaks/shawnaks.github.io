@@ -1,7 +1,6 @@
 import '../styles/projects.css';
 
 import { useRef } from 'react';
-import { Cta } from '../components/Cta';
 import { Chevrons, Icon } from '../components/Icon';
 import { SectionTitle } from '../components/SectionTitle';
 import { ScreenshotFrame } from '../components/ScreenshotFrame';
@@ -9,7 +8,6 @@ import { TransitionLink } from '../components/TransitionLink';
 import { PROJECTS } from '../data/projects';
 import type { ProjectData } from '../data/projects';
 import type { NavigateHandler } from '../lib/transition';
-import type { SectionNavHandler } from '../lib/sections';
 import { useReveal } from '../hooks/useReveal';
 
 type ProjectCardProps = {
@@ -81,12 +79,10 @@ function ProjectCard({ project, onNavigate }: ProjectCardProps) {
 type ProjectsProps = {
   /** Case-study links keep the outgoing route transition. */
   onNavigate?: NavigateHandler;
-  /** The section CTA scrolls back to hello. */
-  onSectionNavigate?: SectionNavHandler;
 };
 
 /** The `projects` section: selected work, one card per case study. */
-export function Projects({ onNavigate, onSectionNavigate }: ProjectsProps) {
+export function Projects({ onNavigate }: ProjectsProps) {
   const sectionRef = useRef<HTMLElement>(null);
 
   useReveal(sectionRef);
@@ -116,10 +112,6 @@ export function Projects({ onNavigate, onSectionNavigate }: ProjectsProps) {
               </li>
             ))}
           </ul>
-
-          <p className="cta-row anim">
-            <Cta onNavigate={onSectionNavigate} />
-          </p>
         </div>
       </div>
     </section>

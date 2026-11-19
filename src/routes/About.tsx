@@ -1,5 +1,4 @@
 import { useRef } from 'react';
-import { Cta } from '../components/Cta';
 import { LeafRain } from '../components/LeafRain';
 import { PlanList } from '../components/PlanList';
 import type { PlanItemData } from '../components/PlanItem';
@@ -7,7 +6,6 @@ import { Portrait } from '../components/Portrait';
 import { SectionTitle } from '../components/SectionTitle';
 import { SkillBars } from '../components/SkillBars';
 import { FACTS } from '../data/site';
-import type { SectionNavHandler } from '../lib/sections';
 import { useReveal } from '../hooks/useReveal';
 import '../styles/about.css';
 
@@ -33,12 +31,8 @@ const COURSES = [
 const TOOLS =
   'Git · VS Code · IntelliJ & PyCharm · Jupyter · Claude Code & GitHub Copilot · Figma · Agile/Scrum · Prompt Engineering';
 
-type AboutProps = {
-  onNavigate?: SectionNavHandler;
-};
-
 /** The `about` section: bio, education, coursework, skill stack. */
-export function About({ onNavigate }: AboutProps) {
+export function About() {
   const sectionRef = useRef<HTMLElement>(null);
 
   useReveal(sectionRef);
@@ -109,10 +103,6 @@ export function About({ onNavigate }: AboutProps) {
           <p className="section-label about-label anim">// tools &amp; more</p>
 
           <p className="tools-line anim">{TOOLS}</p>
-
-          <p className="cta-row anim">
-            <Cta onNavigate={onNavigate} />
-          </p>
         </div>
       </div>
     </section>
