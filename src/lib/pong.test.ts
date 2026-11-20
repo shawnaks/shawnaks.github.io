@@ -48,11 +48,19 @@ describe('court and difficulty configuration', () => {
       'very-hard': [13, 10.4],
       bot: [9, 7.2],
     } as const;
+    const tracking = {
+      easy: 0.4,
+      medium: 0.55,
+      hard: 0.7,
+      'very-hard': 0.85,
+      bot: 0,
+    } as const;
 
     for (const difficulty of DIFFICULTIES) {
       const [ballSpeed, playerSpeed] = speeds[difficulty];
       expect(DIFFICULTY_CONFIG[difficulty].ballSpeed, difficulty).toBe(ballSpeed);
       expect(DIFFICULTY_CONFIG[difficulty].playerSpeed, difficulty).toBeCloseTo(playerSpeed);
+      expect(DIFFICULTY_CONFIG[difficulty].tracking, difficulty).toBe(tracking[difficulty]);
       expect(DIFFICULTY_CONFIG[difficulty].bot, difficulty).toBe(difficulty === 'bot');
     }
   });
@@ -210,8 +218,8 @@ describe('collisions', () => {
     expect(stepGame(game, FRAME).ball.yvel).toBe(0);
   });
 
-  it('bounces off the right paddle and scales deflection by difficulty speed', () => {
-    for (const difficulty of DIFFICULTIES.filter((id) => id !== 'bot')) {
+  it('bounces off the right paddle and deflects away from its centre', () => {
+    for (const difficulty of DIFFICULTIES) {
       const speed = DIFFICULTY_CONFIG[difficulty].ballSpeed;
       const game = playing(difficulty, {
         ball: { x: 663, y: 200, radius: 7, xvel: speed, yvel: 0 },
@@ -219,7 +227,11 @@ describe('collisions', () => {
 
       const bounced = stepGame(game, FRAME);
       expect(bounced.ball.xvel, difficulty).toBe(-speed);
-      expect(bounced.ball.yvel, difficulty).toBe(-speed);
+
+      const centre = bounced.opponent.y + PADDLE.height / 2;
+      expect(Math.sign(bounced.ball.yvel) || 0, difficulty).toBe(
+        Math.sign(-(centre - bounced.ball.y)) || 0,
+      );
     }
   });
 });
@@ -321,13 +333,44 @@ describe('bot mode', () => {
     expect(stepGame(top, FRAME).opponent.y).toBe(0);
     expect(stepGame(bottom, FRAME).opponent.y).toBe(400);
   });
+});
 
-  it('leaves the right paddle to the keyboard in other modes', () => {
+describe('opponent paddle', () => {
+  it('tracks the ball in every non-bot mode', () => {
+    for (const difficulty of DIFFICULTIES.filter((id) => id !== 'bot')) {
+      const cfg = DIFFICULTY_CONFIG[difficulty];
+      const game = playing(difficulty, {
+        ball: { x: 350, y: 100, radius: 7, xvel: cfg.ballSpeed, yvel: 0 },
+      });
+
+      const moved = stepGame(game, FRAME);
+      expect(moved.opponent.y, difficulty).toBeCloseTo(200 - cfg.ballSpeed * cfg.tracking);
+    }
+  });
+
+  it('cannot cross more than its tracked speed in one frame', () => {
+    const cfg = DIFFICULTY_CONFIG.medium;
     const game = playing('medium', {
-      ball: { x: 350, y: 100, radius: 7, xvel: 7, yvel: 0 },
+      opponent: { ...createGame('medium').opponent, y: 400 },
+      ball: { x: 350, y: 0, radius: 7, xvel: cfg.ballSpeed, yvel: 0 },
     });
 
-    expect(stepGame(game, FRAME).opponent.y).toBe(200);
+    expect(stepGame(game, FRAME).opponent.y).toBeCloseTo(400 - cfg.ballSpeed * cfg.tracking);
+  });
+
+  it('clamps to the court at both ends', () => {
+    const cfg = DIFFICULTY_CONFIG.hard;
+    const top = playing('hard', {
+      opponent: { ...createGame('hard').opponent, y: 5 },
+      ball: { x: 350, y: 0, radius: 7, xvel: cfg.ballSpeed, yvel: 0 },
+    });
+    const bottom = playing('hard', {
+      opponent: { ...createGame('hard').opponent, y: 395 },
+      ball: { x: 350, y: 500, radius: 7, xvel: cfg.ballSpeed, yvel: 0 },
+    });
+
+    expect(stepGame(top, FRAME).opponent.y).toBe(0);
+    expect(stepGame(bottom, FRAME).opponent.y).toBe(400);
   });
 });
 

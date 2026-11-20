@@ -4,6 +4,10 @@
  * The original moves in pixels per 60 Hz frame. Speeds here keep those values
  * and `stepGame` scales them by `dt * 60`, so a 1/60 s step is one original
  * frame and the court stays 700 x 500 at any refresh rate.
+ *
+ * One deliberate addition: outside bot mode the original left the right paddle
+ * to a second player, which a single-visitor web page cannot use, so every
+ * mode here has a speed-limited AI opponent (`tracking`); `bot` still snaps.
  */
 
 export const COURT = { width: 700, height: 500 } as const;
@@ -29,6 +33,11 @@ export type DifficultyConfig = {
   ballSpeed: number;
   /** 0.8 x ball speed, as the original paddle class does. */
   playerSpeed: number;
+  /**
+   * Fraction of the ball speed the opponent paddle tracks at. Kept below 1 so
+   * steep shots can beat it; `bot` mode snaps instead.
+   */
+  tracking: number;
   bot: boolean;
 };
 
@@ -41,16 +50,41 @@ export const DIFFICULTIES: readonly Difficulty[] = [
 ];
 
 export const DIFFICULTY_CONFIG: Record<Difficulty, DifficultyConfig> = {
-  easy: { label: 'Easy', ballSpeed: 2, playerSpeed: PLAYER_SPEED_RATIO * 2, bot: false },
-  medium: { label: 'Medium', ballSpeed: 7, playerSpeed: PLAYER_SPEED_RATIO * 7, bot: false },
-  hard: { label: 'Hard', ballSpeed: 9, playerSpeed: PLAYER_SPEED_RATIO * 9, bot: false },
+  easy: {
+    label: 'Easy',
+    ballSpeed: 2,
+    playerSpeed: PLAYER_SPEED_RATIO * 2,
+    tracking: 0.4,
+    bot: false,
+  },
+  medium: {
+    label: 'Medium',
+    ballSpeed: 7,
+    playerSpeed: PLAYER_SPEED_RATIO * 7,
+    tracking: 0.55,
+    bot: false,
+  },
+  hard: {
+    label: 'Hard',
+    ballSpeed: 9,
+    playerSpeed: PLAYER_SPEED_RATIO * 9,
+    tracking: 0.7,
+    bot: false,
+  },
   'very-hard': {
     label: 'Very Hard',
     ballSpeed: 13,
     playerSpeed: PLAYER_SPEED_RATIO * 13,
+    tracking: 0.85,
     bot: false,
   },
-  bot: { label: 'Bot', ballSpeed: 9, playerSpeed: PLAYER_SPEED_RATIO * 9, bot: true },
+  bot: {
+    label: 'Bot',
+    ballSpeed: 9,
+    playerSpeed: PLAYER_SPEED_RATIO * 9,
+    tracking: 0,
+    bot: true,
+  },
 };
 
 export const WIN_MESSAGES: Record<Winner, string> = {
@@ -149,9 +183,10 @@ export function stepGame(state: PongState, dt: number, input: PongInput = {}): P
 
   movePlayer(next, cfg.playerSpeed, frames, input);
 
-  if (cfg.bot) {
-    next.opponent.y = clampPaddleY(next.ball.y - next.opponent.height / 2);
-  }
+  const targetY = clampPaddleY(next.ball.y - next.opponent.height / 2);
+  next.opponent.y = cfg.bot
+    ? targetY
+    : moveToward(next.opponent.y, targetY, cfg.ballSpeed * cfg.tracking * frames);
 
   if (next.status === 'serve') {
     next.serveTimer = Math.max(0, next.serveTimer - dt);
@@ -191,6 +226,12 @@ function movePlayer(
   if (input.up) dy -= speed * frames;
   if (input.down) dy += speed * frames;
   state.player.y = clampPaddleY(state.player.y + dy);
+}
+
+function moveToward(current: number, target: number, maxStep: number): number {
+  const delta = target - current;
+  if (Math.abs(delta) <= maxStep) return target;
+  return current + Math.sign(delta) * maxStep;
 }
 
 function bounceOffWalls(ball: BallState): void {
