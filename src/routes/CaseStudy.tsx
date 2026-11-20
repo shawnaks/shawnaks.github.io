@@ -127,14 +127,18 @@ function CaseStudyView({ project, onNavigate }: CaseStudyViewProps) {
         </header>
 
         <div className="section-body case-body">
-          <ScreenshotFrame
-            className="case-shot"
-            src={project.image?.src}
-            alt={project.image?.alt ?? `${project.name} — Screenshot coming soon`}
-            fit={project.image?.fit}
-            width={project.image?.w}
-            height={project.image?.h}
-          />
+          {project.slug === 'pong' ? (
+            <PongGame />
+          ) : (
+            <ScreenshotFrame
+              className="case-shot"
+              src={project.image?.src}
+              alt={project.image?.alt ?? `${project.name} — Screenshot coming soon`}
+              fit={project.image?.fit}
+              width={project.image?.w}
+              height={project.image?.h}
+            />
+          )}
 
           <div className="case-tldr anim">
             <p className="case-tldr-label">TLDR;</p>
@@ -155,8 +159,6 @@ function CaseStudyView({ project, onNavigate }: CaseStudyViewProps) {
               </ul>
             </div>
           </div>
-
-          {project.slug === 'pong' && <PongGame />}
 
           <div className="case-pairs">
             {project.steps.map((step, i) => (

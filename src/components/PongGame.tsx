@@ -94,7 +94,6 @@ function sameHud(a: Hud, b: Hud): boolean {
 }
 
 export function PongGame() {
-  const [open, setOpen] = useState(false);
   const [started, setStarted] = useState(false);
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
   const [paused, setPaused] = useState(false);
@@ -155,10 +154,8 @@ export function PongGame() {
     requestAnimationFrame(() => selectedDifficultyRef.current?.focus({ preventScroll: true }));
   }, []);
 
-  // Size the backing store once per opening; CSS keeps the 700:500 frame.
+  // Size the backing store once on mount; CSS keeps the 700:500 frame.
   useEffect(() => {
-    if (!open) return;
-
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -175,12 +172,12 @@ export function PongGame() {
     return () => {
       alive = false;
     };
-  }, [open, render]);
+  }, [render]);
 
   // Menu and paused frames are static; no loop while they are on screen.
   useEffect(() => {
-    if (open && !started) render();
-  }, [open, started, render]);
+    if (!started) render();
+  }, [started, render]);
 
   useEffect(() => {
     const update = () => setTabHidden(document.hidden);
@@ -316,11 +313,6 @@ export function PongGame() {
     return () => cancelAnimationFrame(frame);
   }, [started, paused, hud.status, inView, tabHidden]);
 
-  const openPanel = () => {
-    setOpen(true);
-    requestAnimationFrame(() => selectedDifficultyRef.current?.focus({ preventScroll: true }));
-  };
-
   const pointerTarget = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
     if (rect.height === 0) return;
@@ -366,119 +358,111 @@ export function PongGame() {
         </p>
       </div>
 
-      {!open ? (
-        <button type="button" className="pong-btn pong-btn--primary" onClick={openPanel}>
-          Play Pong
-        </button>
-      ) : (
-        <>
-          <div className="pong-stage">
-            <canvas
-              ref={canvasRef}
-              className="pong-canvas"
-              width={COURT.width}
-              height={COURT.height}
-              aria-hidden="true"
-              onPointerDown={onPointerDown}
-              onPointerMove={onPointerMove}
-              onPointerUp={endDrag}
-              onPointerCancel={endDrag}
-              onLostPointerCapture={endDrag}
-            />
+      <div className="pong-stage">
+        <canvas
+          ref={canvasRef}
+          className="pong-canvas"
+          width={COURT.width}
+          height={COURT.height}
+          aria-hidden="true"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onLostPointerCapture={endDrag}
+        />
 
-            {hud.status === 'over' && hud.winner && (
-              <div className="pong-overlay">
-                <p className="pong-result" role="status">
-                  {WIN_MESSAGES[hud.winner]}
-                </p>
-                <p className="pong-result-score">
-                  {hud.leftScore} &mdash; {hud.rightScore}
-                </p>
-                <div className="pong-overlay-actions">
-                  <button
-                    type="button"
-                    className="pong-btn pong-btn--primary"
-                    onClick={() => startGame(difficulty)}
-                  >
-                    Play again
-                  </button>
-                  <button type="button" className="pong-btn" onClick={backToMenu}>
-                    Change difficulty
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {started && paused && hud.status !== 'over' && (
-              <div className="pong-overlay pong-overlay--paused" aria-hidden="true">
-                <p className="pong-paused">Paused</p>
-              </div>
-            )}
-          </div>
-
-          {!started ? (
-            <div className="pong-menu">
-              <div className="pong-difficulty" role="group" aria-label="Difficulty">
-                {DIFFICULTIES.map((id) => (
-                  <button
-                    key={id}
-                    ref={difficulty === id ? selectedDifficultyRef : undefined}
-                    type="button"
-                    className="pong-btn pong-chip"
-                    aria-pressed={difficulty === id}
-                    onClick={() => setDifficulty(id)}
-                  >
-                    {DIFFICULTY_CONFIG[id].label}
-                  </button>
-                ))}
-              </div>
+        {hud.status === 'over' && hud.winner && (
+          <div className="pong-overlay">
+            <p className="pong-result" role="status">
+              {WIN_MESSAGES[hud.winner]}
+            </p>
+            <p className="pong-result-score">
+              {hud.leftScore} &mdash; {hud.rightScore}
+            </p>
+            <div className="pong-overlay-actions">
               <button
                 type="button"
                 className="pong-btn pong-btn--primary"
                 onClick={() => startGame(difficulty)}
               >
-                Start
+                Play again
+              </button>
+              <button type="button" className="pong-btn" onClick={backToMenu}>
+                Change difficulty
               </button>
             </div>
-          ) : (
-            <div
-              className="pong-dock"
-              ref={gameRef}
-              role="group"
-              aria-label="Pong game"
-              aria-describedby="pong-embed-instructions"
-              tabIndex={-1}
-            >
-              <p className="pong-score" aria-hidden="true">
-                <span>{hud.leftScore}</span>
-                <span className="pong-score-sep">&ndash;</span>
-                <span>{hud.rightScore}</span>
-              </p>
-              <p className="sr-only" role="status">
-                Score {hud.leftScore} to {hud.rightScore}
-              </p>
+          </div>
+        )}
 
-              <div className="pong-controls">
-                <button
-                  ref={pauseRef}
-                  type="button"
-                  className="pong-btn"
-                  onClick={paused ? resumeGame : pauseGame}
-                >
-                  {paused ? 'Resume' : 'Pause'}
-                </button>
-                <button
-                  type="button"
-                  className="pong-btn"
-                  onClick={() => startGame(difficulty)}
-                >
-                  Restart
-                </button>
-                <span className="pong-mode">{difficultyLabel}</span>
-              </div>
-            </div>
-          )}
-        </>
+        {started && paused && hud.status !== 'over' && (
+          <div className="pong-overlay pong-overlay--paused" aria-hidden="true">
+            <p className="pong-paused">Paused</p>
+          </div>
+        )}
+      </div>
+
+      {!started ? (
+        <div className="pong-menu">
+          <div className="pong-difficulty" role="group" aria-label="Difficulty">
+            {DIFFICULTIES.map((id) => (
+              <button
+                key={id}
+                ref={difficulty === id ? selectedDifficultyRef : undefined}
+                type="button"
+                className="pong-btn pong-chip"
+                aria-pressed={difficulty === id}
+                onClick={() => setDifficulty(id)}
+              >
+                {DIFFICULTY_CONFIG[id].label}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            className="pong-btn pong-btn--primary"
+            onClick={() => startGame(difficulty)}
+          >
+            Start
+          </button>
+        </div>
+      ) : (
+        <div
+          className="pong-dock"
+          ref={gameRef}
+          role="group"
+          aria-label="Pong game"
+          aria-describedby="pong-embed-instructions"
+          tabIndex={-1}
+        >
+          <p className="pong-score" aria-hidden="true">
+            <span>{hud.leftScore}</span>
+            <span className="pong-score-sep">&ndash;</span>
+            <span>{hud.rightScore}</span>
+          </p>
+          <p className="sr-only" role="status">
+            Score {hud.leftScore} to {hud.rightScore}
+          </p>
+
+          <div className="pong-controls">
+            <button
+              ref={pauseRef}
+              type="button"
+              className="pong-btn"
+              onClick={paused ? resumeGame : pauseGame}
+            >
+              {paused ? 'Resume' : 'Pause'}
+            </button>
+            <button
+              type="button"
+              className="pong-btn"
+              onClick={() => startGame(difficulty)}
+            >
+              Restart
+            </button>
+            <span className="pong-mode">{difficultyLabel}</span>
+          </div>
+        </div>
       )}
     </section>
   );
