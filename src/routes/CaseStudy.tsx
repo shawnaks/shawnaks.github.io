@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Cta } from '../components/Cta';
 import { Chevrons, Icon } from '../components/Icon';
+import { PongGame } from '../components/PongGame';
 import { SectionTitle } from '../components/SectionTitle';
 import { ScreenshotFrame } from '../components/ScreenshotFrame';
 import { TransitionLink } from '../components/TransitionLink';
@@ -154,6 +155,8 @@ function CaseStudyView({ project, onNavigate }: CaseStudyViewProps) {
               </ul>
             </div>
           </div>
+
+          {project.slug === 'pong' && <PongGame />}
 
           <div className="case-pairs">
             {project.steps.map((step, i) => (

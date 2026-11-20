@@ -1,0 +1,260 @@
+/* ==========================================================================
+   pong embed — the playable case-study panel.
+   The court keeps the original palette; the frame, type and buttons use the
+   site tokens so light and dark both read as part of the page.
+   ========================================================================== */
+
+.pong-embed {
+  min-width: 0;
+  margin-bottom: 2.4em;
+  padding: 18px 18px 20px;
+  border: 6px solid var(--fg);
+  background: var(--bg);
+}
+
+.pong-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 16px;
+  margin-bottom: 14px;
+}
+
+.pong-label {
+  font: 700 var(--text-xs)/1 var(--ui);
+  letter-spacing: .04em;
+  color: var(--accent-ink);
+}
+
+.pong-blurb {
+  font: 400 var(--text-xs)/1.5 var(--ui);
+  color: var(--gray);
+}
+
+/* --------------------------------------------------------------------------
+   court — fixed 700:500 frame, scaled by CSS, drawn at DPR 2
+   -------------------------------------------------------------------------- */
+
+.pong-stage {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  aspect-ratio: 700 / 500;
+  overflow: hidden;
+  border: 3px solid var(--fg);
+  background: rgb(22, 77, 158);
+}
+
+.pong-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pong-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  text-align: center;
+  color: #fff;
+  background: rgba(10, 28, 58, .84);
+}
+
+.pong-overlay--paused {
+  background: rgba(10, 28, 58, .6);
+  pointer-events: none;
+}
+
+.pong-result {
+  font: 700 clamp(1.8rem, 4vw, 2.8rem)/1.2 var(--ui);
+  color: #fff;
+}
+
+.pong-result-score {
+  font: 700 var(--text-lg)/1 var(--ui);
+  font-variant-numeric: tabular-nums;
+  color: rgb(81, 255, 46);
+}
+
+.pong-paused {
+  font: 700 var(--text-xl)/1 var(--ui);
+  color: #fff;
+}
+
+.pong-overlay-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* On the blue court the page ink is too dark; keep the frame white. */
+.pong-overlay .pong-btn {
+  border-color: #fff;
+  color: #fff;
+  background: rgba(0, 0, 0, .22);
+}
+
+.pong-overlay .pong-btn:hover,
+.pong-overlay .pong-btn:focus-visible {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.pong-overlay .pong-btn--primary {
+  border-color: rgb(81, 255, 46);
+  color: rgb(81, 255, 46);
+}
+
+.pong-overlay .pong-btn--primary:hover,
+.pong-overlay .pong-btn--primary:focus-visible {
+  background: rgb(81, 255, 46);
+  border-color: rgb(81, 255, 46);
+  color: #08140a;
+}
+
+/* --------------------------------------------------------------------------
+   controls — score, pause/restart, and the difficulty menu
+   -------------------------------------------------------------------------- */
+
+.pong-dock {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  width: 100%;
+  max-width: 700px;
+  margin: 14px auto 0;
+}
+
+.pong-score {
+  display: flex;
+  gap: .3em;
+  margin-right: auto;
+  font: 700 var(--text-xl)/1 var(--ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.pong-score-sep {
+  color: var(--accent-ink);
+}
+
+.pong-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.pong-mode {
+  font: 400 var(--text-xs)/1.4 var(--ui);
+  color: var(--gray);
+}
+
+.pong-menu {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 700px;
+  margin: 14px auto 0;
+}
+
+.pong-difficulty {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pong-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border: 3px solid var(--fg);
+  border-radius: 0;
+  background: transparent;
+  color: var(--fg);
+  font: 700 var(--text-xs)/1 var(--ui);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color .2s linear,
+    border-color .2s linear,
+    color .2s linear;
+}
+
+.pong-btn:hover,
+.pong-btn:focus-visible {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.pong-btn--primary {
+  border-color: var(--accent-ink);
+  color: var(--accent-ink);
+}
+
+.pong-btn--primary:hover,
+.pong-btn--primary:focus-visible {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.pong-chip {
+  padding: 9px 11px;
+}
+
+.pong-chip[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   small screens — tighter frame, compact control row
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 560px) {
+  .pong-embed {
+    padding: 14px;
+    border-width: 6px;
+  }
+
+  .pong-head {
+    margin-bottom: 12px;
+  }
+
+  .pong-dock,
+  .pong-menu {
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .pong-score {
+    font-size: var(--text-lg);
+  }
+
+  .pong-btn {
+    padding: 9px 11px;
+    font-size: 1.2rem;
+  }
+
+  .pong-mode {
+    display: none;
+  }
+}
