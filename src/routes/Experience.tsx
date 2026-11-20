@@ -34,8 +34,8 @@ function RecordCard({ name, meta, achievements }: RecordCardData) {
 
 const ROLE_ITEMS: readonly RecordCardData[] = [
   {
-    name: 'delta dental insurance',
-    meta: 'data engineering intern · atlanta, ga · may–aug 2026',
+    name: 'Delta Dental Insurance',
+    meta: 'Data Engineering Intern · Atlanta, GA · May–Aug 2026',
     achievements: [
       `Engineered a Python + Snowflake ETL pipeline for the National Provider File — ${FACTS.deltaRecords} raw records refined into ${FACTS.deltaRows} dashboard-ready rows.`,
       'Developed a Python AI agent connected to Snowflake and Matillion that builds and QA-checks pipelines from business-logic documents — saving 80% of developer time on manual ETL work.',
@@ -43,16 +43,16 @@ const ROLE_ITEMS: readonly RecordCardData[] = [
     ],
   },
   {
-    name: 'safe robotics lab, georgia tech',
-    meta: 'undergraduate research assistant · dec 2025 – present',
+    name: 'Safe Robotics Lab, Georgia Tech',
+    meta: 'Undergraduate Research Assistant · Dec 2025 – Present',
     achievements: [
       'Teleoperate an OpenArm bimanual robot with Python scripts in MuJoCo for real-time object manipulation.',
       'Process data from human robot operators to train robot-learning models for autonomous actions.',
     ],
   },
   {
-    name: 'nasa genelab multi-omics awg',
-    meta: 'data analyst intern · remote · jun 2024 – sep 2025',
+    name: 'NASA GeneLab Multi-Omics AWG',
+    meta: 'Data Analyst Intern · Remote · Jun 2024 – Sep 2025',
     achievements: [
       'Processed and analyzed stained microscopy data to identify gene-expression patterns.',
       'Clustered biological samples with K-Means to uncover structural relationships across gene datasets.',
@@ -65,8 +65,8 @@ const ROLE_ITEMS: readonly RecordCardData[] = [
 function hackathonItems(onNavigate?: SectionNavHandler): readonly RecordCardData[] {
   return [
     {
-      name: `hacklytics 2026 — ${FACTS.hackathonPlace}, best use of actian vectorai db`,
-      meta: `georgia tech · ${FACTS.hackathonTeams}`,
+      name: `Hacklytics 2026 — ${FACTS.hackathonPlace}, Best Use of Actian VectorAI DB`,
+      meta: `Georgia Tech · ${FACTS.hackathonTeams}`,
       achievements: [
         <>
           Built{' '}
@@ -79,15 +79,15 @@ function hackathonItems(onNavigate?: SectionNavHandler): readonly RecordCardData
       ],
     },
     {
-      name: 'ai atl 2025',
-      meta: 'hackathon · atlanta',
+      name: 'AI ATL 2025',
+      meta: 'Hackathon · Atlanta',
       achievements: [
         'Built Hearo — a voice-first AI vision assistant that narrates scenes for blind and low-vision users, using Gemini 2.5 Flash and ElevenLabs.',
       ],
     },
     {
-      name: 'hackgt 2025 — team lead',
-      meta: 'georgia tech hackathon',
+      name: 'HackGT 2025 — Team Lead',
+      meta: 'Georgia Tech Hackathon',
       achievements: [
         'Led SnapFind, an AI-assisted lost & found platform: chose the tech stack and managed PRs, workflows, and delivery milestones.',
       ],
@@ -115,7 +115,7 @@ export function Experience({ onNavigate }: ExperienceProps) {
       <div className="container">
         <header className="section-head">
           <p className="section-label anim">// work.log</p>
-          <SectionTitle id="experience-title" text="experience" letters />
+          <SectionTitle id="experience-title" text="Experience" letters />
         </header>
 
         <div className="section-body">

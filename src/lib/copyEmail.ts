@@ -4,11 +4,11 @@ import '../styles/toast.css';
 /** How long the confirmation stays up before its exit transition. */
 const TOAST_MS = 2000;
 
-const COPIED = 'email copied';
-const MAIL_APP = 'opening your mail app…';
+const COPIED = 'Email copied';
+const MAIL_APP = 'Opening your mail app…';
 
 /** Accessible name shared by both copiers. */
-export const COPY_EMAIL_LABEL = `copy email address: ${EMAIL}`;
+export const COPY_EMAIL_LABEL = `Copy email address: ${EMAIL}`;
 
 let toast: HTMLDivElement | null = null;
 let hideTimer = 0;

@@ -55,7 +55,7 @@ const CHANNELS: readonly Channel[] = [
   },
   {
     name: 'Résumé',
-    handle: 'preview the pdf',
+    handle: 'Preview the PDF',
     description: 'The one-page formal version, always current.',
     icon: 'down',
     href: RESUME_HREF,
@@ -63,8 +63,8 @@ const CHANNELS: readonly Channel[] = [
   },
 ];
 
-const MAILTO_SUCCESS = `your mail app should open — if it doesn't, email me directly at ${CONTACT.email}.`;
-const SENT_SUCCESS = "message sent — I'll get back to you.";
+const MAILTO_SUCCESS = `Your mail app should open — if it doesn't, email me directly at ${CONTACT.email}.`;
+const SENT_SUCCESS = "Message sent — I'll get back to you.";
 
 /** The channel card as a button: undo the button-only UA chrome, keep the class styling. */
 const CHANNEL_BUTTON_STYLE: CSSProperties = {
@@ -134,8 +134,8 @@ export function Contact({ onNavigate }: ContactProps) {
         kind: 'info',
         text:
           limit.reason === 'window'
-            ? "you've reached the limit for now — try again a little later."
-            : 'sending is paused for a moment — a recent message just went through.',
+            ? "You've reached the limit for now — try again a little later."
+            : 'Sending is paused for a moment — a recent message just went through.',
       };
   const shownNotice = notice ?? limitNotice;
 
@@ -177,7 +177,7 @@ export function Contact({ onNavigate }: ContactProps) {
       // A form that already failed validation is a human correcting it, not a
       // bot: move the fill timer past the window so the retry is never flagged.
       firstEditAt.current = Date.now() - MIN_FILL_MS;
-      setNotice({ kind: 'error', text: 'check the highlighted fields above.' });
+      setNotice({ kind: 'error', text: 'Check the highlighted fields above.' });
       const first = invalid[0];
       window.requestAnimationFrame(() => {
         const field = formRef.current?.querySelector<HTMLElement>(`[name="${first}"]`);
@@ -210,8 +210,8 @@ export function Contact({ onNavigate }: ContactProps) {
         kind: 'info',
         text:
           limit.reason === 'window'
-            ? "you've reached the limit for now — try again a little later."
-            : 'please wait before sending again — a recent message just went through.',
+            ? "You've reached the limit for now — try again a little later."
+            : 'Please wait before sending again — a recent message just went through.',
       });
       return;
     }
@@ -260,8 +260,8 @@ export function Contact({ onNavigate }: ContactProps) {
             // limit does not set that line.
             kind: 'wait',
             text: wait
-              ? `too many messages — try again in ${formatRetryAfter(wait)}.`
-              : 'too many messages — try again a little later.',
+              ? `Too many messages — try again in ${formatRetryAfter(wait)}.`
+              : 'Too many messages — try again a little later.',
           });
           // No limiter.record(): the server did not accept this message.
           return;
@@ -287,7 +287,7 @@ export function Contact({ onNavigate }: ContactProps) {
       // Keep every field exactly as typed so the message is not lost.
       setNotice({
         kind: 'error',
-        text: `that didn't send — your message is still here. try again, or email me at ${CONTACT.email}.`,
+        text: `That didn't send — your message is still here. Try again, or email me at ${CONTACT.email}.`,
       });
     } finally {
       setSending(false);
@@ -304,7 +304,7 @@ export function Contact({ onNavigate }: ContactProps) {
       <div className="container">
         <header className="section-head">
           <p className="section-label anim">// say hello</p>
-          <SectionTitle id="contact-title" text="contact" letters />
+          <SectionTitle id="contact-title" text="Contact" letters />
         </header>
 
         <div className="section-body contact-body">
@@ -356,7 +356,7 @@ export function Contact({ onNavigate }: ContactProps) {
                       type="button"
                       className="contact-channel-link hatch"
                       style={CHANNEL_BUTTON_STYLE}
-                      aria-label="preview résumé"
+                      aria-label="Preview résumé"
                       onClick={openResumePreview}
                     >
                       {body}
@@ -379,7 +379,7 @@ export function Contact({ onNavigate }: ContactProps) {
           <div className="contact-status hatch anim">
             <div className="contact-status-cell">
               <p className="contact-status-label">// location</p>
-              <p className="contact-status-value">atlanta, ga</p>
+              <p className="contact-status-value">Atlanta, GA</p>
             </div>
             <div className="contact-status-cell">
               <p className="contact-status-label">// status</p>
@@ -406,7 +406,7 @@ export function Contact({ onNavigate }: ContactProps) {
             <div className="contact-form-grid">
               <div className="contact-field">
                 <label className="contact-field-label" htmlFor="contact-name">
-                  name
+                  Name
                 </label>
                 <input
                   className="contact-input"
@@ -430,7 +430,7 @@ export function Contact({ onNavigate }: ContactProps) {
 
               <div className="contact-field">
                 <label className="contact-field-label" htmlFor="contact-email">
-                  email
+                  Email
                 </label>
                 <input
                   className="contact-input"
@@ -454,7 +454,7 @@ export function Contact({ onNavigate }: ContactProps) {
 
               <div className="contact-field contact-field--full">
                 <label className="contact-field-label" htmlFor="contact-subject">
-                  subject <span className="contact-field-optional">optional</span>
+                  Subject <span className="contact-field-optional">Optional</span>
                 </label>
                 <input
                   className="contact-input"
@@ -470,7 +470,7 @@ export function Contact({ onNavigate }: ContactProps) {
 
               <div className="contact-field contact-field--full">
                 <label className="contact-field-label" htmlFor="contact-message">
-                  message
+                  Message
                 </label>
                 <textarea
                   className="contact-input contact-textarea"
@@ -535,7 +535,7 @@ export function Contact({ onNavigate }: ContactProps) {
                 aria-describedby={!limit.allowed ? 'contact-form-wait' : undefined}
               >
                 <span className="cta-text">
-                  {sending ? 'sending…' : limit.allowed ? 'send message' : `wait ${seconds}s`}
+                  {sending ? 'Sending…' : limit.allowed ? 'Send message' : `Wait ${seconds}s`}
                 </span>
                 <Chevrons />
               </button>
@@ -543,8 +543,8 @@ export function Contact({ onNavigate }: ContactProps) {
               {!limit.allowed ? (
                 <p className="contact-form-wait" id="contact-form-wait">
                   {limit.reason === 'window'
-                    ? `you've reached the limit — try again in ${seconds}s`
-                    : `please wait ${seconds}s before sending again`}
+                    ? `You've reached the limit — try again in ${seconds}s`
+                    : `Please wait ${seconds}s before sending again`}
                 </p>
               ) : null}
             </div>

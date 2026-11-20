@@ -15,7 +15,7 @@ type HelloProps = {
   onNavigate?: SectionNavHandler;
 };
 
-const STATUS_TEXT = 'currently: robot learning @ the Safe Robotics Lab';
+const STATUS_TEXT = 'Currently: robot learning @ the Safe Robotics Lab';
 const TYPE_START_MS = 320;
 const TYPE_CHAR_MS = 32;
 
@@ -111,7 +111,7 @@ export function Hello({ onNavigate }: HelloProps) {
             <a
               className="scroll-cue-link"
               href="#/about/"
-              aria-label="scroll down to explore"
+              aria-label="Scroll down to explore"
               onClick={handleCueClick}
             >
               <span className="scroll-cue-pie" aria-hidden="true">
@@ -120,7 +120,7 @@ export function Hello({ onNavigate }: HelloProps) {
             </a>
             {/* Same words as the link's aria-label: hide the visible copy so
                 screen readers announce the cue once, not twice. */}
-            <p className="scroll-cue-text" aria-hidden="true">scroll down to explore</p>
+            <p className="scroll-cue-text" aria-hidden="true">Scroll down to explore</p>
           </div>
         </div>
       </div>

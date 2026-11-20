@@ -23,7 +23,7 @@ function ProjectCard({ project, onNavigate }: ProjectCardProps) {
     <article className="project-card">
       <ScreenshotFrame
         src={project.image?.src}
-        alt={project.image?.alt ?? `${project.name} — screenshot coming soon`}
+        alt={project.image?.alt ?? `${project.name} — Screenshot coming soon`}
         fit={project.image?.fit}
         width={project.image?.w}
         height={project.image?.h}
@@ -68,7 +68,7 @@ function ProjectCard({ project, onNavigate }: ProjectCardProps) {
           className="cta card-cta"
           onNavigate={onNavigate}
         >
-          <span className="cta-text">see case study</span>
+          <span className="cta-text">See case study</span>
           <Chevrons />
         </TransitionLink>
       </div>
@@ -97,7 +97,7 @@ export function Projects({ onNavigate }: ProjectsProps) {
       <div className="container">
         <header className="section-head">
           <p className="section-label anim">// ls ./projects</p>
-          <SectionTitle id="projects-title" text="projects" letters />
+          <SectionTitle id="projects-title" text="Projects" letters />
         </header>
 
         <div className="section-body project-body">

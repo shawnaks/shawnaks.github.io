@@ -7,7 +7,7 @@ const SKILLS = [
   { label: 'Python', percent: 90 },
   { label: 'JavaScript / TypeScript', percent: 85 },
   { label: 'React & Next.js', percent: 85 },
-  { label: 'Data Engineering (Snowflake, Pandas)', percent: 85 },
+  { label: 'Data Engineering (Snowflake, pandas)', percent: 85 },
   { label: 'FastAPI & Node.js', percent: 80 },
   { label: 'Machine Learning (PyTorch, TensorFlow)', percent: 80 },
   { label: 'Java & C/C++', percent: 75 },

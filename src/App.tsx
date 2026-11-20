@@ -23,11 +23,11 @@ function RouteEffects() {
 
   useEffect(() => {
     if (isMainPath(location.pathname)) {
-      document.title = 'Shawnak Samaddar // hello world';
+      document.title = 'Shawnak Samaddar // Hello World';
     } else if (isCaseStudyPath(location.pathname)) {
-      document.title = 'Shawnak Samaddar // case study';
+      document.title = 'Shawnak Samaddar // Case Study';
     } else {
-      document.title = 'Shawnak Samaddar // error';
+      document.title = 'Shawnak Samaddar // Error';
     }
   }, [location.pathname]);
 

@@ -12,8 +12,8 @@ import '../styles/about.css';
 const EDUCATION: readonly PlanItemData[] = [
   {
     name: 'Georgia Institute of Technology',
-    meta: `B.S. computer science · atlanta, ga · ${FACTS.graduationShort}`,
-    body: 'threads: artificial intelligence & information internetworks · minor in mathematics',
+    meta: `B.S. computer science · Atlanta, GA · ${FACTS.graduationShort}`,
+    body: 'Threads: artificial intelligence & information internetworks · minor in mathematics',
   },
 ];
 
@@ -49,7 +49,7 @@ export function About() {
       <div className="container">
         <header className="section-head">
           <p className="section-label anim">// whoami</p>
-          <SectionTitle id="about-title" text="about" letters />
+          <SectionTitle id="about-title" text="About" letters />
         </header>
 
         <div className="section-body">
@@ -88,7 +88,7 @@ export function About() {
 
           <p className="section-label about-label anim">// coursework</p>
 
-          <ul className="course-list" aria-label="coursework">
+          <ul className="course-list" aria-label="Coursework">
             {COURSES.map((course) => (
               <li className="course-chip anim" key={course}>
                 {course}

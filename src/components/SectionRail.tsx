@@ -45,7 +45,7 @@ export function SectionRail({ onNavigate }: SectionRailProps) {
                 className={['section-rail-link', isActive ? 'is-active' : '']
                   .filter(Boolean)
                   .join(' ')}
-                aria-label={name}
+                aria-label={name[0].toUpperCase() + name.slice(1)}
                 aria-current={isActive ? 'location' : undefined}
                 onClick={(e) => handleClick(e, item.to)}
               >

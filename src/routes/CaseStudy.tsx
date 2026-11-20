@@ -32,7 +32,7 @@ function CaseStudyNotFound({ onNavigate }: CaseStudyProps) {
       <div className="container">
         <header className="section-head">
           <p className="section-label anim">// case study not found</p>
-          <SectionTitle id="case-study-not-found-title" text="not found" level="h1" />
+          <SectionTitle id="case-study-not-found-title" text="Not found" level="h1" />
         </header>
 
         <div className="section-body">
@@ -42,7 +42,7 @@ function CaseStudyNotFound({ onNavigate }: CaseStudyProps) {
 
           <p className="cta-row anim">
             <Cta to="/projects/" onNavigate={onNavigate}>
-              back to projects
+              Back to projects
             </Cta>
           </p>
         </div>
@@ -129,7 +129,7 @@ function CaseStudyView({ project, onNavigate }: CaseStudyViewProps) {
           <ScreenshotFrame
             className="case-shot"
             src={project.image?.src}
-            alt={project.image?.alt ?? `${project.name} — screenshot coming soon`}
+            alt={project.image?.alt ?? `${project.name} — Screenshot coming soon`}
             fit={project.image?.fit}
             width={project.image?.w}
             height={project.image?.h}
@@ -206,20 +206,20 @@ function CaseStudyView({ project, onNavigate }: CaseStudyViewProps) {
             ))}
           </div>
 
-          <nav className="case-pager anim" aria-label="case study navigation">
+          <nav className="case-pager anim" aria-label="Case study navigation">
             <TransitionLink
               to={`/case-study/${next.slug}/`}
               className="case-next"
               onNavigate={onNavigate}
             >
-              <span className="case-next-label">next:</span>
+              <span className="case-next-label">Next:</span>
               <span className="case-next-name">{next.name}</span>
               <Chevrons className="case-next-icon" />
             </TransitionLink>
 
             <p className="case-back">
               <TransitionLink to="/projects/" onNavigate={onNavigate}>
-                back to listing
+                Back to listing
               </TransitionLink>
             </p>
           </nav>
@@ -238,7 +238,7 @@ export function CaseStudy({ onNavigate }: CaseStudyProps) {
   useEffect(() => {
     document.title = project
       ? `Shawnak Samaddar // ${project.name}`
-      : 'Shawnak Samaddar // error';
+      : 'Shawnak Samaddar // Error';
   }, [project]);
 
   if (!project) return <CaseStudyNotFound onNavigate={onNavigate} />;

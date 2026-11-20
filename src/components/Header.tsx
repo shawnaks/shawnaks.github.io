@@ -71,7 +71,7 @@ export function Header({ ready, onNavigate, onOpenPalette }: HeaderProps) {
     <header className={className} id="header">
       <div className="header-wrap">
         <div className="logo">
-          <Link to="/hello/" aria-label="shawnak samaddar — home" onClick={handleLogoClick}>
+          <Link to="/hello/" aria-label="Shawnak Samaddar — Home" onClick={handleLogoClick}>
             <span className="logo-mark" aria-hidden="true">
               //
             </span>
@@ -79,7 +79,7 @@ export function Header({ ready, onNavigate, onOpenPalette }: HeaderProps) {
           </Link>
         </div>
 
-        <nav className="primary-nav" aria-label="primary">
+        <nav className="primary-nav" aria-label="Primary">
           <ul>
             {NAV_ITEMS.map((item) => (
               <li key={item.to}>
@@ -93,9 +93,9 @@ export function Header({ ready, onNavigate, onOpenPalette }: HeaderProps) {
           <button
             className="palette-trigger"
             type="button"
-            aria-label="open command palette"
+            aria-label="Open command palette"
             aria-keyshortcuts="Control+K Meta+K"
-            title="command palette (Ctrl+K)"
+            title="Command palette (Ctrl+K)"
             onClick={onOpenPalette}
           >
             <span className="palette-trigger-mark" aria-hidden="true">

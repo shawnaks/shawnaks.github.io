@@ -74,8 +74,8 @@ describe('buildMailto', () => {
     const url = buildMailto(VALID, 'shawnaksa150@gmail.com');
     expect(url.startsWith('mailto:shawnaksa150@gmail.com?subject=')).toBe(true);
     expect(url).toContain('subject=internship');
-    expect(decodeURIComponent(url)).toContain('name: Shawnak');
-    expect(decodeURIComponent(url)).toContain('email: shawnaksa150@gmail.com');
+    expect(decodeURIComponent(url)).toContain('Name: Shawnak');
+    expect(decodeURIComponent(url)).toContain('Email: shawnaksa150@gmail.com');
     expect(decodeURIComponent(url)).toContain(VALID.message);
   });
 
@@ -101,6 +101,6 @@ describe('buildMailto', () => {
 
   it('falls back to a default subject when none is given', () => {
     const url = buildMailto({ ...VALID, subject: '' }, 'a@b.co');
-    expect(url).toContain(`subject=${encodeURIComponent('message from your site')}`);
+    expect(url).toContain(`subject=${encodeURIComponent('Message from your site')}`);
   });
 });

@@ -27,11 +27,11 @@ type NavItem = {
 
 /** The five routes, in nav order. */
 export const NAV_ITEMS = [
-  { to: '/hello/', abbr: 'Ho', full: 'home', icon: 'term' },
-  { to: '/about/', abbr: 'Ab', full: 'about', icon: 'user' },
-  { to: '/experience/', abbr: 'Ex', full: 'experience', icon: 'brief' },
-  { to: '/projects/', abbr: 'Pr', full: 'projects', icon: 'code' },
-  { to: '/contact/', abbr: 'Ct', full: 'contact', icon: 'mail' },
+  { to: '/hello/', abbr: 'Ho', full: 'Home', icon: 'term' },
+  { to: '/about/', abbr: 'Ab', full: 'About', icon: 'user' },
+  { to: '/experience/', abbr: 'Ex', full: 'Experience', icon: 'brief' },
+  { to: '/projects/', abbr: 'Pr', full: 'Projects', icon: 'code' },
+  { to: '/contact/', abbr: 'Ct', full: 'Contact', icon: 'mail' },
 ] as const satisfies readonly NavItem[];
 
 /** The four home-grid tiles (hello itself is never a tile). */
@@ -64,7 +64,7 @@ export const FACTS = {
   hackathonTeams: '50+ teams',
   hackathonName: 'Hacklytics',
   graduation: 'December 2027',
-  graduationShort: 'dec 2027',
+  graduationShort: 'Dec 2027',
   internshipTerm: 'summer 2027',
 } as const;
 
@@ -86,31 +86,31 @@ export const SOCIALS: readonly SocialLink[] = [
     id: 'github',
     href: GITHUB_URL,
     icon: 'github',
-    label: 'github',
-    title: 'github',
+    label: 'GitHub',
+    title: 'GitHub',
     external: true,
   },
   {
     id: 'linkedin',
     href: LINKEDIN_URL,
     icon: 'linkedin',
-    label: 'linkedin',
-    title: 'linkedin',
+    label: 'LinkedIn',
+    title: 'LinkedIn',
     external: true,
   },
   {
     id: 'email',
     href: `mailto:${EMAIL}`,
     icon: 'mail',
-    label: 'email',
-    title: 'email',
+    label: 'Email',
+    title: 'Email',
   },
   {
     id: 'resume',
     href: RESUME_HREF,
     icon: 'down',
-    label: 'download résumé (pdf)',
-    title: 'résumé (pdf)',
+    label: 'Download résumé (PDF)',
+    title: 'Résumé (PDF)',
     download: true,
   },
 ];

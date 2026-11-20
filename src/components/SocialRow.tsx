@@ -28,7 +28,7 @@ export function SocialRow() {
             <button
               type="button"
               className="social-button"
-              aria-label="preview résumé"
+              aria-label="Preview résumé"
               title={social.title}
               onClick={openResumePreview}
             >

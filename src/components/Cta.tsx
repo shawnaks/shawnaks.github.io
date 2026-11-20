@@ -14,7 +14,7 @@ type CtaProps = {
 };
 
 /** The wide bordered CTA link with the double-chevron icon. */
-export function Cta({ to = '/hello/', children = 'back to hello', className, onNavigate }: CtaProps) {
+export function Cta({ to = '/hello/', children = 'Back to Hello', className, onNavigate }: CtaProps) {
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (!onNavigate || !isPlainClick(e)) return;
     e.preventDefault();

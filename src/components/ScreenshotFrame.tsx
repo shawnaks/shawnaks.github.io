@@ -31,7 +31,7 @@ export function ScreenshotFrame({
   ratio = 16 / 10,
   className,
 }: ScreenshotFrameProps) {
-  const label = alt || 'screenshot coming soon';
+  const label = alt || 'Screenshot coming soon';
 
   return (
     <div

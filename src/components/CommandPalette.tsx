@@ -24,9 +24,9 @@ type PaletteItem = {
 };
 
 const GROUP_ORDER: readonly { id: GroupId; label: string }[] = [
-  { id: 'sections', label: 'sections' },
-  { id: 'case studies', label: 'case studies' },
-  { id: 'actions', label: 'actions' },
+  { id: 'sections', label: 'Sections' },
+  { id: 'case studies', label: 'Case studies' },
+  { id: 'actions', label: 'Actions' },
 ];
 
 const SECTION_KEYWORDS: Record<string, readonly string[]> = {
@@ -43,7 +43,7 @@ const ITEMS: readonly PaletteItem[] = [
     id: `section-${section.id}`,
     group: 'sections' as const,
     kind: 'section' as const,
-    label: `${String(index + 1).padStart(2, '0')} ${section.id}`,
+    label: `${String(index + 1).padStart(2, '0')} ${section.id[0].toUpperCase()}${section.id.slice(1)}`,
     keywords: SECTION_KEYWORDS[section.id] ?? [section.id],
     href: section.to,
   })),
@@ -67,8 +67,8 @@ const ITEMS: readonly PaletteItem[] = [
     id: 'action-resume',
     group: 'actions',
     kind: 'resume',
-    label: 'download résumé',
-    note: 'pdf',
+    label: 'Download résumé',
+    note: 'PDF',
     keywords: ['resume', 'cv', 'pdf', 'curriculum vitae', 'download'],
     href: RESUME_HREF,
     download: true,
@@ -77,7 +77,7 @@ const ITEMS: readonly PaletteItem[] = [
     id: 'action-email',
     group: 'actions',
     kind: 'email',
-    label: 'email me',
+    label: 'Email me',
     note: EMAIL,
     keywords: ['mail', 'email', 'contact', 'reach out'],
     href: `mailto:${EMAIL}`,
@@ -86,7 +86,7 @@ const ITEMS: readonly PaletteItem[] = [
     id: 'action-theme',
     group: 'actions',
     kind: 'theme',
-    label: 'toggle theme',
+    label: 'Toggle theme',
     note: 'light / dark',
     keywords: ['theme', 'dark', 'light', 'appearance', 'night'],
     href: '#',
@@ -366,7 +366,7 @@ export function CommandPalette({
         className="palette-panel"
         role="dialog"
         aria-modal="true"
-        aria-label="command palette"
+        aria-label="Command palette"
         onKeyDown={handleKeyDown}
       >
         <div className="palette-search">
@@ -378,12 +378,12 @@ export function CommandPalette({
             className="palette-input"
             type="text"
             role="combobox"
-            aria-label="search commands"
+            aria-label="Search commands"
             aria-autocomplete="list"
             aria-expanded="true"
             aria-controls={LIST_ID}
             aria-activedescendant={activeItem ? optionId(activeItem) : undefined}
-            placeholder="search commands…"
+            placeholder="Search commands…"
             autoComplete="off"
             spellCheck={false}
             value={query}
@@ -394,7 +394,7 @@ export function CommandPalette({
           />
         </div>
 
-        <div id={LIST_ID} className="palette-list" role="listbox" aria-label="commands">
+        <div id={LIST_ID} className="palette-list" role="listbox" aria-label="Commands">
           {groups.map((group) => (
             <div
               className="palette-group"
@@ -434,15 +434,15 @@ export function CommandPalette({
 
           {!flat.length ? (
             <p className="palette-empty" role="status">
-              no matches for “{query}”
+              No matches for “{query}”
             </p>
           ) : null}
         </div>
 
         <div className="palette-foot" aria-hidden="true">
-          <span>↑↓ move</span>
-          <span>↵ open</span>
-          <span>esc close</span>
+          <span>↑↓ Move</span>
+          <span>↵ Open</span>
+          <span>esc Close</span>
         </div>
       </div>
     </div>

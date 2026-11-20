@@ -114,11 +114,11 @@ export function ResumePreview() {
             <span className="resume-preview-mark" aria-hidden="true">
               {'// '}
             </span>
-            résumé
+            Résumé
           </h2>
           <div className="resume-preview-actions">
             <a className="resume-preview-action" href={RESUME_HREF} download>
-              download
+              Download
             </a>
             <a
               className="resume-preview-action"
@@ -126,14 +126,14 @@ export function ResumePreview() {
               target="_blank"
               rel="noopener"
             >
-              open in new tab
+              Open in new tab
             </a>
           </div>
           <button
             ref={closeRef}
             className="resume-preview-close"
             type="button"
-            aria-label="close résumé preview"
+            aria-label="Close résumé preview"
             onClick={close}
           >
             <span aria-hidden="true">×</span>
@@ -144,7 +144,7 @@ export function ResumePreview() {
           <iframe
             className="resume-preview-frame"
             src={RESUME_HREF}
-            title="Shawnak Samaddar résumé (PDF)"
+            title="Shawnak Samaddar Résumé (PDF)"
             tabIndex={-1}
           />
         </div>
@@ -152,11 +152,11 @@ export function ResumePreview() {
         <p className="resume-preview-fallback">
           PDF not showing?{' '}
           <a href={RESUME_HREF} download>
-            download the file
+            Download the file
           </a>{' '}
           or{' '}
           <a href={RESUME_HREF} target="_blank" rel="noopener">
-            open it in a new tab
+            Open it in a new tab
           </a>
           .
         </p>

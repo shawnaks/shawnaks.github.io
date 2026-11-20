@@ -54,10 +54,10 @@ export function validateContact(values: ContactValues): {
   const cleaned = cleanContactValues(values);
   const errors: ContactErrors = {};
 
-  if (!cleaned.name) errors.name = 'name is required.';
-  if (!cleaned.email) errors.email = 'email is required.';
-  else if (!EMAIL_RE.test(cleaned.email)) errors.email = 'enter a valid email address.';
-  if (!cleaned.message) errors.message = 'message is required.';
+  if (!cleaned.name) errors.name = 'Name is required.';
+  if (!cleaned.email) errors.email = 'Email is required.';
+  else if (!EMAIL_RE.test(cleaned.email)) errors.email = 'Enter a valid email address.';
+  if (!cleaned.message) errors.message = 'Message is required.';
 
   return { values: cleaned, errors };
 }
@@ -70,10 +70,10 @@ type MailtoValues = Pick<ContactValues, 'name' | 'email' | 'subject' | 'message'
  * when called without validateContact.
  */
 export function buildMailto(values: MailtoValues, to: string): string {
-  const subject = stripLineBreaks(values.subject) || 'message from your site';
+  const subject = stripLineBreaks(values.subject) || 'Message from your site';
   const body = [
-    `name: ${stripLineBreaks(values.name)}`,
-    `email: ${stripLineBreaks(values.email)}`,
+    `Name: ${stripLineBreaks(values.name)}`,
+    `Email: ${stripLineBreaks(values.email)}`,
     '',
     values.message,
   ].join('\n');
