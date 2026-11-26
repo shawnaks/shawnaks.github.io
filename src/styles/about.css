@@ -32,7 +32,7 @@
 }
 
 /* ==========================================================================
-   skill bars — fills grow to --pct
+   skill bars — full-width accent tracks
    ========================================================================== */
 .skill-bars {
   display: grid;
@@ -59,23 +59,11 @@
 
 .skill-fill {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 0;
+  inset: 0;
   display: flex;
   align-items: center;
   overflow: hidden;
-  background: var(--fill);
-  transition: width 1.5s var(--ease);
-}
-
-.skill-bars.is-live .skill-fill { width: var(--pct); }
-
-/* instant rewind before a replay, so fast scroll-out/in always starts at 0 */
-.skill-bars.is-resetting .skill-fill {
-  width: 0;
-  transition: none;
+  background: var(--accent);
 }
 
 .skill-name {
