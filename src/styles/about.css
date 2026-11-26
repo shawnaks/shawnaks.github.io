@@ -32,11 +32,12 @@
 }
 
 /* ==========================================================================
-   skill bars — fills grow to --pct, numbers count in SkillBars.tsx
+   skill bars — fills grow to --pct
    ========================================================================== */
 .skill-bars {
   display: grid;
   gap: 14px;
+  max-width: 720px;
   margin-bottom: 1.2em;
 }
 
@@ -90,22 +91,6 @@
 /* narrow screens move the label above the track so long names never clip */
 .skill-name--top { display: none; }
 
-.skill-num {
-  flex: none;
-  width: 3.2em;
-  text-align: right;
-  font: 700 var(--text-sm)/1 var(--ui);
-  font-variant-numeric: tabular-nums;
-}
-
-.skill-num::after {
-  content: '%';
-  margin-left: .08em;
-  font-size: .62em;
-  font-weight: 400;
-  color: var(--gray);
-}
-
 /* ==========================================================================
    responsive
    ========================================================================== */
@@ -113,11 +98,11 @@
   .course-chip { font-size: var(--text-xs); }
   .skill-bar {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr;
     grid-template-areas:
-      'name name'
-      'track num';
-    gap: 6px 10px;
+      'name'
+      'track';
+    gap: 6px;
     align-items: center;
   }
   .skill-name--top {
@@ -131,5 +116,4 @@
   }
   .skill-fill .skill-name { display: none; }
   .skill-track { height: 32px; grid-area: track; }
-  .skill-num { width: 3.2em; font-size: var(--text-sm); grid-area: num; }
 }
