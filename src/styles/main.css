@@ -901,6 +901,7 @@ ul { list-style: none; }
   .page-stack > .section--home { min-height: 0; }
   .page-stack > .section:last-child,
   #main > .section:last-child { page-break-after: auto; }
+  .skill-fill { width: 100% !important; }
   .anim, .rule { opacity: 1 !important; transform: none !important; width: 100% !important; }
   .title-bar { display: none !important; }
   .section--page .title-text { color: var(--fg) !important; }
