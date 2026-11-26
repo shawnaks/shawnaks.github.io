@@ -67,7 +67,7 @@ const ITEMS: readonly PaletteItem[] = [
     id: 'action-resume',
     group: 'actions',
     kind: 'resume',
-    label: 'Download résumé',
+    label: 'Download resume',
     note: 'PDF',
     keywords: ['resume', 'cv', 'pdf', 'curriculum vitae', 'download'],
     href: RESUME_HREF,
@@ -101,7 +101,7 @@ const optionId = (item: PaletteItem) => `palette-option-${item.id}`;
 const anchorHref = (item: PaletteItem) =>
   item.kind === 'section' || item.kind === 'case' ? `#${item.href}` : item.href;
 
-/** Case- and accent-insensitive so "resume" finds "résumé". */
+/** Case-insensitive so "resume" and "Resume" both match. */
 function normalize(value: string): string {
   return value
     .toLowerCase()
@@ -320,7 +320,7 @@ export function CommandPalette({
       return;
     }
 
-    // Résumé download / mailto: let the browser act, then close.
+    // Resume download / mailto: let the browser act, then close.
     close(true);
   };
 

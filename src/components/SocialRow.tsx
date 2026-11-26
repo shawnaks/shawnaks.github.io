@@ -4,7 +4,7 @@ import { useEmailCopy } from '../hooks/useEmailCopy';
 import { Icon } from './Icon';
 import { openResumePreview } from './ResumePreview';
 
-/** github · linkedin · email · résumé — external links, copy, in-page preview. */
+/** github · linkedin · email · resume — external links, copy, in-page preview. */
 export function SocialRow() {
   const { copied, copy } = useEmailCopy();
 
@@ -28,7 +28,7 @@ export function SocialRow() {
             <button
               type="button"
               className="social-button"
-              aria-label="Preview résumé"
+              aria-label="Preview resume"
               title={social.title}
               onClick={openResumePreview}
             >

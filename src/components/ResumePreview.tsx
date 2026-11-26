@@ -15,7 +15,7 @@ const TITLE_ID = 'resume-preview-title';
 const FOCUSABLE = 'a[href], button:not([disabled])';
 
 /**
- * Résumé dialog: the PDF inline with download / new-tab escape hatches in the
+ * Resume dialog: the PDF inline with download / new-tab escape hatches in the
  * bar and in the footer strip, which stays visible when a browser refuses to
  * render the frame. Mounted once; opened by RESUME_PREVIEW_EVENT.
  */
@@ -114,7 +114,7 @@ export function ResumePreview() {
             <span className="resume-preview-mark" aria-hidden="true">
               {'// '}
             </span>
-            Résumé
+            Resume
           </h2>
           <div className="resume-preview-actions">
             <a className="resume-preview-action" href={RESUME_HREF} download>
@@ -133,7 +133,7 @@ export function ResumePreview() {
             ref={closeRef}
             className="resume-preview-close"
             type="button"
-            aria-label="Close résumé preview"
+            aria-label="Close resume preview"
             onClick={close}
           >
             <span aria-hidden="true">×</span>
@@ -144,7 +144,7 @@ export function ResumePreview() {
           <iframe
             className="resume-preview-frame"
             src={RESUME_HREF}
-            title="Shawnak Samaddar Résumé (PDF)"
+            title="Shawnak Samaddar Resume (PDF)"
             tabIndex={-1}
           />
         </div>

@@ -109,8 +109,8 @@ export const SOCIALS: readonly SocialLink[] = [
     id: 'resume',
     href: RESUME_HREF,
     icon: 'down',
-    label: 'Download résumé (PDF)',
-    title: 'Résumé (PDF)',
+    label: 'Download resume (PDF)',
+    title: 'Resume (PDF)',
     download: true,
   },
 ];

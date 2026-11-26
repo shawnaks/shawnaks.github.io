@@ -54,7 +54,7 @@ const CHANNELS: readonly Channel[] = [
     external: true,
   },
   {
-    name: 'Résumé',
+    name: 'Resume',
     handle: 'Preview the PDF',
     description: 'The one-page formal version, always current.',
     icon: 'down',
@@ -356,7 +356,7 @@ export function Contact({ onNavigate }: ContactProps) {
                       type="button"
                       className="contact-channel-link hatch"
                       style={CHANNEL_BUTTON_STYLE}
-                      aria-label="Preview résumé"
+                      aria-label="Preview resume"
                       onClick={openResumePreview}
                     >
                       {body}
